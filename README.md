@@ -1,25 +1,84 @@
-# Novel Log
-등장인물의 상태 관리를 Novel Log를 통해 간편하게 관리해 보세요!<br>
+<h1> Novel Log</h1>
+
+<p><strong>Novel Log는 판타지 소설 작가가 등장인물·장비·회차 정보를 체계적으로 관리할 수 있도록 돕는 세계관 관리 도구입니다.</strong></p>
+
+<h2>📌 소개</h2>
+
+<p>
+판타지 소설에서는 등장인물의 성장이나 상태 변화를 표현하기 위해 <strong>상태창(Status Window)</strong>을 사용하는 경우가 많습니다.<br>
+하지만 연재가 길어질수록 상태창 갱신 시 설정 누락이 발생하기 쉬우며, 매 회차마다 상태창을 반복해서 등장시키는 것도 현실적으로 어렵습니다.<br>
 <br>
-판타지 소설에서 등장인물의 성장 등의 변화를 독자들에게 보여주기 위한 장치로 상태창을 사용하는 경우가 많습니다.<br>
-연재가 길어지게 되면 상태창을 오랜만에 갱신하면서 빠뜨리는 부분이 생기면서 설정 오류가 생기는 경우도 많아집니다.<br>
-상태창은 상태를 보기 쉽게 정리하지만 실제 연재에서는 변화가 생길 때마다 등장시키기엔 무리가 있습니다.<br>
-이를 보완하기 위해서 Novel Log에서는 ( 등장인물 목록 / 장비 목록 / 회차 목록 ) 기능을 이용해 설정 관리에 도움을 줍니다.<br>
-<br>
-현재 Novel Log 주소:<br>
-https://d2dan5t0q4jwaf.cloudfront.net/<br>
-<br>
-프로젝트 설명:<br>
-프론트엔드     --- React 프로젝트, tailwind 모듈 사용<br>
-백엔드         --- Spring-Boot 프로젝트, MVC 패턴 사용, MyBatis로 DB 매핑 작업<br>
-                   Spring Security를 사용한 보안 관리(JWT 발급)<br>
-                   개인별 관리를 위해 로그인 기능 사용[일반 로그인 / OAuth2 로그인(Google, Naver)]<br>
-데이터베이스   --- 주요 데이터 MySQL 사용, 기타 데이터 Redis<br>
-<br>
-<br>
-배포 관련:<br>
-React 프로젝트    -  build 결과를 Spring-Boot 프로젝트에 포함시켜서 함께 build<br>
-                    대형 프로젝트가 아닌 개인 프로젝트로 진행해 통합해도 큰 영향 없음<br>
-Spring-Boot 서버  -  AWS EC2 INSTANCE로 서버 실행 및 Cloud Front로 배포하여 https 도메인 사용<br>
-MySQL - AWS RDS로 서버와 연결<br>
-Redis - Elastic Cache를 처음 연결했다가 비용 문제로 AWS EC2 INSTANCE에 설치하여 서버와 연결<br>
+Novel Log는 이러한 문제를 해결하기 위해 다음 기능을 제공합니다:
+</p>
+
+<ul>
+  <li>등장인물 목록 관리</li>
+  <li>장비 목록 관리</li>
+  <li>회차별 정보 관리</li>
+</ul>
+
+<p>작가가 설정을 놓치지 않도록 돕고, 변화 기록을 쉽게 추적할 수 있도록 하는 도구입니다.</p>
+
+<hr>
+
+<h2>🔗 데모 사이트</h2>
+<p>
+👉 <a href="https://d2dan5t0q4jwaf.cloudfront.net/">https://d2dan5t0q4jwaf.cloudfront.net/</a>
+</p>
+
+<hr>
+
+<h2>🛠 기술 스택</h2>
+
+<h3>Frontend</h3>
+<ul>
+  <li>React</li>
+  <li>Tailwind CSS</li>
+</ul>
+
+<h3>Backend</h3>
+<ul>
+  <li>Spring Boot (MVC 패턴)</li>
+  <li>Spring Security (JWT 인증)</li>
+  <li>OAuth2 로그인 (Google, Naver)</li>
+  <li>MyBatis (DB 매핑)</li>
+</ul>
+
+<h3>Database</h3>
+<ul>
+  <li>MySQL (주요 데이터)</li>
+  <li>Redis (세션/캐시 데이터)</li>
+</ul>
+
+<hr>
+
+<h2>🚀 배포 구조</h2>
+
+<h3>Frontend (React)</h3>
+<ul>
+  <li>빌드 결과물을 Spring Boot 리소스에 포함해 통합 빌드</li>
+  <li>개인 프로젝트 규모에서는 부담 없는 방식</li>
+</ul>
+
+<h3>Backend (Spring Boot)</h3>
+<ul>
+  <li>AWS EC2에서 서버 실행</li>
+  <li>CloudFront를 통해 HTTPS 제공</li>
+</ul>
+
+<h3>Database</h3>
+<ul>
+  <li>MySQL: AWS RDS 사용</li>
+  <li>Redis: ElasticCache → 비용 절감 위해 EC2 내부 설치로 변경</li>
+</ul>
+
+<hr>
+
+<h2>📂 주요 기능 요약</h2>
+<ul>
+  <li>등장인물 관리: 정보·상태·회차별 변화 기록</li>
+  <li>장비 관리: 장비 목록 및 인물 연결 관리</li>
+  <li>회차 관리: 회차별 상세 정보 구조화</li>
+  <li>JWT 인증: 쿠키로 1차 발급 → 프론트에서 헤더 사용</li>
+  <li>OAuth2 로그인 지원: Google / Naver</li>
+</ul>

@@ -10,7 +10,7 @@
     </select>
 
     <select id="getUserByName" resultType="UserDTO">
-        SELECT * FROM user WHERE userName = #{userName};
+        SELECT * FROM User WHERE userName = #{userName};
     </select>
 
     <select id = "findByEmail" resultType="UserDTO">
@@ -18,15 +18,15 @@
     </select>
 
     <insert id="insertUser" useGeneratedKeys="true" parameterType="UserDTO">
-        INSERT INTO User (userId, username, email, password, role, lastLoginDate) VALUES (#{userId},
+        INSERT INTO User (userId, userName, email, password, role, lastLoginDate) VALUES (#{userId},
         <choose>
-            <when test="username != null and username !=''">#{username}</when>
+            <when test="userName != null and userName !=''">#{userName}</when>
             <otherwise>'user'</otherwise>
         </choose>, #{email}, #{password}, #{role}, #{lastLoginDate});
     </insert>
 
     <update id="updateUser" parameterType="UserDTO">
-        UPDATE User SET username = #{username} WHERE userId = #{userId};
+        UPDATE User SET userName = #{userName} WHERE userId = #{userId};
     </update>
 
     <delete id="deleteUser" parameterType="UserDTO">

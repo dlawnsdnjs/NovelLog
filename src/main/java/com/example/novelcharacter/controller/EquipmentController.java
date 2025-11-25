@@ -78,10 +78,10 @@ class EquipmentController {
      * @throws NoPermissionException  소설 또는 회차 접근 권한이 없는 경우
      */
     @PostMapping("/addEquipment")
-    public void addEquipment(@RequestHeader String access, @Valid @RequestBody EquipmentDataDTO equipmentDataDTO) throws NoPermissionException {
+    public EquipmentDataDTO addEquipment(@RequestHeader String access, @Valid @RequestBody EquipmentDataDTO equipmentDataDTO) throws NoPermissionException {
         long uuid = jwtUtil.getUuid(access);
-
         equipmentService.insertEquipment(equipmentDataDTO, uuid);
+        return equipmentDataDTO;
     }
 
     /**

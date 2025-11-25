@@ -1,11 +1,15 @@
 package com.example.novelcharacter.controller;
 
 import com.example.novelcharacter.JWT.JWTUtil;
+import com.example.novelcharacter.service.FindIdService;
+import com.example.novelcharacter.service.ResetPasswordService;
 import com.example.novelcharacter.service.UserService;
 import org.apache.ibatis.javassist.bytecode.DuplicateMemberException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import java.util.Map;
 
 /**
@@ -18,6 +22,8 @@ import java.util.Map;
 public class UserController {
 
     private final UserService userService;
+    private final FindIdService findIdService;
+    private final ResetPasswordService resetPasswordService;
     private final JWTUtil jwtUtil;
 
     /**
@@ -27,8 +33,10 @@ public class UserController {
      * @param jwtUtil     JWT 토큰의 검증 및 사용자 식별을 담당하는 유틸리티 클래스
      */
     @Autowired
-    public UserController(UserService userService, JWTUtil jwtUtil) {
+    public UserController(UserService userService, FindIdService findIdService, ResetPasswordService resetPasswordService, JWTUtil jwtUtil) {
         this.userService = userService;
+        this.findIdService = findIdService;
+        this.resetPasswordService = resetPasswordService;
         this.jwtUtil = jwtUtil;
     }
 
@@ -48,4 +56,58 @@ public class UserController {
         String userName = body.get("userName");
         userService.updateUserName(userName, uuid);
     }
+
+    @PatchMapping("/userPasswordChange")
+    public void userPasswordChange(@RequestHeader("access") String access, @RequestBody Map<String, String> body) throws DuplicateMemberException {
+        long uuid = jwtUtil.getUuid(access);
+        String currentPassword = body.get("currentPassword");
+        String newPassword = body.get("newPassword");
+        resetPasswordService.changePassword(uuid, currentPassword, newPassword);
+
+    }
+
+    @PostMapping("/userIdFind")
+    public ResponseEntity<?> userIdFind(@RequestBody Map<String, String> body) throws DuplicateMemberException, MessagingException {
+        String email = body.get("email");
+        boolean sent = findIdService.sendUserId(email);
+        if (!sent) {
+            return ResponseEntity.noContent().build(); // 204
+        }
+
+        return ResponseEntity.ok().build(); // 200
+    }
+
+    @PostMapping("/resetPassword")
+    public ResponseEntity<?> sendReset(@RequestBody Map<String, String> request) throws DuplicateMemberException, MessagingException {
+        String userId = request.get("userId");
+
+        boolean sent = resetPasswordService.sendResetEmail(userId);
+        if (!sent) {
+            return ResponseEntity.noContent().build(); // 204: 존재하지 않는 이메일
+        }
+
+        return ResponseEntity.ok().build(); // 200: 메일 발송
+    }
+
+    @PostMapping("/resetPassword/confirm")
+    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> body) {
+
+        String token = body.get("token");
+        String newPassword = body.get("newPassword");
+
+        try {
+            resetPasswordService.resetPassword(token, newPassword);
+            return ResponseEntity.ok().build(); // 성공
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(400).body("Invalid token");
+        }
+    }
+
+    @PostMapping
+    public ResponseEntity<?> accountLink(@RequestBody Map<String, String> body) {
+        String email = body.get("email");
+//        userService.
+        return ResponseEntity.ok().build();
+    }
+
 }

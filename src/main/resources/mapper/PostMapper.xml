@@ -2,27 +2,27 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.novelcharacter.mapper.PostMapper">
     <insert id="insertPost" useGeneratedKeys="true" keyProperty="postId" parameterType="PostDTO">
-        INSERT INTO post (boardId, postTitle, content, uuid)
+        INSERT INTO Post (boardId, postTitle, content, uuid)
         VALUES (#{boardId}, #{postTitle}, #{content}, #{uuid})
     </insert>
 
     <select id="selectPostsByBoard" resultType="PostDataDTO">
         SELECT p.postId, p.postTitle, u.userName
-        FROM post p
-                 JOIN user u ON p.uuid = u.uuid
+        FROM Post p
+                 JOIN User u ON p.uuid = u.uuid
         WHERE p.boardId = #{boardId}
         ORDER BY p.postId DESC
         LIMIT 20 OFFSET #{page};
     </select>
 
     <select id="selectPostCountByBoard">
-        SELECT count(*) FROM post WHERE boardId = #{boardId};
+        SELECT count(*) FROM Post WHERE boardId = #{boardId};
     </select>
 
     <select id="selectPostsByUuid" resultType="PostDataDTO">
         SELECT p.postId, p.postTitle, u.userName
-        FROM post p
-                 JOIN user u ON p.uuid = u.uuid
+        FROM Post p
+                 JOIN User u ON p.uuid = u.uuid
         WHERE p.boardId = #{boardId} AND p.uuid = #{uuid}
         ORDER BY p.postId DESC
         LIMIT 20 OFFSET #{page};
@@ -30,8 +30,8 @@
 
     <select id="selectPostsByUserName" resultType="PostDataDTO">
         SELECT p.postId, p.postTitle, u.userName
-        FROM post p
-                 JOIN user u ON p.uuid = u.uuid
+        FROM Post p
+                 JOIN User u ON p.uuid = u.uuid
         WHERE p.boardId = #{boardId} AND u.userName LIKE CONCAT('%', #{userName}, '%')
         ORDER BY p.postId DESC
         LIMIT 20 OFFSET #{page};
@@ -39,20 +39,20 @@
 
     <select id="selectPostCountByUuid">
     SELECT count(*)
-    FROM post p
-    JOIN user u ON p.uuid = u.uuid
+    FROM Post p
+    JOIN User u ON p.uuid = u.uuid
     WHERE p.boardId = #{boardId} AND p.uuid = #{uuid}
     </select>
 
     <select id="selectPostCountByUserName">
         SELECT count(*)
-        FROM post p
-                 JOIN user u ON p.uuid = u.uuid
+        FROM Post p
+                 JOIN User u ON p.uuid = u.uuid
         WHERE p.boardId = #{boardId} AND u.userName = #{userName}
     </select>
 
     <select id="selectPostById" resultType="PostResponseDTO">
-        SELECT postId, postTitle, userName, content  FROM post p JOIN user u ON p.uuid = u.uuid WHERE postId=#{postId};
+        SELECT postId, postTitle, userName, content  FROM Post p JOIN User u ON p.uuid = u.uuid WHERE postId=#{postId};
     </select>
 
     <update id="updatePost" parameterType="PostDTO">
@@ -60,6 +60,6 @@
     </update>
 
     <delete id="deletePost">
-        DELETE FROM post WHERE postId=#{postId};
+        DELETE FROM Post WHERE postId=#{postId};
     </delete>
 </mapper>

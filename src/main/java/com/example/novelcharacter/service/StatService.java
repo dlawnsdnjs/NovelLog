@@ -138,7 +138,6 @@ public class StatService {
         List<StatDTO> result = new ArrayList<>(statDTOList);
 
         if (!missingNames.isEmpty()) {
-            System.out.println(missingNames);
             result.addAll(insertStatList(missingNames));
         }
 

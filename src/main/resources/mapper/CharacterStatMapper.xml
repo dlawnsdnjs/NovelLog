@@ -3,7 +3,7 @@
 <mapper namespace="com.example.novelcharacter.mapper.CharacterStatMapper">
 
     <select id="selectCharacterStatsByIds" resultType="CharacterStatDTO">
-        SELECT * FROM characterStat WHERE episodeNum = #{episodeNum} AND characterNum = #{characterNum};
+        SELECT * FROM novel_log.CharacterStat WHERE episodeNum = #{episodeNum} AND characterNum = #{characterNum};
     </select>
 
     <select id="selectCharacterStatsResponse" parameterType="EpisodeCharacterDTO" resultType="StatInfoDTO">

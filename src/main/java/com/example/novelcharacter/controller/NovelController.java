@@ -107,7 +107,7 @@ public class NovelController {
      *     <li>권한이 유효하면 소설 데이터를 조회하여 반환합니다.</li>
      * </ol>
      */
-    @GetMapping("/novel/{novelNum}")
+    @GetMapping("/getNovel/{novelNum}")
     public NovelDTO getNovel(@RequestHeader("access") String access,
                              @PathVariable("novelNum") long novelNum) throws NoPermissionException {
         long uuid = jwtUtil.getUuid(access);

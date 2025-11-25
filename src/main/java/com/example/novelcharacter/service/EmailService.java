@@ -47,6 +47,7 @@ public class EmailService {
         helper.setSubject(title); // 메일 제목
         helper.setText(content, true); // 본문 내용 (HTML 허용)
         helper.setReplyTo("no-reply@domain.com"); // 회신 불가 주소 설정
+        helper.setFrom("no-reply@domain.com");
 
         try {
             emailSender.send(message);
@@ -74,4 +75,6 @@ public class EmailService {
         message.setText(text);
         return message;
     }
+
+    
 }

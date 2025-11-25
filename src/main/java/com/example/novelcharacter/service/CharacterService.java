@@ -191,6 +191,15 @@ public class CharacterService {
      */
     public CharacterResponseDataDTO selectCharacterData(EpisodeCharacterDTO episodeCharacterDTO, long uuid)
             throws NoPermissionException {
+        CharacterResponseDataDTO response = selectSimpleCharacterData(episodeCharacterDTO, uuid);
+
+        List<StatInfoDTO> finalStats = statCalculator.calculate(response.getStats(), response.getEquipment());
+        response.setFinalStats(finalStats);
+
+        return response;
+    }
+
+    public CharacterResponseDataDTO selectSimpleCharacterData(EpisodeCharacterDTO episodeCharacterDTO, long uuid) throws NoPermissionException {
         episodeService.checkEpisodeOwner(episodeCharacterDTO.getEpisodeNum(), uuid);
         checkCharacterOwner(uuid, episodeCharacterDTO.getCharacterNum());
 
@@ -205,10 +214,12 @@ public class CharacterService {
         List<EquipmentDataDTO> equipmentData = equipmentService.selectEquipmentDataList(equipList);
         response.setEquipment(equipmentData);
 
-        List<StatInfoDTO> finalStats = statCalculator.calculate(stats, equipmentData);
-        response.setFinalStats(finalStats);
-
         return response;
+    }
+
+    public CharacterResponseDataDTO selectRecentCharacterData(EpisodeCharacterDTO episodeCharacterDTO, long uuid) throws NoPermissionException {
+        EpisodeCharacterDTO result = episodeCharacterMapper.selectRecentEpisodeCharacter(episodeCharacterDTO);
+        return selectSimpleCharacterData(result, uuid);
     }
 
     /**
@@ -289,8 +300,14 @@ public class CharacterService {
      * @param statInfoDTOS 등록할 스탯 정보 목록
      */
     public void insertCharacterStatList(long episodeNum, long characterNum, List<StatInfoDTO> statInfoDTOS) {
+        if(statInfoDTOS == null || statInfoDTOS.isEmpty()
+                || statInfoDTOS.stream().allMatch(dto -> dto.getStatName().isBlank())) {
+            return;
+        }
         List<String> statNames = statInfoDTOS.stream().map(StatInfoDTO::getStatName).collect(Collectors.toList());
+
         List<StatDTO> statDTOS = statService.selectStatList(statNames);
+
 
         Map<String, Long> statCodeMap = statDTOS.stream()
                 .collect(Collectors.toMap(StatDTO::getStatName, StatDTO::getStatCode));
@@ -384,7 +401,9 @@ public class CharacterService {
      * @param equipments 장비 번호 목록
      */
     public void insertCharacterEquipList(long episodeNum, long characterNum, List<Long> equipments) {
-        characterEquipMapper.insertCharacterEquipList(episodeNum, characterNum, equipments);
+        if(!equipments.isEmpty()) {
+            characterEquipMapper.insertCharacterEquipList(episodeNum, characterNum, equipments);
+        }
     }
 
     /**

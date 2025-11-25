@@ -22,12 +22,12 @@
         WHERE es.equipmentNum = #{equipmentNum} AND es.statCode = s.statCode;
     </select>
 
-    <insert id="insertEquipmentStat" parameterType="EquipmentStatDTO">
+    <insert id="insertEquipmentStat" parameterType="EquipmentStatDTO" useGeneratedKeys="true" keyProperty="equipmentNum">
         INSERT INTO EquipmentStat (equipmentNum, StatCode, statType, value) VALUES (#{equipmentNum}, #{StatCode}, #{statType}, #{value});
     </insert>
 
     <insert id="insertEquipmentStatList" parameterType="EquipmentStatDTO">
-        INSERT INTO equipmentstat (equipmentNum, statCode, statType, value)
+        INSERT INTO EquipmentStat (equipmentNum, statCode, statType, value)
         VALUES
             <foreach collection="stats" item="statInfo" separator=",">
                 (#{equipmentNum}, #{statInfo.stat.statCode}, #{statInfo.type}, #{statInfo.stat.value})

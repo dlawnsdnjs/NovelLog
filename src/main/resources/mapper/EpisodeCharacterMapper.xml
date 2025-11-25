@@ -5,6 +5,17 @@
         SELECT * FROM EpisodeCharacter WHERE episodeNum = #{episodeNum};
     </select>
 
+    <select id="selectRecentEpisodeCharacter"
+            parameterType="EpisodeCharacterDTO"
+            resultType="EpisodeCharacterDTO">
+        SELECT *
+        FROM EpisodeCharacter
+        WHERE characterNum = #{characterNum}
+          AND episodeNum &lt; #{episodeNum}
+        ORDER BY episodeNum DESC
+        LIMIT 1
+    </select>
+
     <select id="selectCharactersByEpisode" resultType = "CharacterDTO">
         SELECT novelNum, c.characterNum AS characterNum, characterName FROM EpisodeCharacter e, `Character` c WHERE e.episodeNum = #{episodeNum} AND e.characterNum = c.characterNum;
     </select>

@@ -4,6 +4,7 @@ import com.example.novelcharacter.dto.FavoriteDTO;
 import com.example.novelcharacter.dto.NovelDTO;
 import com.example.novelcharacter.dto.NovelWithFavoriteDTO;
 import com.example.novelcharacter.mapper.NovelMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,7 @@ import java.util.List;
  * <p>이 서비스는 {@link NovelMapper}를 통해 데이터베이스 접근을 수행하며,
  * {@link FavoriteService}를 통해 즐겨찾기 상태를 관리합니다.</p>
  */
+@Slf4j
 @Service
 public class NovelService {
     /** 소설 관련 데이터베이스 작업을 담당하는 Mapper */
@@ -139,7 +141,7 @@ public class NovelService {
             checkOwner(novelDTO.getNovelNum(), novelDTO.getUuid());
             novelMapper.updateNovel(novelDTO);
         } catch (Exception e) {
-            System.out.println(e);
+            log.warn("Failed to update novel", e);
         }
     }
 

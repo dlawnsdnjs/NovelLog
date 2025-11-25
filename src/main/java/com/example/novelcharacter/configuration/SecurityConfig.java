@@ -5,6 +5,7 @@ import com.example.novelcharacter.JWT.JWTFilter;
 import com.example.novelcharacter.JWT.JWTUtil;
 import com.example.novelcharacter.JWT.LoginFilter;
 import com.example.novelcharacter.OAuth2.CustomSuccessHandler;
+import com.example.novelcharacter.component.RateLimitFilter;
 import com.example.novelcharacter.service.CustomOAuth2UserService;
 import com.example.novelcharacter.service.RefreshService;
 import com.example.novelcharacter.service.UserService;
@@ -15,6 +16,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -32,16 +34,18 @@ public class SecurityConfig {
     private final RefreshService refreshService;
     private final UserService userService;
     private final JWTUtil jwtUtil;
+    private final RateLimitFilter rateLimitFilter;
 
     @Autowired
     public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, CustomOAuth2UserService customOAuth2UserService, CustomSuccessHandler customSuccessHandler
-            ,RefreshService refreshService, UserService userService, JWTUtil jwtUtil) {
+            ,RefreshService refreshService, UserService userService, JWTUtil jwtUtil, RateLimitFilter rateLimitFilter) {
         this.authenticationConfiguration = authenticationConfiguration;
         this.customOAuth2UserService = customOAuth2UserService;
         this.customSuccessHandler = customSuccessHandler;
         this.refreshService = refreshService;
         this.userService = userService;
         this.jwtUtil = jwtUtil;
+        this.rateLimitFilter = rateLimitFilter;
     }
 
     @Bean
@@ -55,24 +59,42 @@ public class SecurityConfig {
     }
 
     @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring()
+                .requestMatchers(
+                        "/static/**",
+                        "/favicon.ico",
+                        "/manifest.json",
+                        "/asset-manifest.json",
+                        "/index.html",
+                        "/*.js",
+                        "/*.css",
+                        "/*.png",
+                        "/*.json"
+                );
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/post/**","/api/**", "/login/**","/reissue").permitAll()
+                        .requestMatchers(
+                                "/", "/page/**", "/oauth/callback", "/login",
+                                "/api/**", "/reissue", "/post/**", "/userIdFind",
+                                "/resetPassword", "/resetPassword/confirm"
+                        ).permitAll()
                         .anyRequest().authenticated())
+                .addFilterBefore(rateLimitFilter, LogoutFilter.class)
                 .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshService), LogoutFilter.class)
                 .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshService, userService), UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(new JWTFilter(jwtUtil), OAuth2LoginAuthenticationFilter.class)
                 .oauth2Login(oauth2 -> oauth2
-                        .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
-                                .userService(customOAuth2UserService))
+                        .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig.userService(customOAuth2UserService))
                         .successHandler(customSuccessHandler))
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        ;
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
     }

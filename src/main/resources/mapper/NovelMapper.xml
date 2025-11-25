@@ -6,8 +6,8 @@
     <select id="selectAllNovel" resultType="NovelWithFavoriteDTO">
         SELECT n.*,
                CASE WHEN f.targetId IS NULL THEN 0 ELSE 1 END AS isFavorite
-        FROM novel n
-                 LEFT JOIN favorite f
+        FROM Novel n
+                 LEFT JOIN Favorite f
                            ON f.targetType = 'Novel'
                                AND f.uuid = #{uuid}
                                AND f.targetId = n.novelNum

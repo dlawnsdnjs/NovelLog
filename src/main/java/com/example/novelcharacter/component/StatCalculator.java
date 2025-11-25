@@ -16,13 +16,30 @@ public class StatCalculator {
             List<StatInfoDTO> baseStats,
             List<EquipmentDataDTO> equipmentList
     ) {
+
+        // baseStats null 혹은 "의미 없는 빈 데이터" 제거
+        if (baseStats == null) baseStats = List.of();
+        baseStats = baseStats.stream()
+                .filter(s -> s.getStatName() != null && !s.getStatName().isBlank())
+                .toList();
+
+        // equipmentList null 방지
+        if (equipmentList == null) equipmentList = List.of();
+
         Map<String, Long> finalStats = new LinkedHashMap<>();
+
+        // base 등록
         for (StatInfoDTO stat : baseStats) {
             finalStats.put(stat.getStatName(), stat.getValue());
         }
 
+        // 장비 보정 적용
         for (EquipmentDataDTO equip : equipmentList) {
+            if (equip == null || equip.getEquipmentStats() == null) continue; // NPE 방지
+
             for (EquipmentStatInfoDTO equipStat : equip.getEquipmentStats()) {
+                if (equipStat.getStatName() == null || equipStat.getStatName().isBlank()) continue;
+
                 String name = equipStat.getStatName();
                 long value = equipStat.getValue();
 

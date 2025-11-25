@@ -49,7 +49,6 @@ public class PostService {
             throw new NoPermissionException("관리자 권한이 필요합니다.");
         }
         postDTO.setUuid(uuid);
-        System.out.println(postDTO);
 
         postMapper.insertPost(postDTO);
     }

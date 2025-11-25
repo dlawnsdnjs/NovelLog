@@ -286,6 +286,9 @@ public class EquipmentService {
      * @return 장비 및 스탯 정보를 포함한 DTO 리스트
      */
     public List<EquipmentDataDTO> selectEquipmentDataList(List<Long> equipmentIds) {
+        if(equipmentIds == null || equipmentIds.isEmpty()) {
+            return null;
+        }
         List<EquipmentDTO> equipmentDTOS = selectEquipmentsByIds(equipmentIds);
         List<EquipmentStatInfoWithNumDTO> equipmentStatInfoWithNumDTOS = selectEquipmentStatsWithNum(equipmentIds);
 

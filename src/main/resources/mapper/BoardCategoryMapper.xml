@@ -3,7 +3,7 @@
 <mapper namespace="com.example.novelcharacter.mapper.BoardCategoryMapper">
 
     <select id="selectAllBoardCategory" resultType="BoardCategoryDTO">
-        SELECT * FROM boardcategory;
+        SELECT * FROM BoardCategory;
     </select>
 
 

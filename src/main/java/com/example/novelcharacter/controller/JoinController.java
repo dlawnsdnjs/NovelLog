@@ -2,6 +2,7 @@ package com.example.novelcharacter.controller;
 
 import com.example.novelcharacter.dto.JoinDTO;
 import com.example.novelcharacter.service.JoinService;
+import jakarta.validation.Valid;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -42,7 +43,7 @@ public class JoinController {
      * - 비밀번호 암호화 후 DB 저장
      */
     @PostMapping("/join")
-    public String joinProcess(@RequestBody JoinDTO joinDTO) {
+    public String joinProcess(@Valid @RequestBody JoinDTO joinDTO) {
         joinService.joinProcess(joinDTO);
         return "ok";
     }

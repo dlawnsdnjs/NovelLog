@@ -118,6 +118,14 @@ public class UserService {
         userMapper.updateUser(userDTO);
     }
 
+    public void updatePassword(String userId, String newPassword){
+        UserDTO userDTO = userMapper.getUserById(userId);
+        userDTO.setPassword(newPassword);
+        updateUser(userDTO);
+    }
+
+
+
     /**
      * <p>사용자 이름을 변경합니다.</p>
      * <p>이미 존재하는 이름일 경우 {@link DuplicateMemberException} 예외를 발생시킵니다.</p>
@@ -131,7 +139,7 @@ public class UserService {
         if (getUserByName(userName) != null) {
             throw new DuplicateMemberException("중복된 이름입니다");
         }
-        userDTO.setUsername(userName);
+        userDTO.setUserName(userName);
         updateUser(userDTO);
     }
 

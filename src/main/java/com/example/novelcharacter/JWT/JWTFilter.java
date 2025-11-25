@@ -13,6 +13,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.List;
 
 public class JWTFilter extends OncePerRequestFilter {
     private final JWTUtil jwtUtil;
@@ -21,17 +23,36 @@ public class JWTFilter extends OncePerRequestFilter {
         this.jwtUtil = jwtUtil;
     }
 
+    private static final List<String> EXCLUDE_PATHS = Arrays.asList(
+            "/static/", "/index.html",
+            "/favicon.ico",
+            "/manifest.json",
+            "/asset-manifest.json",
+            "/logo192.png",
+            "/logo512.png",
+            "/page",
+            "/oauth/callback"
+    );
+
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
         String path = request.getRequestURI();
 
+        if (shouldNotFilter(path)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         // permitAll 경로들을 필터에서 제외
         if (path.equals("/") ||
                 path.startsWith("/api/") ||
-                path.startsWith("/login/") ||
+                path.startsWith("/login") ||
                 path.equals("/reissue") ||
-                path.startsWith("/post/")) {
+                path.startsWith("/post/") ||
+                path.startsWith("/userIdFind") ||
+                path.startsWith("/resetPassword")
+        ) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -62,7 +83,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
         UserDTO user = new UserDTO();
         user.setUuid(uuid);
-        user.setUsername(username);
+        user.setUserName(username);
         user.setRole(role);
 
         CustomUserDetails customUserDetails = new CustomUserDetails(user);
@@ -78,5 +99,11 @@ public class JWTFilter extends OncePerRequestFilter {
         PrintWriter writer = response.getWriter();
         writer.print("{\"error\": \"" + error + "\", \"message\": \"" + message + "\"}");
         writer.flush();
+    }
+
+    // ✅ 필터를 적용하지 않을 경로 판단
+    private boolean shouldNotFilter(String requestURI) {
+        return EXCLUDE_PATHS.stream()
+                .anyMatch(path -> requestURI.startsWith(path) || requestURI.equals(path));
     }
 }

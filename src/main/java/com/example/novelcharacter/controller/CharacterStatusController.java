@@ -3,10 +3,7 @@ package com.example.novelcharacter.controller;
 import com.example.novelcharacter.JWT.JWTUtil;
 import com.example.novelcharacter.dto.*;
 import com.example.novelcharacter.service.CharacterService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.naming.NoPermissionException;
 import java.util.List;
@@ -18,6 +15,7 @@ import java.util.Map;
  * <p>JWT 기반 인증을 사용하여, 특정 회차에 등장하는 캐릭터들의 상태를 추가하거나 조회하는 기능을 제공합니다.</p>
  */
 @RestController
+@RequestMapping("/episode")
 public class CharacterStatusController {
 
     private final JWTUtil jwtUtil;
@@ -58,7 +56,7 @@ public class CharacterStatusController {
      *
      * <p>성공 시 HTTP 200 OK를 반환하며, 별도의 응답 본문은 없습니다.</p>
      */
-    @PostMapping("/episode/addCharacterStatus")
+    @PostMapping("/addCharacterStatus")
     public void addCharacterStatus(@RequestHeader String access, @RequestBody CharacterRequestDataDTO characterRequestDataDTO)
             throws NoPermissionException {
         long uuid = jwtUtil.getUuid(access);
@@ -88,7 +86,7 @@ public class CharacterStatusController {
      * ]
      * </pre>
      */
-    @PostMapping("/episode/characters")
+    @PostMapping("/characters")
     public List<CharacterDTO> selectEpisodeCharacters(@RequestHeader String access, @RequestBody Map<String, Long> payload)
             throws NoPermissionException {
         long uuid = jwtUtil.getUuid(access);
@@ -126,10 +124,22 @@ public class CharacterStatusController {
      * }
      * </pre>
      */
-    @PostMapping("/episode/characterStatus")
+    @PostMapping("/characterStatus")
     public CharacterResponseDataDTO selectCharacterStats(@RequestHeader String access, @RequestBody EpisodeCharacterDTO episodeCharacterDTO)
             throws NoPermissionException {
         long uuid = jwtUtil.getUuid(access);
         return characterService.selectCharacterData(episodeCharacterDTO, uuid);
+    }
+
+    @PostMapping("/characterStatus/recent")
+    public CharacterResponseDataDTO selectRecentCharacterStats(@RequestHeader String access, @RequestBody EpisodeCharacterDTO episodeCharacterDTO) throws NoPermissionException {
+        long uuid = jwtUtil.getUuid(access);
+        return characterService.selectRecentCharacterData(episodeCharacterDTO, uuid);
+    }
+
+    @PostMapping("/deleteCharacterStatus")
+    public void deleteCharacterStatus(@RequestHeader String access, @RequestBody EpisodeCharacterDTO episodeCharacterDTO) throws NoPermissionException {
+        long uuid = jwtUtil.getUuid(access);
+        characterService.deleteEpisodeCharacter(episodeCharacterDTO, uuid);
     }
 }

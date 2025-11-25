@@ -97,7 +97,7 @@ public class JoinService {
             while (!saved) {
                 try {
                     String randomNickname = "User_" + UUID.randomUUID().toString().substring(0, 6);
-                    data.setUsername(randomNickname);
+                    data.setUserName(randomNickname);
                     userService.insertUser(data);
                     saved = true;
                 } catch (DuplicateKeyException e) {

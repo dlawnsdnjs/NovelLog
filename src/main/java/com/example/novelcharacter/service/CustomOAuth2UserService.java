@@ -58,7 +58,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 String randomNickname = "User_" + UUID.randomUUID().toString().substring(0, 6);
 
                 newUser.setUserId(providerId+"@"+provider+".com");
-                newUser.setUsername(randomNickname);
+                newUser.setUserName(randomNickname);
                 newUser.setPassword("OAuthUser");
                 newUser.setRole("ROLE_USER");
                 newUser.setEmail(email);

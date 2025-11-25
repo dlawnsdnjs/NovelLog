@@ -1,6 +1,6 @@
 package com.example.novelcharacter.service;
 
-import com.example.novelcharacter.dto.UserDTO;
+import com.example.novelcharacter.dto.User.UserDTO;
 import com.example.novelcharacter.mapper.UserMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

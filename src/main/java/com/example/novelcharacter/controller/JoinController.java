@@ -1,6 +1,6 @@
 package com.example.novelcharacter.controller;
 
-import com.example.novelcharacter.dto.JoinDTO;
+import com.example.novelcharacter.dto.User.JoinDTO;
 import com.example.novelcharacter.service.JoinService;
 import jakarta.validation.Valid;
 import lombok.Data;

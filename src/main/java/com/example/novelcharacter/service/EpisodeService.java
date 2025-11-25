@@ -1,6 +1,6 @@
 package com.example.novelcharacter.service;
 
-import com.example.novelcharacter.dto.EpisodeDTO;
+import com.example.novelcharacter.dto.Episode.EpisodeDTO;
 import com.example.novelcharacter.mapper.EpisodeMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

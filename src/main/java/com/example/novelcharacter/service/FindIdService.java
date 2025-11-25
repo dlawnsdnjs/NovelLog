@@ -1,7 +1,7 @@
 package com.example.novelcharacter.service;
 
 import com.example.novelcharacter.component.MaskUtil;
-import com.example.novelcharacter.dto.UserDTO;
+import com.example.novelcharacter.dto.User.UserDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,21 +23,6 @@ public class FindIdService {
         UserDTO user = userService.findByEmail(email);
         if (user == null) {
             return false;
-        }
-        // OAuthUser 의 경우 별도 처리
-        if ("OAuthUser".equals(user.getPassword())) {
-            String html;
-            try {
-                html = templateService.loadTemplate(
-                        "find-userid-oauth.html",
-                        Map.of("email", email)
-                );
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-            emailService.sendEmail(email, "SNS 로그인 안내", html);
-            return true;
         }
         String maskedId = MaskUtil.maskUserId(user.getUserId());
 

@@ -1,4 +1,4 @@
-package com.example.novelcharacter.dto;
+package com.example.novelcharacter.dto.Character;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -9,11 +9,10 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class EquipmentDTO {
+public class CharacterDTO {
     private long novelNum;
-    private long equipmentNum;
     @NotBlank
     @Size(max=40)
-    private String equipmentName;
-    private String inform;
+    private String characterName;
+    private long characterNum;
 }

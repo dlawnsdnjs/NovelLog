@@ -1,8 +1,8 @@
 package com.example.novelcharacter.service;
 
 import com.example.novelcharacter.dto.FavoriteDTO;
-import com.example.novelcharacter.dto.NovelDTO;
-import com.example.novelcharacter.dto.NovelWithFavoriteDTO;
+import com.example.novelcharacter.dto.Novel.NovelDTO;
+import com.example.novelcharacter.dto.Novel.NovelWithFavoriteDTO;
 import com.example.novelcharacter.mapper.NovelMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

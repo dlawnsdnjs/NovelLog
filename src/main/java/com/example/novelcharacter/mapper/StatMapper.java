@@ -1,6 +1,6 @@
 package com.example.novelcharacter.mapper;
 
-import com.example.novelcharacter.dto.StatDTO;
+import com.example.novelcharacter.dto.Stat.StatDTO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;

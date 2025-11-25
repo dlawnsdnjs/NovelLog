@@ -1,7 +1,7 @@
 package com.example.novelcharacter.service;
 
-import com.example.novelcharacter.dto.JoinDTO;
-import com.example.novelcharacter.dto.UserDTO;
+import com.example.novelcharacter.dto.User.JoinDTO;
+import com.example.novelcharacter.dto.User.UserDTO;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

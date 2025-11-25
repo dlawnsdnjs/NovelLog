@@ -1,4 +1,4 @@
-package com.example.novelcharacter.dto;
+package com.example.novelcharacter.dto.Board;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,8 +9,9 @@ import lombok.ToString;
 @Setter
 @ToString
 @AllArgsConstructor
-public class PostDataDTO {
+public class PostResponseDTO {
     private long postId;
     private String postTitle;
     private String userName;
+    private String content;
 }

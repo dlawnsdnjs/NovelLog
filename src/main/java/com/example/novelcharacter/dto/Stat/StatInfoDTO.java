@@ -1,4 +1,4 @@
-package com.example.novelcharacter.dto;
+package com.example.novelcharacter.dto.Stat;
 
 import lombok.*;
 

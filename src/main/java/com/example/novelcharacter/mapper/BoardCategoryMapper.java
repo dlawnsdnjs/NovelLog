@@ -1,6 +1,6 @@
 package com.example.novelcharacter.mapper;
 
-import com.example.novelcharacter.dto.BoardCategoryDTO;
+import com.example.novelcharacter.dto.Board.BoardCategoryDTO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;

@@ -1,6 +1,8 @@
 package com.example.novelcharacter.service;
 
-import com.example.novelcharacter.dto.*;
+import com.example.novelcharacter.dto.Equipment.*;
+import com.example.novelcharacter.dto.Stat.StatDTO;
+import com.example.novelcharacter.dto.Stat.StatRequestDTO;
 import com.example.novelcharacter.mapper.EquipmentMapper;
 import com.example.novelcharacter.mapper.EquipmentStatMapper;
 import org.springframework.beans.factory.annotation.Autowired;

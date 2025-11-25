@@ -1,7 +1,12 @@
 package com.example.novelcharacter.service;
 
 import com.example.novelcharacter.component.StatCalculator;
-import com.example.novelcharacter.dto.*;
+import com.example.novelcharacter.dto.Character.CharacterDTO;
+import com.example.novelcharacter.dto.Episode.*;
+import com.example.novelcharacter.dto.Equipment.EquipmentDataDTO;
+import com.example.novelcharacter.dto.Stat.StatDTO;
+import com.example.novelcharacter.dto.Stat.StatInfoDTO;
+import com.example.novelcharacter.dto.Stat.StatRequestDTO;
 import com.example.novelcharacter.mapper.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;

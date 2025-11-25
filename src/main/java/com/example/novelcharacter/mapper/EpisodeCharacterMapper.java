@@ -1,7 +1,7 @@
 package com.example.novelcharacter.mapper;
 
-import com.example.novelcharacter.dto.CharacterDTO;
-import com.example.novelcharacter.dto.EpisodeCharacterDTO;
+import com.example.novelcharacter.dto.Character.CharacterDTO;
+import com.example.novelcharacter.dto.Episode.EpisodeCharacterDTO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;

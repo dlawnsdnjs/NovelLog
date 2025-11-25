@@ -1,7 +1,7 @@
 package com.example.novelcharacter.JWT;
 
-import com.example.novelcharacter.dto.CustomUserDetails;
-import com.example.novelcharacter.dto.UserDTO;
+import com.example.novelcharacter.dto.User.CustomUserDetails;
+import com.example.novelcharacter.dto.User.UserDTO;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

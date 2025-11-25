@@ -1,8 +1,8 @@
 package com.example.novelcharacter.mapper;
 
-import com.example.novelcharacter.dto.PostDTO;
-import com.example.novelcharacter.dto.PostDataDTO;
-import com.example.novelcharacter.dto.PostResponseDTO;
+import com.example.novelcharacter.dto.Board.PostDTO;
+import com.example.novelcharacter.dto.Board.PostDataDTO;
+import com.example.novelcharacter.dto.Board.PostResponseDTO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;

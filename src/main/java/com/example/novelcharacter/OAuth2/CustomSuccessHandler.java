@@ -2,7 +2,7 @@ package com.example.novelcharacter.OAuth2;
 
 import com.example.novelcharacter.JWT.JWTUtil;
 import com.example.novelcharacter.dto.CustomOAuth2User;
-import com.example.novelcharacter.dto.UserDTO;
+import com.example.novelcharacter.dto.User.UserDTO;
 import com.example.novelcharacter.service.UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

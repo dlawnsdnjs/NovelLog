@@ -1,7 +1,10 @@
 package com.example.novelcharacter.controller;
 
 import com.example.novelcharacter.JWT.JWTUtil;
-import com.example.novelcharacter.dto.*;
+import com.example.novelcharacter.dto.Character.CharacterDTO;
+import com.example.novelcharacter.dto.Episode.CharacterRequestDataDTO;
+import com.example.novelcharacter.dto.Episode.CharacterResponseDataDTO;
+import com.example.novelcharacter.dto.Episode.EpisodeCharacterDTO;
 import com.example.novelcharacter.service.CharacterService;
 import org.springframework.web.bind.annotation.*;
 

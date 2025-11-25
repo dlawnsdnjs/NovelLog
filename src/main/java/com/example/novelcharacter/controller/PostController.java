@@ -1,7 +1,10 @@
 package com.example.novelcharacter.controller;
 
 import com.example.novelcharacter.JWT.JWTUtil;
-import com.example.novelcharacter.dto.*;
+import com.example.novelcharacter.dto.Board.BoardCategoryDTO;
+import com.example.novelcharacter.dto.Board.PostDTO;
+import com.example.novelcharacter.dto.Board.PostPageResponseDTO;
+import com.example.novelcharacter.dto.Board.PostResponseDTO;
 import com.example.novelcharacter.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

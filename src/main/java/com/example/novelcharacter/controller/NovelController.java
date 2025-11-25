@@ -1,11 +1,10 @@
 package com.example.novelcharacter.controller;
 
 import com.example.novelcharacter.JWT.JWTUtil;
-import com.example.novelcharacter.dto.NovelDTO;
-import com.example.novelcharacter.dto.NovelWithFavoriteDTO;
+import com.example.novelcharacter.dto.Novel.NovelDTO;
+import com.example.novelcharacter.dto.Novel.NovelWithFavoriteDTO;
 import com.example.novelcharacter.service.NovelService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

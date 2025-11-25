@@ -1,6 +1,9 @@
 package com.example.novelcharacter.service;
 
-import com.example.novelcharacter.dto.*;
+import com.example.novelcharacter.dto.Board.BoardCategoryDTO;
+import com.example.novelcharacter.dto.Board.PostDTO;
+import com.example.novelcharacter.dto.Board.PostPageResponseDTO;
+import com.example.novelcharacter.dto.Board.PostResponseDTO;
 import com.example.novelcharacter.mapper.BoardCategoryMapper;
 import com.example.novelcharacter.mapper.PostMapper;
 import org.springframework.beans.factory.annotation.Autowired;

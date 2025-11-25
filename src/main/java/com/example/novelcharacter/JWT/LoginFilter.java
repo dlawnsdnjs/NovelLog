@@ -1,8 +1,8 @@
     package com.example.novelcharacter.JWT;
 
-    import com.example.novelcharacter.dto.CustomUserDetails;
+    import com.example.novelcharacter.dto.User.CustomUserDetails;
     import com.example.novelcharacter.dto.RefreshDTO;
-    import com.example.novelcharacter.dto.UserDTO;
+    import com.example.novelcharacter.dto.User.UserDTO;
     import com.example.novelcharacter.service.RefreshService;
     import com.example.novelcharacter.service.UserService;
     import jakarta.servlet.FilterChain;

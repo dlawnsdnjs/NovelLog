@@ -2,7 +2,7 @@ package com.example.novelcharacter.service;
 
 import com.example.novelcharacter.JWT.JWTUtil;
 import com.example.novelcharacter.dto.RefreshDTO;
-import com.example.novelcharacter.dto.UserDTO;
+import com.example.novelcharacter.dto.User.UserDTO;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

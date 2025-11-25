@@ -14,7 +14,7 @@
     </select>
 
     <select id = "findByEmail" resultType="UserDTO">
-        SELECT * FROM User WHERE email = #{email};
+        SELECT * FROM User WHERE email = #{email} AND password != 'OAuthUser';
     </select>
 
     <insert id="insertUser" useGeneratedKeys="true" parameterType="UserDTO">

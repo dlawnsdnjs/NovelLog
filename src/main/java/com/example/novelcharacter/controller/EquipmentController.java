@@ -1,8 +1,8 @@
 package com.example.novelcharacter.controller;
 
 import com.example.novelcharacter.JWT.JWTUtil;
-import com.example.novelcharacter.dto.EquipmentDTO;
-import com.example.novelcharacter.dto.EquipmentDataDTO;
+import com.example.novelcharacter.dto.Equipment.EquipmentDTO;
+import com.example.novelcharacter.dto.Equipment.EquipmentDataDTO;
 import com.example.novelcharacter.service.EquipmentService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

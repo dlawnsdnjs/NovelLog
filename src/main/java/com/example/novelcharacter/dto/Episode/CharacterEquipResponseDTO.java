@@ -1,5 +1,6 @@
-package com.example.novelcharacter.dto;
+package com.example.novelcharacter.dto.Episode;
 
+import com.example.novelcharacter.dto.Stat.StatInfoDTO;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

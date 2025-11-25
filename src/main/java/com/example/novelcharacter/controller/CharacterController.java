@@ -1,7 +1,7 @@
 package com.example.novelcharacter.controller;
 
 import com.example.novelcharacter.JWT.JWTUtil;
-import com.example.novelcharacter.dto.CharacterDTO;
+import com.example.novelcharacter.dto.Character.CharacterDTO;
 import com.example.novelcharacter.service.CharacterService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

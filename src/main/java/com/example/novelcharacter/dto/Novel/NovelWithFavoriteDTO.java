@@ -1,4 +1,4 @@
-package com.example.novelcharacter.dto;
+package com.example.novelcharacter.dto.Novel;
 
 import lombok.Getter;
 import lombok.Setter;

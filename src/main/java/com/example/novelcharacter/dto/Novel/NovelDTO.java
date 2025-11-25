@@ -1,4 +1,4 @@
-package com.example.novelcharacter.dto;
+package com.example.novelcharacter.dto.Novel;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

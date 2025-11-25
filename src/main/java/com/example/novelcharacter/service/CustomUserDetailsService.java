@@ -1,7 +1,7 @@
 package com.example.novelcharacter.service;
 
-import com.example.novelcharacter.dto.CustomUserDetails;
-import com.example.novelcharacter.dto.UserDTO;
+import com.example.novelcharacter.dto.User.CustomUserDetails;
+import com.example.novelcharacter.dto.User.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

@@ -1,9 +1,9 @@
 package com.example.novelcharacter.mapper;
 
-import com.example.novelcharacter.dto.EquipmentStatDTO;
-import com.example.novelcharacter.dto.EquipmentStatInfoDTO;
-import com.example.novelcharacter.dto.EquipmentStatInfoWithNumDTO;
-import com.example.novelcharacter.dto.EquipmentStatRequestDTO;
+import com.example.novelcharacter.dto.Equipment.EquipmentStatDTO;
+import com.example.novelcharacter.dto.Equipment.EquipmentStatInfoDTO;
+import com.example.novelcharacter.dto.Equipment.EquipmentStatInfoWithNumDTO;
+import com.example.novelcharacter.dto.Equipment.EquipmentStatRequestDTO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;

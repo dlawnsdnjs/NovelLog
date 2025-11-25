@@ -36,3 +36,7 @@ out/
 ### VS Code ###
 .vscode/
 src/main/resources/.env
+src/main/resources/static/book-open.png
+src/main/resources/static/favicon.ico
+src/main/resources/static/logo192.png
+src/main/resources/static/logo512.png

@@ -17,4 +17,5 @@ public class UserDTO {
     private String password;
     private String role;
     private LocalDate lastLoginDate;
+    private LocalDate privacy_agreed_at;
 }

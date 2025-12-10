@@ -124,6 +124,9 @@ public class UserService {
         updateUser(userDTO);
     }
 
+    public boolean checkDuplicateName(String userName) {
+        return getUserByName(userName) != null;
+    }
 
 
     /**
@@ -160,5 +163,9 @@ public class UserService {
      */
     public void deleteUser(UserDTO userDTO) {
         userMapper.deleteUser(userDTO);
+    }
+
+    public void deleteUser(long uuid){
+        deleteUser(getUserByUuid(uuid));
     }
 }

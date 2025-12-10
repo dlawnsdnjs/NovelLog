@@ -6,6 +6,7 @@ import com.example.novelcharacter.service.ResetPasswordService;
 import com.example.novelcharacter.service.UserService;
 import org.apache.ibatis.javassist.bytecode.DuplicateMemberException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,6 +39,16 @@ public class UserController {
         this.findIdService = findIdService;
         this.resetPasswordService = resetPasswordService;
         this.jwtUtil = jwtUtil;
+    }
+
+    @GetMapping("/duplicateCheck")
+    public ResponseEntity<String> duplicateCheck(@RequestParam String userName) {
+        if(userService.checkDuplicateName(userName)){
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body("이미 사용 중인 아이디입니다.");
+        }
+        return ResponseEntity.ok("사용 가능한 아이디입니다.");
     }
 
     /**
@@ -103,10 +114,15 @@ public class UserController {
         }
     }
 
-    @PostMapping
-    public ResponseEntity<?> accountLink(@RequestBody Map<String, String> body) {
-        String email = body.get("email");
-//        userService.
+    @DeleteMapping("/deleteAccount")
+    public ResponseEntity<?> deleteAccount(@RequestHeader String access) {
+        long uuid = jwtUtil.getUuid(access);
+        try {
+            userService.deleteUser(uuid);
+        }
+        catch (Exception e) {
+            return ResponseEntity.status(400).body("Invalid token");
+        }
         return ResponseEntity.ok().build();
     }
 

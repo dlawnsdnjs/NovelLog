@@ -1,7 +1,7 @@
 package com.example.novelcharacter.OAuth2;
 
 import com.example.novelcharacter.JWT.JWTUtil;
-import com.example.novelcharacter.dto.CustomOAuth2User;
+import com.example.novelcharacter.dto.User.CustomOAuth2User;
 import com.example.novelcharacter.dto.User.UserDTO;
 import com.example.novelcharacter.service.UserService;
 import jakarta.servlet.ServletException;
@@ -41,7 +41,10 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         long userId = customUserDetails.getUuid();
         String username = customUserDetails.getName();
         UserDTO userDTO = userService.getUserByUuid(userId);
-        // userService.updateLastLoginTime(userDTO);
+
+        if(userDTO != null) {
+            userService.updateLastLoginTime(userDTO);
+        }
 
         // ✅ 권한 정보
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();

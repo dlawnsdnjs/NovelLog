@@ -79,8 +79,8 @@ public class OAuthTokenController {
         String username = jwtUtil.getUsername(token);
         String role = jwtUtil.getRole(token);
 
-        String access = jwtUtil.createJwt("access", uuid, username, role, 600000L);
-        String newRefresh = jwtUtil.createJwt("refresh", uuid, username, role, 86400000L);
+        String access = jwtUtil.createJwt("access", uuid, username, role, "OAUTH", 600000L);
+        String newRefresh = jwtUtil.createJwt("refresh", uuid, username, role, "OAUTH", 86400000L);
 
         addRefreshEntity(uuid, newRefresh, 86400000L);
 

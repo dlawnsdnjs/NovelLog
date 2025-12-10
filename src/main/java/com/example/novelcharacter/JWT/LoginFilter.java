@@ -61,14 +61,14 @@
             String role = auth.getAuthority();
 
             // ✅ JWT 토큰 생성
-            String access = jwtUtil.createJwt("access", uuid, username, role, 600000L);     // 10분
-            String refresh = jwtUtil.createJwt("refresh", uuid, username, role, 86400000L); // 24시간
+            String access = jwtUtil.createJwt("access", uuid, username, role, "LOCAL", 600000L);     // 10분
+            String refresh = jwtUtil.createJwt("refresh", uuid, username, role, "LOCAL", 86400000L); // 24시간
 
             // DB에 refresh 저장
             addRefreshDTO(uuid, refresh, 86400000L);
 
             // ✅ access 토큰은 헤더로 전송
-            response.setHeader("access", access);
+            response.setHeader("Access", access);
 
             // ✅ refresh 토큰은 ResponseCookie로 설정 (보안, CORS 대응)
             ResponseCookie refreshCookie = ResponseCookie.from("refresh", refresh)

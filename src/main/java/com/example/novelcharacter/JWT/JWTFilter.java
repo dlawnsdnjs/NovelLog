@@ -26,6 +26,7 @@ public class JWTFilter extends OncePerRequestFilter {
     private static final List<String> EXCLUDE_PATHS = Arrays.asList(
             "/static/", "/index.html",
             "/favicon.ico",
+            "/book-open.svg",
             "/manifest.json",
             "/asset-manifest.json",
             "/logo192.png",

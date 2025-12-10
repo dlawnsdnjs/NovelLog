@@ -3,6 +3,7 @@ package com.example.novelcharacter.service;
 import com.example.novelcharacter.dto.OAuth.GoogleResponse;
 import com.example.novelcharacter.dto.OAuth.NaverResponse;
 import com.example.novelcharacter.dto.OAuth.OAuth2Response;
+import com.example.novelcharacter.dto.User.CustomOAuth2User;
 import com.example.novelcharacter.dto.User.UserDTO;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -39,17 +40,17 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
 
         String username = oAuth2Response.getProviderId()+"@"+oAuth2Response.getProvider()+".com";
-        String email = oAuth2Response.getEmail();
+//        String email = oAuth2Response.getEmail();
         UserDTO existData = userService.getUserById(username);
 
 
         if(existData == null){
-            existData = registerNewUser(oAuth2Response.getProvider(), oAuth2Response.getProviderId(), email);
+            existData = registerNewUser(oAuth2Response.getProvider(), oAuth2Response.getProviderId());
         }
         return new CustomOAuth2User(existData);
     }
 
-    private UserDTO registerNewUser(String provider, String providerId, String email) {
+    private UserDTO registerNewUser(String provider, String providerId) {
         boolean saved = false;
         UserDTO newUser = new UserDTO();
 
@@ -61,7 +62,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 newUser.setUserName(randomNickname);
                 newUser.setPassword("OAuthUser");
                 newUser.setRole("ROLE_USER");
-                newUser.setEmail(email);
                 newUser.setLastLoginDate(LocalDate.now());
                 userService.insertUser(newUser);
                 saved = true;

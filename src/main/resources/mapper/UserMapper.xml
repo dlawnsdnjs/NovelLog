@@ -18,11 +18,11 @@
     </select>
 
     <insert id="insertUser" useGeneratedKeys="true" parameterType="UserDTO">
-        INSERT INTO User (userId, userName, email, password, role, lastLoginDate) VALUES (#{userId},
+        INSERT INTO User (userId, userName, email, password, role, lastLoginDate, privacy_agreed_at) VALUES (#{userId},
         <choose>
             <when test="userName != null and userName !=''">#{userName}</when>
             <otherwise>'user'</otherwise>
-        </choose>, #{email}, #{password}, #{role}, #{lastLoginDate});
+        </choose>, #{email}, #{password}, #{role}, #{lastLoginDate}, #{privacy_agreed_at});
     </insert>
 
     <update id="updateUser" parameterType="UserDTO">

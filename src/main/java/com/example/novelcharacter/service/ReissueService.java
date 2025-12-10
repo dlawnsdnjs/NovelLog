@@ -68,10 +68,11 @@ public class ReissueService {
         UserDTO user = userService.getUserByUuid(uuid);
         String username = user.getUserName();
         String role = user.getRole();
+        String loginType = jwtUtil.getLoginType(refresh);
 
         // 새로운 토큰 발급
-        String newAccess = jwtUtil.createJwt("access", uuid, username, role, 600_000L);      // 10분
-        String newRefresh = jwtUtil.createJwt("refresh", uuid, username, role, 86_400_000L); // 24시간
+        String newAccess = jwtUtil.createJwt("access", uuid, username, role, loginType, 600_000L);      // 10분
+        String newRefresh = jwtUtil.createJwt("refresh", uuid, username, role, loginType, 86_400_000L); // 24시간
 
         // 기존 Refresh Token 삭제 후 새로 저장
         refreshService.deleteByRefresh(refresh);

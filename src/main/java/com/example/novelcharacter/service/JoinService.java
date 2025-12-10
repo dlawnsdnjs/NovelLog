@@ -92,6 +92,7 @@ public class JoinService {
             data.setEmail(email);
             data.setRole("ROLE_USER");
             data.setLastLoginDate(LocalDate.now());
+            data.setPrivacy_agreed_at(LocalDate.now());
 
             boolean saved = false;
             while (!saved) {

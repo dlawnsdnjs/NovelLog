@@ -8,23 +8,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.mail.MessagingException;
 import java.util.Map;
 
-/**
- * 회원가입 및 이메일 인증 관련 요청을 처리하는 컨트롤러
- * - 회원가입(join)
- * - 이메일 인증 코드 발송(emailVerify)
- * - 인증 코드 검증(codeVerify)
- */
 @RestController
 @RequiredArgsConstructor
-@Profile({"!dev", "default"})
-@RequestMapping("/api") // 공통 경로 prefix 설정
-public class JoinController {
-
+@Profile("dev")
+@RequestMapping("/api")
+public class JoinTestController {
     private final JoinService joinService;
 
     /**
@@ -41,6 +37,7 @@ public class JoinController {
      */
     @PostMapping("/join")
     public String joinProcess(@Valid @RequestBody JoinDTO joinDTO) {
+        System.out.println("testJoin : "+joinDTO);
         joinService.joinProcess(joinDTO);
         return "ok";
     }
@@ -58,12 +55,12 @@ public class JoinController {
      * - 코드 및 이메일을 서버(예: Redis나 Map)에 임시 저장
      */
     @PostMapping("/emailVerify")
-    public ResponseEntity<String> sendVerificationEmail(@RequestBody EmailRequest request) throws MessagingException {
+    public ResponseEntity<String> sendVerificationEmail(@RequestBody JoinController.EmailRequest request) throws MessagingException {
         String email = request.getEmail();
 
-        joinService.sendCodeToEmail(email); // 이메일 발송 서비스 호출
+        String code = joinService.sendCodeToEmail(email); // 이메일 발송 서비스 호출
 
-        return ResponseEntity.ok("ok");
+        return ResponseEntity.ok(code);
     }
 
     /**

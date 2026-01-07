@@ -2,6 +2,7 @@ package com.example.novelcharacter.service;
 
 import com.example.novelcharacter.dto.FavoriteDTO;
 import com.example.novelcharacter.mapper.FavoriteMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,21 +20,12 @@ import org.springframework.stereotype.Service;
  *
  * <p>이 서비스는 {@link FavoriteMapper}를 통해 데이터베이스와 연동됩니다.</p>
  */
+@RequiredArgsConstructor
 @Service
 public class FavoriteService {
 
     /** 즐겨찾기 관련 DB 작업을 수행하는 매퍼 */
     private final FavoriteMapper favoriteMapper;
-
-    /**
-     * {@code FavoriteService}의 생성자.
-     *
-     * @param favoriteMapper 즐겨찾기 관련 SQL 처리를 담당하는 매퍼
-     */
-    @Autowired
-    public FavoriteService(final FavoriteMapper favoriteMapper) {
-        this.favoriteMapper = favoriteMapper;
-    }
 
     /**
      * 즐겨찾기를 설정하거나 해제합니다.

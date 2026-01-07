@@ -6,6 +6,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -38,30 +39,11 @@ public class JWTFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
-        String path = request.getRequestURI();
 
-        if (shouldNotFilter(path)) {
+        String accessToken = request.getHeader("Access");
+
+        if (accessToken == null || accessToken.isBlank()) {
             filterChain.doFilter(request, response);
-            return;
-        }
-
-        // permitAll 경로들을 필터에서 제외
-        if (path.equals("/") ||
-                path.startsWith("/api/") ||
-                path.startsWith("/login") ||
-                path.equals("/reissue") ||
-                path.startsWith("/post/") ||
-                path.startsWith("/userIdFind") ||
-                path.startsWith("/resetPassword")
-        ) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        String accessToken = request.getHeader("access");
-
-        if (accessToken == null || accessToken.trim().isEmpty()) {
-            sendError(response, HttpServletResponse.SC_UNAUTHORIZED, "NO_TOKEN", "Access token is missing");
             return;
         }
 
@@ -73,7 +55,7 @@ public class JWTFilter extends OncePerRequestFilter {
         }
 
         String category = jwtUtil.getCategory(accessToken);
-        if (!"access".equals(category)) {
+        if (!"Access".equals(category)) {
             sendError(response, HttpServletResponse.SC_UNAUTHORIZED, "INVALID_TOKEN", "Invalid access token");
             return;
         }
@@ -103,8 +85,14 @@ public class JWTFilter extends OncePerRequestFilter {
     }
 
     // ✅ 필터를 적용하지 않을 경로 판단
-    private boolean shouldNotFilter(String requestURI) {
-        return EXCLUDE_PATHS.stream()
-                .anyMatch(path -> requestURI.startsWith(path) || requestURI.equals(path));
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+
+        return path.startsWith("/login")
+                || path.startsWith("/reissue")
+                || path.startsWith("/oauth")
+                || path.startsWith("/actuator")
+                || path.startsWith("/static");
     }
 }

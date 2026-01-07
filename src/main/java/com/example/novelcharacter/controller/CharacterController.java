@@ -4,6 +4,7 @@ import com.example.novelcharacter.JWT.JWTUtil;
 import com.example.novelcharacter.dto.Character.CharacterDTO;
 import com.example.novelcharacter.service.CharacterService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,23 +18,12 @@ import java.util.Map;
  *
  * <p>JWT 인증을 기반으로 사용자의 소설, 회차 내 캐릭터 데이터를 조회, 추가, 삭제하는 기능을 제공합니다.</p>
  */
+@RequiredArgsConstructor
 @RestController
 public class CharacterController {
 
     private final CharacterService characterService;
     private final JWTUtil jwtUtil;
-
-    /**
-     * CharacterController 생성자입니다.
-     *
-     * @param characterService 캐릭터 관련 비즈니스 로직을 처리하는 서비스
-     * @param jwtUtil JWT 토큰에서 사용자 식별 정보를 추출하는 유틸리티 클래스
-     */
-    @Autowired
-    public CharacterController(CharacterService characterService, JWTUtil jwtUtil) {
-        this.characterService = characterService;
-        this.jwtUtil = jwtUtil;
-    }
 
     /**
      * 특정 회차에 포함된 캐릭터 목록을 조회합니다.
@@ -51,7 +41,7 @@ public class CharacterController {
      * </pre>
      */
     @PostMapping("/episodeCharacters")
-    public List<CharacterDTO> episodeCharacter(@RequestHeader String access, @RequestBody long episodeNum)
+    public List<CharacterDTO> episodeCharacter(@RequestHeader("Access") String access, @RequestBody long episodeNum)
             throws NoPermissionException {
         long uuid = jwtUtil.getUuid(access);
         return characterService.selectCharactersByEpisode(episodeNum, uuid);
@@ -73,7 +63,7 @@ public class CharacterController {
      * </pre>
      */
     @PostMapping("/novelCharacters")
-    public List<CharacterDTO> novelCharacters(@RequestHeader String access, @RequestBody Map<String, Long> payload)
+    public List<CharacterDTO> novelCharacters(@RequestHeader("Access") String access, @RequestBody Map<String, Long> payload)
             throws NoPermissionException {
         long uuid = jwtUtil.getUuid(access);
         long novelNum = payload.get("novelNum");
@@ -100,7 +90,7 @@ public class CharacterController {
      * </pre>
      */
     @PostMapping("/addCharacter")
-    public CharacterDTO addCharacter(@RequestHeader String access, @Valid @RequestBody CharacterDTO characterDTO)
+    public CharacterDTO addCharacter(@RequestHeader("Access") String access, @Valid @RequestBody CharacterDTO characterDTO)
             throws NoPermissionException {
         long uuid = jwtUtil.getUuid(access);
         characterService.insertCharacter(characterDTO, uuid);
@@ -123,7 +113,7 @@ public class CharacterController {
      * </pre>
      */
     @PostMapping("/deleteCharacter")
-    public ResponseEntity<Void> deleteEpisode(@RequestHeader String access, @RequestBody CharacterDTO characterDTO)
+    public ResponseEntity<Void> deleteEpisode(@RequestHeader("Access") String access, @RequestBody CharacterDTO characterDTO)
             throws NoPermissionException {
         long uuid = jwtUtil.getUuid(access);
         characterService.deleteCharacter(characterDTO, uuid);

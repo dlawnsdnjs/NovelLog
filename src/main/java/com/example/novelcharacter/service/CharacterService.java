@@ -9,6 +9,7 @@ import com.example.novelcharacter.dto.Stat.StatInfoDTO;
 import com.example.novelcharacter.dto.Stat.StatRequestDTO;
 import com.example.novelcharacter.mapper.*;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
  *
  * @author
  */
+@RequiredArgsConstructor
 @Service
 public class CharacterService {
 
@@ -38,39 +40,6 @@ public class CharacterService {
     private final StatService statService;
     private final StatCalculator statCalculator;
 
-    /**
-     * CharacterService 생성자.
-     *
-     * @param characterMapper 캐릭터 매퍼
-     * @param episodeCharacterMapper 에피소드-캐릭터 매퍼
-     * @param characterStatMapper 캐릭터 스탯 매퍼
-     * @param characterEquipMapper 캐릭터 장비 매퍼
-     * @param novelService 소설 서비스
-     * @param episodeService 에피소드 서비스
-     * @param equipmentService 장비 서비스
-     * @param statService 스탯 서비스
-     * @param statCalculator 스탯 계산기
-     */
-    @Autowired
-    public CharacterService(CharacterMapper characterMapper,
-                            EpisodeCharacterMapper episodeCharacterMapper,
-                            CharacterStatMapper characterStatMapper,
-                            CharacterEquipMapper characterEquipMapper,
-                            NovelService novelService,
-                            EpisodeService episodeService,
-                            EquipmentService equipmentService,
-                            StatService statService,
-                            StatCalculator statCalculator) {
-        this.characterMapper = characterMapper;
-        this.episodeCharacterMapper = episodeCharacterMapper;
-        this.characterStatMapper = characterStatMapper;
-        this.characterEquipMapper = characterEquipMapper;
-        this.novelService = novelService;
-        this.episodeService = episodeService;
-        this.equipmentService = equipmentService;
-        this.statService = statService;
-        this.statCalculator = statCalculator;
-    }
 
     /**
      * 새로운 캐릭터를 등록합니다.
@@ -180,7 +149,7 @@ public class CharacterService {
         long episodeNum = characterRequestDataDTO.getEpisodeNum();
         long characterNum = characterRequestDataDTO.getCharacterNum();
 
-        deleteEpisodeCharacter(new EpisodeCharacterDTO(episodeNum, characterNum));
+//        deleteEpisodeCharacter(new EpisodeCharacterDTO(episodeNum, characterNum));
         insertEpisodeCharacter(episodeNum, characterNum);
         insertCharacterStatList(episodeNum, characterNum, characterRequestDataDTO.getStats());
         insertCharacterEquipList(episodeNum, characterNum, characterRequestDataDTO.getEquipments());
@@ -406,7 +375,7 @@ public class CharacterService {
      * @param equipments 장비 번호 목록
      */
     public void insertCharacterEquipList(long episodeNum, long characterNum, List<Long> equipments) {
-        if(!equipments.isEmpty()) {
+        if((equipments != null) && !equipments.isEmpty()) {
             characterEquipMapper.insertCharacterEquipList(episodeNum, characterNum, equipments);
         }
     }

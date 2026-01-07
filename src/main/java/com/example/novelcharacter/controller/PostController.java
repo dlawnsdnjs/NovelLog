@@ -6,6 +6,7 @@ import com.example.novelcharacter.dto.Board.PostDTO;
 import com.example.novelcharacter.dto.Board.PostPageResponseDTO;
 import com.example.novelcharacter.dto.Board.PostResponseDTO;
 import com.example.novelcharacter.service.PostService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,22 +29,11 @@ import java.util.List;
  * </ul>
  */
 @RestController
+@RequiredArgsConstructor
 public class PostController {
 
     private final PostService postService;
     private final JWTUtil jwtUtil;
-
-    /**
-     * {@code PostController} 생성자.
-     *
-     * @param postService 게시글 관련 비즈니스 로직을 처리하는 서비스
-     * @param jwtUtil     JWT 파싱 및 사용자 식별에 사용되는 유틸리티 클래스
-     */
-    @Autowired
-    public PostController(PostService postService, JWTUtil jwtUtil) {
-        this.postService = postService;
-        this.jwtUtil = jwtUtil;
-    }
 
     /**
      * 전체 게시판 목록을 조회합니다.
@@ -91,7 +81,7 @@ public class PostController {
      * @return 사용자가 작성한 게시글 목록 ({@link PostPageResponseDTO})
      */
     @GetMapping("/myPost/boardId={boardId}/page={page}")
-    public PostPageResponseDTO selectMyPostsByBoardId(@RequestHeader("access") String access,
+    public PostPageResponseDTO selectMyPostsByBoardId(@RequestHeader("Access") String access,
                                                       @PathVariable("boardId") long boardId,
                                                       @PathVariable("page") int page) {
         long uuid = jwtUtil.getUuid(access);
@@ -117,7 +107,7 @@ public class PostController {
      * @throws NoPermissionException 권한이 없는 사용자가 요청한 경우
      */
     @PostMapping("/postAdd")
-    public void postAdd(@RequestHeader("access") String access,
+    public void postAdd(@RequestHeader("Access") String access,
                         @RequestBody PostDTO postDTO) throws NoPermissionException {
         long uuid = jwtUtil.getUuid(access);
         String role = jwtUtil.getRole(access);
@@ -132,7 +122,7 @@ public class PostController {
      * @throws NoPermissionException 다른 사용자의 게시글을 수정하려는 경우
      */
     @PostMapping("/postUpdate")
-    public void updatePost(@RequestHeader("access") String access,
+    public void updatePost(@RequestHeader("Access") String access,
                            @RequestBody PostDTO postDTO) throws NoPermissionException {
         long uuid = jwtUtil.getUuid(access);
         postService.updatePost(postDTO, uuid);
@@ -146,7 +136,7 @@ public class PostController {
      * @throws NoPermissionException 다른 사용자의 게시글을 삭제하려는 경우
      */
     @PostMapping("/postDelete")
-    public void deletePost(@RequestHeader("access") String access,
+    public void deletePost(@RequestHeader("Access") String access,
                            @RequestBody PostDTO postDTO) throws NoPermissionException {
         String userName = jwtUtil.getUsername(access);
         postService.deletePost(postDTO, userName);

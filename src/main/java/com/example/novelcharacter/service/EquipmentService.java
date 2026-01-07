@@ -5,6 +5,7 @@ import com.example.novelcharacter.dto.Stat.StatDTO;
 import com.example.novelcharacter.dto.Stat.StatRequestDTO;
 import com.example.novelcharacter.mapper.EquipmentMapper;
 import com.example.novelcharacter.mapper.EquipmentStatMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
  * @author
  * @since 2025-10-15
  */
+@RequiredArgsConstructor
 @Service
 public class EquipmentService {
 
@@ -32,22 +34,6 @@ public class EquipmentService {
     private final StatService statService;
     private final NovelService novelService;
 
-    /**
-     * EquipmentService 생성자.
-     *
-     * @param equipmentMapper 장비 데이터 접근 매퍼
-     * @param equipmentStatMapper 장비 스탯 데이터 접근 매퍼
-     * @param statService 스탯 관련 서비스
-     * @param novelService 소설 소유자 검증 서비스
-     */
-    @Autowired
-    public EquipmentService(EquipmentMapper equipmentMapper, EquipmentStatMapper equipmentStatMapper,
-                            StatService statService, NovelService novelService) {
-        this.equipmentMapper = equipmentMapper;
-        this.equipmentStatMapper = equipmentStatMapper;
-        this.statService = statService;
-        this.novelService = novelService;
-    }
 
     /**
      * 장비 번호로 특정 장비 정보를 조회합니다.

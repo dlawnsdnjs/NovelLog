@@ -29,13 +29,13 @@ import java.util.UUID;
  *     <li>인증번호 검증 및 Redis 연동</li>
  * </ul>
  *
- * <p>이 클래스는 {@link UserService}, {@link EmailService}, {@link RedisService} 등과 협력하여
+ * <p>이 클래스는 {@link UserService}, {@link EmailServiceImpl}, {@link RedisService} 등과 협력하여
  * 회원가입 절차 전반을 수행합니다.</p>
  */
 @Slf4j
 @Service
 @Transactional
-@RequiredArgsConstructor(onConstructor_ = {@Autowired})
+@RequiredArgsConstructor
 public class JoinService {
 
     /** 사용자 관련 기능을 수행하는 서비스 */
@@ -72,22 +72,22 @@ public class JoinService {
      * @throws RuntimeException 아이디 또는 이메일이 중복된 경우
      */
     public void joinProcess(JoinDTO joinDTO) {
-        String username = joinDTO.getId();
+        String userId = joinDTO.getId();
         String password = joinDTO.getPassword();
         String email = joinDTO.getEmail();
-        String authCode = joinDTO.getAuthCode();
+        String joinToken = joinDTO.getJoinToken();
 
         // 아이디 및 이메일 중복 검사
-        this.checkDuplicatedId(username);
+        this.checkDuplicatedId(userId);
         this.checkDuplicatedEmail(email);
 
         // Redis에서 인증 완료 여부 확인
-        String authComplete = redisService.getValues(authCode);
+        String authComplete = redisService.getValues("JoinToken:"+joinToken);
 
         // 인증 완료 시 회원가입 처리
-        if ("ok".equals(authComplete)) {
+        if (email.equals(authComplete)) {
             UserDTO data = new UserDTO();
-            data.setUserId(username);
+            data.setUserId(userId);
             data.setPassword(bCryptPasswordEncoder.encode(password));
             data.setEmail(email);
             data.setRole("ROLE_USER");
@@ -101,6 +101,7 @@ public class JoinService {
                     data.setUserName(randomNickname);
                     userService.insertUser(data);
                     saved = true;
+                    redisService.deleteValues("JoinToken:"+joinToken);
                 } catch (DuplicateKeyException e) {
                     // username UNIQUE 제약 위반 시 닉네임 재생성 후 재시도
                 }
@@ -133,10 +134,10 @@ public class JoinService {
      * @throws MessagingException 이메일 전송 실패 시
      * @throws RuntimeException 이메일이 이미 등록된 경우
      */
-    public void sendCodeToEmail(String toEmail) throws MessagingException {
+    public String sendCodeToEmail(String toEmail) throws MessagingException {
         this.checkDuplicatedEmail(toEmail);
 
-        String title = "Travel with me 이메일 인증 번호";
+        String title = "Novel Log 이메일 인증 번호";
         String authCode = this.createCode();
 
         mailService.sendEmail(toEmail, title, authCode);
@@ -147,6 +148,8 @@ public class JoinService {
                 authCode,
                 Duration.ofMillis(this.authCodeExpirationMillis)
         );
+
+        return authCode;
     }
 
     /**
@@ -195,17 +198,18 @@ public class JoinService {
      * @return 인증 성공 시 {@code true}, 실패 시 {@code false}
      * @throws RuntimeException 이메일이 이미 존재하는 경우
      */
-    public boolean verifiedCode(String email, String authCode) {
-        this.checkDuplicatedEmail(email);
+    public String verifiedCode(String email, String authCode) {
         String redisAuthCode = redisService.getValues(AUTH_CODE_PREFIX + email);
 
-        boolean result = redisService.checkExistsValue(redisAuthCode) && redisAuthCode.equals(authCode);
+        if (redisAuthCode != null && redisAuthCode.equals(authCode)) {
+            redisService.deleteValues(AUTH_CODE_PREFIX + email);
 
-        if (result) {
+            String joinToken = UUID.randomUUID().toString();
             // 인증 완료 상태 저장
-            redisService.setValues(authCode + email, "ok", Duration.ofMillis(authCodeExpirationMillis));
+            redisService.setValues( "JoinToken:"+joinToken, email, Duration.ofMillis(authCodeExpirationMillis));
+            return joinToken;
         }
 
-        return result;
+        throw new RuntimeException("인증코드 불일치");
     }
 }

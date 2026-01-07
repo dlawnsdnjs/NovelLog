@@ -2,6 +2,7 @@ package com.example.novelcharacter.service;
 
 import com.example.novelcharacter.dto.Stat.StatDTO;
 import com.example.novelcharacter.mapper.StatMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,20 +29,11 @@ import java.util.stream.Collectors;
  * @author
  * @version 1.0
  */
+@RequiredArgsConstructor
 @Service
 public class StatService {
 
     private final StatMapper statMapper;
-
-    /**
-     * {@link StatService} 생성자.
-     *
-     * @param statMapper 스탯 데이터베이스 접근을 담당하는 매퍼 객체
-     */
-    @Autowired
-    public StatService(StatMapper statMapper) {
-        this.statMapper = statMapper;
-    }
 
     /**
      * <p>단일 스탯 정보를 데이터베이스에 등록합니다.</p>

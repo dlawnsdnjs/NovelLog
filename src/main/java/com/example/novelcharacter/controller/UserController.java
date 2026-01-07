@@ -4,6 +4,7 @@ import com.example.novelcharacter.JWT.JWTUtil;
 import com.example.novelcharacter.service.FindIdService;
 import com.example.novelcharacter.service.ResetPasswordService;
 import com.example.novelcharacter.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.apache.ibatis.javassist.bytecode.DuplicateMemberException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ import java.util.Map;
  * <p>현재는 사용자 이름(username) 변경 기능만 포함되어 있습니다.</p>
  */
 @RestController
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
@@ -27,19 +29,6 @@ public class UserController {
     private final ResetPasswordService resetPasswordService;
     private final JWTUtil jwtUtil;
 
-    /**
-     * {@code UserController} 생성자.
-     *
-     * @param userService 사용자 관련 데이터베이스 작업을 처리하는 서비스
-     * @param jwtUtil     JWT 토큰의 검증 및 사용자 식별을 담당하는 유틸리티 클래스
-     */
-    @Autowired
-    public UserController(UserService userService, FindIdService findIdService, ResetPasswordService resetPasswordService, JWTUtil jwtUtil) {
-        this.userService = userService;
-        this.findIdService = findIdService;
-        this.resetPasswordService = resetPasswordService;
-        this.jwtUtil = jwtUtil;
-    }
 
     @GetMapping("/duplicateCheck")
     public ResponseEntity<String> duplicateCheck(@RequestParam String userName) {
@@ -62,14 +51,14 @@ public class UserController {
      * @throws Exception 이름이 중복되거나 변경 권한이 없을 경우 발생
      */
     @PatchMapping("/userUpdate")
-    public void userUpdate(@RequestHeader("access") String access, @RequestBody Map<String, String> body) throws DuplicateMemberException {
+    public void userUpdate(@RequestHeader("Access") String access, @RequestBody Map<String, String> body) throws DuplicateMemberException {
         long uuid = jwtUtil.getUuid(access);
         String userName = body.get("userName");
         userService.updateUserName(userName, uuid);
     }
 
     @PatchMapping("/userPasswordChange")
-    public void userPasswordChange(@RequestHeader("access") String access, @RequestBody Map<String, String> body) throws DuplicateMemberException {
+    public void userPasswordChange(@RequestHeader("Access") String access, @RequestBody Map<String, String> body) throws DuplicateMemberException {
         long uuid = jwtUtil.getUuid(access);
         String currentPassword = body.get("currentPassword");
         String newPassword = body.get("newPassword");
@@ -115,7 +104,7 @@ public class UserController {
     }
 
     @DeleteMapping("/deleteAccount")
-    public ResponseEntity<?> deleteAccount(@RequestHeader String access) {
+    public ResponseEntity<?> deleteAccount(@RequestHeader("Access") String access) {
         long uuid = jwtUtil.getUuid(access);
         try {
             userService.deleteUser(uuid);

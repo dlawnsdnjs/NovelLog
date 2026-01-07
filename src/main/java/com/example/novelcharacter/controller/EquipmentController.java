@@ -5,6 +5,7 @@ import com.example.novelcharacter.dto.Equipment.EquipmentDTO;
 import com.example.novelcharacter.dto.Equipment.EquipmentDataDTO;
 import com.example.novelcharacter.service.EquipmentService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,19 +22,12 @@ import java.util.Map;
  * - 회차/소설과 연결된 장비 목록 조회, 등록, 수정, 삭제 등을 담당
  */
 @RestController
+@RequiredArgsConstructor
 class EquipmentController {
 
     private final EquipmentService equipmentService;
     private final JWTUtil jwtUtil;
 
-    /**
-     * 생성자 주입 방식으로 EquipmentService와 JWTUtil을 주입받음
-     */
-    @Autowired
-    public EquipmentController(EquipmentService equipmentService, JWTUtil jwtUtil) {
-        this.equipmentService = equipmentService;
-        this.jwtUtil = jwtUtil;
-    }
 
     /**
      * [POST] /getEquipments
@@ -45,7 +39,7 @@ class EquipmentController {
      * @throws NoPermissionException  소설 접근 권한이 없는 경우 예외 발생
      */
     @PostMapping("/getEquipments")
-    public List<EquipmentDTO> getEquipments(@RequestHeader String access, @RequestBody Map<String, Long> payload) throws NoPermissionException {
+    public List<EquipmentDTO> getEquipments(@RequestHeader("Access") String access, @RequestBody Map<String, Long> payload) throws NoPermissionException {
         long uuid = jwtUtil.getUuid(access); // JWT에서 사용자 식별자 추출
         long novelNum = payload.get("novelNum"); // 요청 데이터에서 novelNum 추출
 
@@ -62,7 +56,7 @@ class EquipmentController {
      * @throws NoPermissionException  장비 접근 권한이 없을 경우
      */
     @PostMapping("/getEquipmentData")
-    public EquipmentDataDTO getEquipmentData(@RequestHeader String access, @RequestBody Map<String, Long> payload) throws NoPermissionException {
+    public EquipmentDataDTO getEquipmentData(@RequestHeader("Access") String access, @RequestBody Map<String, Long> payload) throws NoPermissionException {
         long uuid = jwtUtil.getUuid(access);
         long equipmentNum = payload.get("equipmentNum");
 
@@ -78,7 +72,7 @@ class EquipmentController {
      * @throws NoPermissionException  소설 또는 회차 접근 권한이 없는 경우
      */
     @PostMapping("/addEquipment")
-    public EquipmentDataDTO addEquipment(@RequestHeader String access, @Valid @RequestBody EquipmentDataDTO equipmentDataDTO) throws NoPermissionException {
+    public EquipmentDataDTO addEquipment(@RequestHeader("Access") String access, @Valid @RequestBody EquipmentDataDTO equipmentDataDTO) throws NoPermissionException {
         long uuid = jwtUtil.getUuid(access);
         equipmentService.insertEquipment(equipmentDataDTO, uuid);
         return equipmentDataDTO;
@@ -93,7 +87,7 @@ class EquipmentController {
      * @throws NoPermissionException  수정 권한이 없을 경우
      */
     @PostMapping("/updateEquipment")
-    public void updateEquipment(@RequestHeader String access, @Valid @RequestBody EquipmentDataDTO equipmentDataDTO) throws NoPermissionException {
+    public void updateEquipment(@RequestHeader("Access") String access, @Valid @RequestBody EquipmentDataDTO equipmentDataDTO) throws NoPermissionException {
         long uuid = jwtUtil.getUuid(access);
 
         equipmentService.updateEquipment(equipmentDataDTO, uuid);
@@ -109,7 +103,7 @@ class EquipmentController {
      * @throws NoPermissionException  삭제 권한이 없을 경우
      */
     @PostMapping("/deleteEquipment")
-    public ResponseEntity<Void> deleteEpisode(@RequestHeader String access, @RequestBody EquipmentDTO equipmentDTO) throws NoPermissionException {
+    public ResponseEntity<Void> deleteEpisode(@RequestHeader("Access") String access, @RequestBody EquipmentDTO equipmentDTO) throws NoPermissionException {
         long uuid = jwtUtil.getUuid(access);
         equipmentService.deleteEquipment(equipmentDTO, uuid);
 

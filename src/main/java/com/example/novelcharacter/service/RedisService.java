@@ -2,14 +2,15 @@ package com.example.novelcharacter.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.HashOperations;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -59,12 +60,8 @@ public class RedisService {
      * @param key 조회할 Redis 키
      * @return 저장된 문자열 값이 존재하면 해당 값, 존재하지 않으면 "false"
      */
-    @Transactional(readOnly = true)
     public String getValues(String key) {
         ValueOperations<String, Object> values = redisTemplate.opsForValue();
-        if (values.get(key) == null) {
-            return "false";
-        }
         return (String) values.get(key);
     }
 
@@ -77,13 +74,51 @@ public class RedisService {
         redisTemplate.delete(key);
     }
 
+
+    public boolean exists(String key) {
+        return Boolean.TRUE.equals(redisTemplate.hasKey(key));
+    }
+
     /**
-     * Redis 값 존재 여부를 확인합니다.
+     * 특정 패턴에 매칭되는 모든 키를 SCAN으로 찾아 반환합니다.
+     * (예: RT:123:*)
      *
-     * @param value {@link #getValues(String)}의 반환 값
-     * @return 값이 "false"가 아니면 {@code true}, 그렇지 않으면 {@code false}
+     * @param pattern 검색할 키 패턴
+     * @return 매칭된 키들의 Set
      */
-    public boolean checkExistsValue(String value) {
-        return !value.equals("false");
+    public Set<String> getKeysByPattern(String pattern) {
+        Set<String> keys = new HashSet<>();
+
+        // ScanOptions 설정: 한 번에 100개씩 읽어오도록 설정 (성능 최적화)
+        ScanOptions options = ScanOptions.scanOptions()
+                .match(pattern)
+                .count(100)
+                .build();
+
+        // redisTemplate의 execute를 사용하여 커서를 안전하게 관리
+        return redisTemplate.execute((RedisCallback<Set<String>>) connection -> {
+            Set<String> foundKeys = new HashSet<>();
+            try (Cursor<byte[]> cursor = connection.scan(options)) {
+                while (cursor.hasNext()) {
+                    foundKeys.add(new String(cursor.next()));
+                }
+            } catch (Exception e) {
+                log.error("Redis SCAN 중 오류 발생: {}", e.getMessage());
+            }
+            return foundKeys;
+        });
+    }
+
+    /**
+     * 특정 패턴에 매칭되는 모든 키를 찾아 삭제합니다. (모든 기기 로그아웃용)
+     *
+     * @param pattern 삭제할 키 패턴
+     */
+    public void deleteKeysByPattern(String pattern) {
+        Set<String> keys = getKeysByPattern(pattern);
+        if (!keys.isEmpty()) {
+            redisTemplate.delete(keys);
+            log.info("패턴 [{}]에 해당하는 키 {}개 삭제 완료", pattern, keys.size());
+        }
     }
 }

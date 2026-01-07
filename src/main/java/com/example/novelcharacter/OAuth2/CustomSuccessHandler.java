@@ -7,6 +7,7 @@ import com.example.novelcharacter.service.UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -22,6 +23,10 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     private final JWTUtil jwtUtil;
     private final UserService userService;
+
+    @Value("${FRONT_TEST_URL}")
+    private String frontURL;
+
 
     public CustomSuccessHandler(JWTUtil jwtUtil, UserService userService) {
         this.jwtUtil = jwtUtil;
@@ -66,6 +71,6 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         response.addHeader("Set-Cookie", cookie.toString());
 
         // ✅ 프론트엔드로 리다이렉트
-        response.sendRedirect("/oauth/callback");
+        response.sendRedirect(frontURL+"/oauth/callback");
     }
 }

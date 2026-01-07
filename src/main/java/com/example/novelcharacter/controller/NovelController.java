@@ -4,6 +4,7 @@ import com.example.novelcharacter.JWT.JWTUtil;
 import com.example.novelcharacter.dto.Novel.NovelDTO;
 import com.example.novelcharacter.dto.Novel.NovelWithFavoriteDTO;
 import com.example.novelcharacter.service.NovelService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,21 +28,11 @@ import java.util.Map;
  * 모든 요청은 JWT 토큰을 기반으로 사용자의 UUID를 추출하여 인증 및 권한 검사를 수행합니다.
  */
 @RestController
+@RequiredArgsConstructor
 public class NovelController {
     private final NovelService novelService;
     private final JWTUtil jwtUtil;
 
-    /**
-     * NovelService 및 JWTUtil을 주입받는 생성자
-     *
-     * @param novelService 소설 관련 비즈니스 로직을 처리하는 서비스
-     * @param jwtUtil JWT 토큰에서 사용자 정보를 추출하는 유틸리티
-     */
-    @Autowired
-    public NovelController(NovelService novelService, JWTUtil jwtUtil){
-        this.novelService = novelService;
-        this.jwtUtil = jwtUtil;
-    }
 
     /**
      * [POST] /insertNovel
@@ -60,7 +51,7 @@ public class NovelController {
      */
     @PostMapping("/insertNovel")
     public NovelWithFavoriteDTO insertNovel(
-            @RequestHeader("access") String access,
+            @RequestHeader("Access") String access,
             @RequestBody Map<String, String> payload) {
 
         long uuid = jwtUtil.getUuid(access);
@@ -83,7 +74,7 @@ public class NovelController {
      * </ol>
      */
     @PostMapping("/setFavoriteNovel")
-    public void setFavoriteNovel(@RequestHeader("access") String access, @RequestBody Map<String, Long> payload){
+    public void setFavoriteNovel(@RequestHeader("Access") String access, @RequestBody Map<String, Long> payload){
         long uuid = jwtUtil.getUuid(access);
         novelService.setFavoriteNovel(payload.get("novelNum"), uuid);
     }
@@ -107,7 +98,7 @@ public class NovelController {
      * </ol>
      */
     @GetMapping("/getNovel/{novelNum}")
-    public NovelDTO getNovel(@RequestHeader("access") String access,
+    public NovelDTO getNovel(@RequestHeader("Access") String access,
                              @PathVariable("novelNum") long novelNum) throws NoPermissionException {
         long uuid = jwtUtil.getUuid(access);
         return novelService.selectNovelOne(novelNum, uuid);
@@ -128,7 +119,7 @@ public class NovelController {
      */
     @GetMapping("/novelList")
     public List<NovelWithFavoriteDTO> novelList(
-            @RequestHeader("access") String access) {
+            @RequestHeader("Access") String access) {
 
         long uuid = jwtUtil.getUuid(access);
 
@@ -150,7 +141,7 @@ public class NovelController {
      * </ol>
      */
     @PostMapping("/deleteNovel")
-    public ResponseEntity<Void> deleteNovel(@RequestHeader String access, @RequestBody  Map<String, Long> payload) throws NoPermissionException {
+    public ResponseEntity<Void> deleteNovel(@RequestHeader("Access") String access, @RequestBody  Map<String, Long> payload) throws NoPermissionException {
         long uuid = jwtUtil.getUuid(access);
         novelService.deleteNovel(payload.get("novelNum"), uuid);
         return ResponseEntity.noContent().build(); // 204 No Content

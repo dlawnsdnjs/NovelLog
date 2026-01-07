@@ -6,6 +6,7 @@ import com.example.novelcharacter.dto.Board.PostPageResponseDTO;
 import com.example.novelcharacter.dto.Board.PostResponseDTO;
 import com.example.novelcharacter.mapper.BoardCategoryMapper;
 import com.example.novelcharacter.mapper.PostMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,22 +20,11 @@ import java.util.List;
  * 사용자 권한을 검증하여 허가되지 않은 접근을 차단합니다.
  * </p>
  */
+@RequiredArgsConstructor
 @Service
 public class PostService {
     private final PostMapper postMapper;
     private final BoardCategoryMapper boardCategoryMapper;
-
-    /**
-     * {@code PostService} 생성자.
-     *
-     * @param postMapper           게시글 데이터베이스 접근을 위한 매퍼
-     * @param boardCategoryMapper  게시판 카테고리 데이터 접근을 위한 매퍼
-     */
-    @Autowired
-    public PostService(PostMapper postMapper, BoardCategoryMapper boardCategoryMapper) {
-        this.postMapper = postMapper;
-        this.boardCategoryMapper = boardCategoryMapper;
-    }
 
     /**
      * 게시글을 등록합니다.

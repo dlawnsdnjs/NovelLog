@@ -3,6 +3,7 @@ package com.example.novelcharacter.service;
 import com.example.novelcharacter.component.MaskUtil;
 import com.example.novelcharacter.dto.User.UserDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;

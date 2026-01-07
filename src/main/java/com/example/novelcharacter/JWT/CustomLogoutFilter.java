@@ -49,7 +49,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         String refresh = null;
         Cookie[] cookies = request.getCookies();
         for(Cookie cookie: cookies){
-            if(cookie.getName().equals("refresh")){
+            if(cookie.getName().equals("Refresh")){
                 refresh = cookie.getValue();
                 break;
             }
@@ -69,22 +69,25 @@ public class CustomLogoutFilter extends GenericFilterBean {
         }
 
         String category = jwtUtil.getCategory(refresh);
-        if(!category.equals("refresh")){
+        if(!category.equals("Refresh")){
             // refresh 쿠키에 제대로 refresh 토큰이 들어있는지 검증
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
+        long uuid = jwtUtil.getUuid(refresh);
+        String randomId = jwtUtil.getRandomId(refresh);
+
         // 해당 토큰이 db에 저장되어 있는지 확인
-        Boolean isExist = refreshService.existsByRefresh(refresh);
+        Boolean isExist = refreshService.checkRefresh(uuid, randomId, refresh);
         if(!isExist){
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
-        refreshService.deleteByRefresh(refresh);
+        refreshService.deleteByRefresh(uuid);
 
-        Cookie cookie = new Cookie("refresh", null);
+        Cookie cookie = new Cookie("Refresh", null);
         cookie.setMaxAge(0);
         cookie.setPath("/");
 

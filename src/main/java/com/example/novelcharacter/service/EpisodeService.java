@@ -2,6 +2,7 @@ package com.example.novelcharacter.service;
 
 import com.example.novelcharacter.dto.Episode.EpisodeDTO;
 import com.example.novelcharacter.mapper.EpisodeMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ import java.util.List;
  * @author
  * @since 2025-10-15
  */
+@RequiredArgsConstructor
 @Service
 public class EpisodeService {
 
@@ -26,18 +28,6 @@ public class EpisodeService {
 
     /** 소설의 소유자 검증 및 관련 검증 로직을 담당하는 서비스 */
     private final NovelService novelService;
-
-    /**
-     * EpisodeService 생성자.
-     *
-     * @param episodeMapper 회차 데이터 접근 매퍼
-     * @param novelService  소설 서비스 (소유자 검증용)
-     */
-    @Autowired
-    public EpisodeService(EpisodeMapper episodeMapper, NovelService novelService) {
-        this.episodeMapper = episodeMapper;
-        this.novelService = novelService;
-    }
 
     /**
      * 새로운 회차를 등록합니다.

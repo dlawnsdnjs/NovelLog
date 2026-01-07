@@ -4,6 +4,7 @@ import com.example.novelcharacter.dto.FavoriteDTO;
 import com.example.novelcharacter.dto.Novel.NovelDTO;
 import com.example.novelcharacter.dto.Novel.NovelWithFavoriteDTO;
 import com.example.novelcharacter.mapper.NovelMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ import java.util.List;
  * {@link FavoriteService}를 통해 즐겨찾기 상태를 관리합니다.</p>
  */
 @Slf4j
+@RequiredArgsConstructor
 @Service
 public class NovelService {
     /** 소설 관련 데이터베이스 작업을 담당하는 Mapper */
@@ -32,18 +34,6 @@ public class NovelService {
 
     /** 즐겨찾기 상태를 관리하는 서비스 */
     private final FavoriteService favoriteService;
-
-    /**
-     * {@code NovelService}의 생성자.
-     *
-     * @param novelMapper      소설 관련 데이터베이스 접근 객체
-     * @param favoriteService  즐겨찾기 관련 서비스
-     */
-    @Autowired
-    public NovelService(NovelMapper novelMapper, FavoriteService favoriteService) {
-        this.novelMapper = novelMapper;
-        this.favoriteService = favoriteService;
-    }
 
     /**
      * 새로운 소설을 생성하고 데이터베이스에 저장합니다.

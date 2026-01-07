@@ -10,7 +10,7 @@ public class CorsMvcConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .exposedHeaders("Set-Cookie", "Authorization", "Access", "refresh")
+                .exposedHeaders("Set-Cookie", "Authorization", "Access", "Refresh")
                 .allowedOrigins("http://localhost:3000/", "ec2-3-39-42-1.ap-northeast-2.compute.amazonaws.com:8080", "https://d2dan5t0q4jwaf.cloudfront.net")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                 .allowedHeaders("*")

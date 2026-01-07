@@ -4,6 +4,7 @@ import com.example.novelcharacter.JWT.JWTUtil;
 import com.example.novelcharacter.dto.Episode.EpisodeDTO;
 import com.example.novelcharacter.service.EpisodeService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,22 +20,12 @@ import java.util.Map;
  * 모든 요청은 JWT 인증을 기반으로 하며, 토큰의 UUID를 통해 사용자 권한을 검증합니다.</p>
  */
 @RestController
+@RequiredArgsConstructor
 public class EpisodeController {
 
     private final EpisodeService episodeService;
     private final JWTUtil jwtUtil;
 
-    /**
-     * EpisodeController 생성자입니다.
-     *
-     * @param episodeService 회차 관련 비즈니스 로직을 처리하는 서비스 클래스
-     * @param jwtUtil JWT 토큰에서 사용자 정보를 추출하는 유틸리티 클래스
-     */
-    @Autowired
-    public EpisodeController(EpisodeService episodeService, JWTUtil jwtUtil) {
-        this.episodeService = episodeService;
-        this.jwtUtil = jwtUtil;
-    }
 
     /**
      * 특정 소설의 모든 회차 목록을 조회합니다.
@@ -63,7 +54,7 @@ public class EpisodeController {
      * </pre>
      */
     @PostMapping("/allEpisode")
-    public List<EpisodeDTO> getAllEpisode(@RequestHeader String access, @RequestBody Map<String, Long> payload)
+    public List<EpisodeDTO> getAllEpisode(@RequestHeader("Access") String access, @RequestBody Map<String, Long> payload)
             throws NoPermissionException {
 
         long uuid = jwtUtil.getUuid(access);
@@ -102,7 +93,7 @@ public class EpisodeController {
      * </pre>
      */
     @PostMapping("/addEpisode")
-    public EpisodeDTO addEpisode(@RequestHeader String access, @Valid @RequestBody EpisodeDTO episodeDTO)
+    public EpisodeDTO addEpisode(@RequestHeader("Access") String access, @Valid @RequestBody EpisodeDTO episodeDTO)
             throws NoPermissionException {
 
         long uuid = jwtUtil.getUuid(access);
@@ -135,7 +126,7 @@ public class EpisodeController {
      * </pre>
      */
     @PostMapping("/deleteEpisode")
-    public ResponseEntity<Void> deleteEpisode(@RequestHeader String access, @RequestBody EpisodeDTO episodeDTO)
+    public ResponseEntity<Void> deleteEpisode(@RequestHeader("Access") String access, @RequestBody EpisodeDTO episodeDTO)
             throws NoPermissionException {
 
         long uuid = jwtUtil.getUuid(access);

@@ -19,5 +19,5 @@ public class JoinDTO {
     @Pattern(regexp="^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,20}$",
             message="비밀번호는 문자/숫자/특수문자 포함 8~20자")
     private String password;
-    private String authCode;
+    private String joinToken;
 }

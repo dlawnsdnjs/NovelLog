@@ -1,16 +1,16 @@
     package com.example.novelcharacter.JWT;
 
+    import com.example.novelcharacter.dto.TokenResponse;
     import com.example.novelcharacter.dto.User.CustomUserDetails;
-    import com.example.novelcharacter.dto.RefreshDTO;
     import com.example.novelcharacter.dto.User.UserDTO;
-    import com.example.novelcharacter.service.RefreshService;
+    import com.example.novelcharacter.service.TokenProvider;
     import com.example.novelcharacter.service.UserService;
     import jakarta.servlet.FilterChain;
     import jakarta.servlet.http.HttpServletRequest;
     import jakarta.servlet.http.HttpServletResponse;
     import lombok.RequiredArgsConstructor;
+    import org.springframework.beans.factory.annotation.Autowired;
     import org.springframework.http.HttpStatus;
-    import org.springframework.http.ResponseCookie;
     import org.springframework.security.authentication.AuthenticationManager;
     import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
     import org.springframework.security.core.Authentication;
@@ -19,16 +19,14 @@
     import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
     import java.util.Collection;
-    import java.util.Date;
     import java.util.Iterator;
 
     @RequiredArgsConstructor
     public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         private final AuthenticationManager authenticationManager;
-        private final JWTUtil jwtUtil;
-        private final RefreshService refreshService;
         private final UserService userService;
+        private final TokenProvider tokenProvider;
 
         @Override
         public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -60,25 +58,9 @@
             GrantedAuthority auth = iterator.next();
             String role = auth.getAuthority();
 
-            // ✅ JWT 토큰 생성
-            String access = jwtUtil.createJwt("access", uuid, username, role, "LOCAL", 600000L);     // 10분
-            String refresh = jwtUtil.createJwt("refresh", uuid, username, role, "LOCAL", 86400000L); // 24시간
+            TokenResponse tokenSet = tokenProvider.generateTokenSet(uuid, username, role, "LOCAL");
+            tokenProvider.sendTokens(response, tokenSet);
 
-            // DB에 refresh 저장
-            addRefreshDTO(uuid, refresh, 86400000L);
-
-            // ✅ access 토큰은 헤더로 전송
-            response.setHeader("Access", access);
-
-            // ✅ refresh 토큰은 ResponseCookie로 설정 (보안, CORS 대응)
-            ResponseCookie refreshCookie = ResponseCookie.from("refresh", refresh)
-                    .httpOnly(true)
-                    .secure(false)
-                    .path("/")
-                    .maxAge(24 * 60 * 60)
-                    .build();
-
-            response.addHeader("Set-Cookie", refreshCookie.toString());
             response.setStatus(HttpStatus.OK.value());
         }
 
@@ -86,17 +68,5 @@
         @Override
         protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
-        }
-
-        // ✅ refresh 토큰 DB 저장
-        private void addRefreshDTO(long uuid, String refresh, Long expiredMs) {
-            Date date = new Date(System.currentTimeMillis() + expiredMs);
-
-            RefreshDTO refreshDTO = new RefreshDTO();
-            refreshDTO.setUuid(uuid);
-            refreshDTO.setRefresh(refresh);
-            refreshDTO.setExpiration(date.toString());
-
-            refreshService.addRefresh(refreshDTO);
         }
     }

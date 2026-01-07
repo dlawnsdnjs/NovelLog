@@ -3,6 +3,7 @@ package com.example.novelcharacter.controller;
 import com.example.novelcharacter.service.ReissueService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,19 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
  * 검증이 성공하면 {@link ReissueService}를 통해 새로운 토큰을 생성하여 응답합니다.</p>
  */
 @RestController
+@RequiredArgsConstructor
 public class ReissueController {
 
     private final ReissueService reissueService;
-
-    /**
-     * {@code ReissueController} 생성자.
-     *
-     * @param reissueService JWT 재발급 로직을 처리하는 서비스 클래스
-     */
-    @Autowired
-    public ReissueController(ReissueService reissueService) {
-        this.reissueService = reissueService;
-    }
 
     /**
      * 만료된 Access Token을 새로운 토큰으로 재발급합니다.

@@ -8,7 +8,9 @@ import com.example.novelcharacter.OAuth2.CustomSuccessHandler;
 import com.example.novelcharacter.component.RateLimitFilter;
 import com.example.novelcharacter.service.CustomOAuth2UserService;
 import com.example.novelcharacter.service.RefreshService;
+import com.example.novelcharacter.service.TokenProvider;
 import com.example.novelcharacter.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,6 +28,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 @EnableWebSecurity
+@RequiredArgsConstructor
 @Configuration
 public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
@@ -34,19 +37,8 @@ public class SecurityConfig {
     private final RefreshService refreshService;
     private final UserService userService;
     private final JWTUtil jwtUtil;
-    private final RateLimitFilter rateLimitFilter;
+    private final TokenProvider tokenProvider;
 
-    @Autowired
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, CustomOAuth2UserService customOAuth2UserService, CustomSuccessHandler customSuccessHandler
-            ,RefreshService refreshService, UserService userService, JWTUtil jwtUtil, RateLimitFilter rateLimitFilter) {
-        this.authenticationConfiguration = authenticationConfiguration;
-        this.customOAuth2UserService = customOAuth2UserService;
-        this.customSuccessHandler = customSuccessHandler;
-        this.refreshService = refreshService;
-        this.userService = userService;
-        this.jwtUtil = jwtUtil;
-        this.rateLimitFilter = rateLimitFilter;
-    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception{
@@ -83,14 +75,13 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/", "/page/**", "/oauth/callback", "/login",
+                                "/", "/actuator/**" ,"/page/**", "/oauth/callback", "/login",
                                 "/api/**", "/reissue", "/post/**", "/userIdFind",
                                 "/resetPassword", "/resetPassword/confirm"
                         ).permitAll()
                         .anyRequest().authenticated())
-                .addFilterBefore(rateLimitFilter, LogoutFilter.class)
                 .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshService), LogoutFilter.class)
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshService, userService), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshService, userService, tokenProvider), UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(new JWTFilter(jwtUtil), OAuth2LoginAuthenticationFilter.class)
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig.userService(customOAuth2UserService))

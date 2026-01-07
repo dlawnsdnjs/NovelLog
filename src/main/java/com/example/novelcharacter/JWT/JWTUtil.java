@@ -26,6 +26,10 @@ public class JWTUtil {
         return Long.parseLong(extractClaims(token).get("uuid", String.class));
     }
 
+    public String getRandomId(String token) {
+        return extractClaims(token).get("randomId", String.class);
+    }
+
     public String getUsername(String token) {
         return extractClaims(token).get("username", String.class);
     }
@@ -78,6 +82,19 @@ public class JWTUtil {
                 .claim("uuid", String.valueOf(uuid))
                 .claim("username", username)
                 .claim("role", role)
+                .claim("loginType", loginType)
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + expiredMs))
+                .signWith(secretKey)
+                .compact();
+    }
+
+    public String createJwt(String category, long uuid, String randomId, String loginType, Long expiredMs) {
+
+        return Jwts.builder()
+                .claim("category", category)
+                .claim("uuid", String.valueOf(uuid))
+                .claim("randomId", randomId)
                 .claim("loginType", loginType)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expiredMs))

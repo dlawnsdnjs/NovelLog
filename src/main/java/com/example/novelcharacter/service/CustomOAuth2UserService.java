@@ -40,9 +40,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
 
         String username = oAuth2Response.getProviderId()+"@"+oAuth2Response.getProvider()+".com";
-//        String email = oAuth2Response.getEmail();
         UserDTO existData = userService.getUserById(username);
-
 
         if(existData == null){
             existData = registerNewUser(oAuth2Response.getProvider(), oAuth2Response.getProviderId());
@@ -61,12 +59,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 newUser.setUserId(providerId+"@"+provider+".com");
                 newUser.setUserName(randomNickname);
                 newUser.setPassword("OAuthUser");
+                newUser.setEmail("OAuthUser@"+provider+".com")  ;
                 newUser.setRole("ROLE_USER");
                 newUser.setLastLoginDate(LocalDate.now());
                 userService.insertUser(newUser);
                 saved = true;
             } catch (DataIntegrityViolationException e) {
                 // UNIQUE(username) 충돌 시 재시도
+//                e.printStackTrace();
             }
         }
 

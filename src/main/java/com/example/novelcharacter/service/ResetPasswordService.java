@@ -23,8 +23,8 @@ public class ResetPasswordService {
     private final EmailService emailService;
     private final BCryptPasswordEncoder encoder;
 
-    @Value("${EC2_INSTANCE_URL}")
-    private String EC2_INSTANCE_URL;
+    @Value("${BACK_URL}")
+    private String BACK_URL;
 
 
     public boolean sendResetEmail(String userId) throws MessagingException {
@@ -39,7 +39,7 @@ public class ResetPasswordService {
         redisService.setValues("PW_RESET_" + token, user.getUserId(), Duration.ofMinutes(15));
 
         // reset url (프론트 url)
-        String resetLink = EC2_INSTANCE_URL + "/page/reset-password?token=" + token;
+        String resetLink = BACK_URL + "/page/reset-password?token=" + token;
 
         String html;
         try {

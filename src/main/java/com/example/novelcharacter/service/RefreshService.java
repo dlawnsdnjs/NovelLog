@@ -20,7 +20,7 @@ public class RefreshService {
 
     public Boolean checkRefresh(long uuid, String randomId, String refresh) {
         String value = redisService.getValues("RT:"+uuid+":"+randomId);
-        return value.equals(refresh);
+        return value != null && value.equals(refresh);
     }
 
     // 다중 로그인 허용하지만 refresh 토큰 삭제 시 같은 유저의 모든 refresh 토큰 삭제

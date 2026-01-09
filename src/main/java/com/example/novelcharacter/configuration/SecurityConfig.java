@@ -55,7 +55,6 @@ public class SecurityConfig {
         return (web) -> web.ignoring()
                 .requestMatchers(
                         "/static/**",
-                        "/favicon.ico",
                         "/book-open.svg",
                         "/manifest.json",
                         "/asset-manifest.json",
@@ -77,11 +76,13 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/", "/actuator/**" ,"/page/**", "/oauth/callback", "/login",
                                 "/api/**", "/reissue", "/post/**", "/userIdFind",
-                                "/resetPassword", "/resetPassword/confirm"
+                                "/resetPassword", "/resetPassword/confirm",
+                                "/static/**", "/*.css", "/*.png", "/*.js", "/*/svg",
+                                "/manifest.json", "/asset-manifest.json", "/index.html"
                         ).permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshService), LogoutFilter.class)
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshService, userService, tokenProvider), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), userService, tokenProvider), UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(new JWTFilter(jwtUtil), OAuth2LoginAuthenticationFilter.class)
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig.userService(customOAuth2UserService))

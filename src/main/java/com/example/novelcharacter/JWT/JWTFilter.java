@@ -26,7 +26,6 @@ public class JWTFilter extends OncePerRequestFilter {
 
     private static final List<String> EXCLUDE_PATHS = Arrays.asList(
             "/static/", "/index.html",
-            "/favicon.ico",
             "/book-open.svg",
             "/manifest.json",
             "/asset-manifest.json",
@@ -39,7 +38,6 @@ public class JWTFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
-
         String accessToken = request.getHeader("Access");
 
         if (accessToken == null || accessToken.isBlank()) {
@@ -89,10 +87,8 @@ public class JWTFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
 
-        return path.startsWith("/login")
-                || path.startsWith("/reissue")
-                || path.startsWith("/oauth")
-                || path.startsWith("/actuator")
-                || path.startsWith("/static");
+
+        return EXCLUDE_PATHS.stream()
+                .anyMatch(path::startsWith);
     }
 }

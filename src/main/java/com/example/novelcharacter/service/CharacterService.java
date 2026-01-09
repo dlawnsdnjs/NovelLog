@@ -193,7 +193,8 @@ public class CharacterService {
 
     public CharacterResponseDataDTO selectRecentCharacterData(EpisodeCharacterDTO episodeCharacterDTO, long uuid) throws NoPermissionException {
         EpisodeCharacterDTO result = episodeCharacterMapper.selectRecentEpisodeCharacter(episodeCharacterDTO);
-        return selectSimpleCharacterData(result, uuid);
+
+        return result != null ? selectSimpleCharacterData(result, uuid) : null;
     }
 
     /**

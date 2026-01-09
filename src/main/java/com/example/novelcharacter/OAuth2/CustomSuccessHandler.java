@@ -24,7 +24,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private final JWTUtil jwtUtil;
     private final UserService userService;
 
-    @Value("${FRONT_TEST_URL}")
+    @Value("${FRONT_URL}")
     private String frontURL;
 
 
@@ -39,7 +39,6 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             HttpServletResponse response,
             Authentication authentication
     ) throws IOException, ServletException {
-
         // ✅ OAuth2User 정보 추출
         CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
 
@@ -69,7 +68,6 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 .build();
 
         response.addHeader("Set-Cookie", cookie.toString());
-
         // ✅ 프론트엔드로 리다이렉트
         response.sendRedirect(frontURL+"/oauth/callback");
     }

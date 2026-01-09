@@ -89,24 +89,21 @@ public class RedisService {
     public Set<String> getKeysByPattern(String pattern) {
         Set<String> keys = new HashSet<>();
 
-        // ScanOptions 설정: 한 번에 100개씩 읽어오도록 설정 (성능 최적화)
         ScanOptions options = ScanOptions.scanOptions()
                 .match(pattern)
                 .count(100)
                 .build();
 
-        // redisTemplate의 execute를 사용하여 커서를 안전하게 관리
-        return redisTemplate.execute((RedisCallback<Set<String>>) connection -> {
-            Set<String> foundKeys = new HashSet<>();
-            try (Cursor<byte[]> cursor = connection.scan(options)) {
-                while (cursor.hasNext()) {
-                    foundKeys.add(new String(cursor.next()));
-                }
-            } catch (Exception e) {
-                log.error("Redis SCAN 중 오류 발생: {}", e.getMessage());
+        // redisTemplate에서 제공하는 scan을 직접 호출
+        try (Cursor<String> cursor = redisTemplate.scan(options)) {
+            while (cursor.hasNext()) {
+                keys.add(cursor.next());
             }
-            return foundKeys;
-        });
+        } catch (Exception e) {
+            log.error("Redis SCAN 중 오류 발생: {}", e.getMessage());
+        }
+
+        return keys;
     }
 
     /**

@@ -17,7 +17,7 @@
         SELECT * FROM User WHERE email = #{email} AND password != 'OAuthUser';
     </select>
 
-    <insert id="insertUser" useGeneratedKeys="true" parameterType="UserDTO">
+    <insert id="insertUser" useGeneratedKeys="true" keyProperty="uuid" parameterType="UserDTO">
         INSERT INTO User (userId, userName, email, password, role, lastLoginDate, privacy_agreed_at) VALUES (#{userId},
         <choose>
             <when test="userName != null and userName !=''">#{userName}</when>

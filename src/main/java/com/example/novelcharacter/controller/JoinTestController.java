@@ -37,7 +37,6 @@ public class JoinTestController {
      */
     @PostMapping("/join")
     public String joinProcess(@Valid @RequestBody JoinDTO joinDTO) {
-        System.out.println("testJoin : "+joinDTO);
         joinService.joinProcess(joinDTO);
         return "ok";
     }

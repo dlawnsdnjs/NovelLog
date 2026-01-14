@@ -183,9 +183,8 @@ public class CharacterService {
         List<StatInfoDTO> stats = selectCharacterStatsByIds(episodeCharacterDTO);
         response.setStats(stats);
 
-        List<CharacterEquipDTO> equips = selectCharacterEquipsByIds(episodeCharacterDTO);
-        List<Long> equipList = equips.stream().map(CharacterEquipDTO::getEquipmentNum).toList();
-        List<EquipmentDataDTO> equipmentData = equipmentService.selectEquipmentDataList(equipList);
+        List<Long> equips = selectCharacterEquipsByIds(episodeCharacterDTO);
+        List<EquipmentDataDTO> equipmentData = equipmentService.selectEquipmentDataList(equips);
         response.setEquipment(equipmentData);
 
         return response;
@@ -349,7 +348,7 @@ public class CharacterService {
      * @param episodeCharacterDTO 에피소드-캐릭터 관계 정보
      * @return 장비 목록
      */
-    public List<CharacterEquipDTO> selectCharacterEquipsByIds(EpisodeCharacterDTO episodeCharacterDTO) {
+    public List<Long> selectCharacterEquipsByIds(EpisodeCharacterDTO episodeCharacterDTO) {
         return characterEquipMapper.selectCharacterEquipsByIds(
                 episodeCharacterDTO.getEpisodeNum(),
                 episodeCharacterDTO.getCharacterNum()

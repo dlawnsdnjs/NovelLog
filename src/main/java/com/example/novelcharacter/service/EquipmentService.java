@@ -277,35 +277,36 @@ public class EquipmentService {
         if(equipmentIds == null || equipmentIds.isEmpty()) {
             return null;
         }
-        List<EquipmentDTO> equipmentDTOS = selectEquipmentsByIds(equipmentIds);
-        List<EquipmentStatInfoWithNumDTO> equipmentStatInfoWithNumDTOS = selectEquipmentStatsWithNum(equipmentIds);
-
-        Map<Long, List<EquipmentStatInfoWithNumDTO>> statMap =
-                equipmentStatInfoWithNumDTOS.stream()
-                        .collect(Collectors.groupingBy(EquipmentStatInfoWithNumDTO::getEquipmentNum));
+//        List<EquipmentDTO> equipmentDTOS = selectEquipmentsByIds(equipmentIds);
+//        List<EquipmentStatInfoWithNumDTO> equipmentStatInfoWithNumDTOS = selectEquipmentStatsWithNum(equipmentIds);
+//
+//        Map<Long, List<EquipmentStatInfoWithNumDTO>> statMap =
+//                equipmentStatInfoWithNumDTOS.stream()
+//                        .collect(Collectors.groupingBy(EquipmentStatInfoWithNumDTO::getEquipmentNum));
 
         List<EquipmentDataDTO> equipmentDataDTOS = new ArrayList<>();
+        equipmentMapper.selectEquipmentDataList(equipmentIds);
 
-        for (EquipmentDTO equipmentDTO : equipmentDTOS) {
-            EquipmentDataDTO equipmentDataDTO = new EquipmentDataDTO();
-            equipmentDataDTO.setEquipment(equipmentDTO);
-
-            List<EquipmentStatInfoWithNumDTO> statWithNumList =
-                    statMap.getOrDefault(equipmentDTO.getEquipmentNum(), new ArrayList<>());
-
-            List<EquipmentStatInfoDTO> equipmentStats = statWithNumList.stream()
-                    .map(statWithNum -> {
-                        EquipmentStatInfoDTO statInfo = new EquipmentStatInfoDTO();
-                        statInfo.setStatName(statWithNum.getStatName());
-                        statInfo.setValue(statWithNum.getValue());
-                        statInfo.setType(statWithNum.getType());
-                        return statInfo;
-                    })
-                    .collect(Collectors.toList());
-
-            equipmentDataDTO.setEquipmentStats(equipmentStats);
-            equipmentDataDTOS.add(equipmentDataDTO);
-        }
+//        for (EquipmentDTO equipmentDTO : equipmentDTOS) {
+//            EquipmentDataDTO equipmentDataDTO = new EquipmentDataDTO();
+//            equipmentDataDTO.setEquipment(equipmentDTO);
+//
+//            List<EquipmentStatInfoWithNumDTO> statWithNumList =
+//                    statMap.getOrDefault(equipmentDTO.getEquipmentNum(), new ArrayList<>());
+//
+//            List<EquipmentStatInfoDTO> equipmentStats = statWithNumList.stream()
+//                    .map(statWithNum -> {
+//                        EquipmentStatInfoDTO statInfo = new EquipmentStatInfoDTO();
+//                        statInfo.setStatName(statWithNum.getStatName());
+//                        statInfo.setValue(statWithNum.getValue());
+//                        statInfo.setType(statWithNum.getType());
+//                        return statInfo;
+//                    })
+//                    .collect(Collectors.toList());
+//
+//            equipmentDataDTO.setEquipmentStats(equipmentStats);
+//            equipmentDataDTOS.add(equipmentDataDTO);
+//        }
 
         return equipmentDataDTOS;
     }

@@ -67,10 +67,12 @@ public class ResetPasswordService {
         redisService.deleteValues("PW_RESET_" + token);
     }
 
-    public void changePassword(long uuid, String currentPassword, String newPassword) {
+    public boolean changePassword(long uuid, String currentPassword, String newPassword) {
         UserDTO userDTO = userService.getUserByUuid(uuid);
         if(userDTO.getPassword().equals(encoder.encode(currentPassword))) {
             userService.updatePassword(userDTO.getUserId(), encoder.encode(newPassword));
+            return true;
         }
+        return false;
     }
 }

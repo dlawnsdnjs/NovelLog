@@ -11,7 +11,7 @@ public class CorsMvcConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .exposedHeaders("Set-Cookie", "Authorization", "Access", "Refresh")
-                .allowedOrigins("http://localhost:3000/", "https://d2dan5t0q4jwaf.cloudfront.net")
+                .allowedOrigins("http://localhost:3000/", "https://d2dan5t0q4jwaf.cloudfront.net", "https://novel-log.com")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);

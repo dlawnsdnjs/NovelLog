@@ -14,6 +14,40 @@
             </foreach>
     </select>
 
+    <resultMap id="EquipmentDataResultMap" type="EquipmentDataDTO">
+        <association property="equipment" javaType="EquipmentDTO">
+            <id property="equipmentNum" column="equipmentNum"/>
+            <result property="novelNum" column="novelNum"/>
+            <result property="equipmentName" column="equipmentName"/>
+            <result property="inform" column="inform"/>
+        </association>
+
+        <collection property="equipmentStats" ofType="EquipmentStatInfoDTO">
+            <result property="statName" column="statName"/>
+            <result property="value" column="value"/>
+            <result property="type" column="statType"/>
+        </collection>
+    </resultMap>
+
+    <select id="selectEquipmentDataList" resultMap="EquipmentDataResultMap">
+        SELECT
+        e.equipmentNum,
+        e.novelNum,
+        e.equipmentName,
+        e.inform,
+        s.statName,
+        es.value,
+        es.statType
+        FROM Equipment e
+        LEFT JOIN EquipmentStat es ON e.equipmentNum = es.equipmentNum
+        LEFT JOIN Stat s ON es.statCode = s.statCode
+        WHERE e.equipmentNum IN
+        <foreach collection="list" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        ORDER BY e.equipmentNum ASC
+    </select>
+
     <select id="selectEquipmentsById" resultType="EquipmentDTO">
         SELECT * FROM Equipment WHERE novelNum = #{novelNum};
     </select>

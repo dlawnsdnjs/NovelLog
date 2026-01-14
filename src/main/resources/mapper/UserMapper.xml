@@ -26,7 +26,7 @@
     </insert>
 
     <update id="updateUser" parameterType="UserDTO">
-        UPDATE User SET userName = #{userName} WHERE userId = #{userId};
+        UPDATE User SET userName = #{userName} AND password = #{password} WHERE userId = #{userId};
     </update>
 
     <delete id="deleteUser" parameterType="UserDTO">

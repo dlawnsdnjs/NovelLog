@@ -58,12 +58,16 @@ public class UserController {
     }
 
     @PatchMapping("/userPasswordChange")
-    public void userPasswordChange(@RequestHeader("Access") String access, @RequestBody Map<String, String> body) throws DuplicateMemberException {
+    public ResponseEntity<?> userPasswordChange(@RequestHeader("Access") String access, @RequestBody Map<String, String> body) throws DuplicateMemberException {
         long uuid = jwtUtil.getUuid(access);
         String currentPassword = body.get("currentPassword");
         String newPassword = body.get("newPassword");
-        resetPasswordService.changePassword(uuid, currentPassword, newPassword);
+        boolean result = resetPasswordService.changePassword(uuid, currentPassword, newPassword);
 
+        if(result){
+            return  ResponseEntity.status(HttpStatus.OK).build();
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     @PostMapping("/userIdFind")

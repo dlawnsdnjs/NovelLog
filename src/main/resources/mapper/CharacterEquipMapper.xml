@@ -7,7 +7,7 @@
     </select>
 
     <select id="selectCharacterEquipsByIds" resultType="CharacterEquipDTO">
-        SELECT * FROM CharacterEquip WHERE episodeNum = #{episodeNum} AND characterNum = #{characterNum};
+        SELECT equipmentNum FROM CharacterEquip WHERE episodeNum = #{episodeNum} AND characterNum = #{characterNum};
     </select>
 
     <insert id="insertCharacterEquip" parameterType="CharacterEquipDTO">

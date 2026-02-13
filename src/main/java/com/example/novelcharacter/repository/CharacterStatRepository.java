@@ -14,7 +14,6 @@ import java.util.List;
 
 @Repository
 public interface CharacterStatRepository extends JpaRepository<CharacterStat, CharacterStatId> {
-    public List<CharacterStat> findCharacterStatsByEpisodeCharacter(EpisodeCharacter episodeCharacter);
 
     @Query("select new com.example.novelcharacter.domain.Stat.dto.StatInfoDTO(s.statName, cs.value) " +
             "from CharacterStat cs join cs.stat s " +

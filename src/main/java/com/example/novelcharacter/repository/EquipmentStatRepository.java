@@ -14,8 +14,6 @@ import java.util.List;
 
 @Repository
 public interface EquipmentStatRepository extends JpaRepository<EquipmentStat, EquipmentStatId> {
-    public EquipmentStat findEquipmentStatById(EquipmentStatId id);
-
     @Query("select new com.example.novelcharacter.domain.Equipment.dto.EquipmentStatInfoWithNumDTO( " +
             "es.equipment.equipmentNum, s.statName, es.value, es.id.statType ) " +
             "from EquipmentStat es join es.stat s " +

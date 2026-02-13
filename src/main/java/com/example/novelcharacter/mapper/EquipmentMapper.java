@@ -1,5 +1,6 @@
 package com.example.novelcharacter.mapper;
 
+import com.example.novelcharacter.domain.Equipment.dto.EquipmentDTO;
 import com.example.novelcharacter.domain.Equipment.entity.Equipment;
 import com.example.novelcharacter.domain.Equipment.dto.EquipmentDataDTO;
 import org.apache.ibatis.annotations.Mapper;

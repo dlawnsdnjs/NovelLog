@@ -1,9 +1,6 @@
 package com.example.novelcharacter.service;
 
-import com.example.novelcharacter.domain.Equipment.dto.EquipmentDataDTO;
-import com.example.novelcharacter.domain.Equipment.dto.EquipmentStatInfoDTO;
-import com.example.novelcharacter.domain.Equipment.dto.EquipmentStatInfoWithNumDTO;
-import com.example.novelcharacter.domain.Equipment.dto.EquipmentStatRequestDTO;
+import com.example.novelcharacter.domain.Equipment.dto.*;
 import com.example.novelcharacter.domain.Equipment.entity.Equipment;
 import com.example.novelcharacter.domain.Equipment.entity.EquipmentStat;
 import com.example.novelcharacter.domain.Stat.entity.Stat;
@@ -45,7 +42,7 @@ public class EquipmentService {
      * @param equipmentNum 장비 고유 번호
      * @return 장비 정보 DTO
      */
-    public Equipment selectEquipmentById(long equipmentNum) {
+    public EquipmentDTO selectEquipmentById(long equipmentNum) {
         return equipmentMapper.selectEquipmentById(equipmentNum);
     }
 
@@ -80,7 +77,7 @@ public class EquipmentService {
      * @return 장비 목록
      * @throws NoPermissionException 사용자가 소설의 소유자가 아닐 경우
      */
-    public List<Equipment> selectEquipmentsByNovel(long novelNum, long uuid) throws NoPermissionException {
+    public List<EquipmentDTO> selectEquipmentsByNovel(long novelNum, long uuid) throws NoPermissionException {
         novelService.checkOwner(novelNum, uuid);
         return equipmentMapper.selectEquipmentsById(novelNum);
     }
@@ -94,7 +91,7 @@ public class EquipmentService {
      * @return 페이징된 장비 목록
      * @throws NoPermissionException 사용자가 소설의 소유자가 아닐 경우
      */
-    public List<Equipment> selectEquipmentsPageByNovel(long novelNum, int offset, long uuid) throws NoPermissionException {
+    public List<EquipmentDTO> selectEquipmentsPageByNovel(long novelNum, int offset, long uuid) throws NoPermissionException {
         novelService.checkOwner(novelNum, uuid);
         return equipmentMapper.selectEquipmentsPageById(novelNum, offset);
     }
@@ -108,7 +105,7 @@ public class EquipmentService {
      * @return 장비 DTO
      * @throws NoPermissionException 사용자가 소설의 소유자가 아닐 경우
      */
-    public Equipment selectEquipmentByName(String equipmentName, long novelNum, long uuid) throws NoPermissionException {
+    public EquipmentDTO selectEquipmentByName(String equipmentName, long novelNum, long uuid) throws NoPermissionException {
         novelService.checkOwner(novelNum, uuid);
         return equipmentMapper.selectEquipmentByName(equipmentName, novelNum);
     }

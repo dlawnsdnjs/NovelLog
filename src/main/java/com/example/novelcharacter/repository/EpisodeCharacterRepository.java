@@ -12,11 +12,9 @@ import java.util.List;
 
 @Repository
 public interface EpisodeCharacterRepository extends JpaRepository<EpisodeCharacter, EpisodeCharacterId> {
-    public List<EpisodeCharacter> findEpisodeCharactersByIdEpisodeNum(long episodeNum);
-
     @Query("select c " +
             "from EpisodeCharacter ec join ec.character c " +
             "where ec.episode.episodeNum = :episodeNum")
     public List<Character> findCharactersByIdEpisodeNum(@Param("episodeNum") long episodeNum);
-    public EpisodeCharacter findRecentEpisodeCharacter(EpisodeCharacter  episodeCharacter);
+    public EpisodeCharacter findRecentEpisodeCharacter(EpisodeCharacter episodeCharacter);
 }

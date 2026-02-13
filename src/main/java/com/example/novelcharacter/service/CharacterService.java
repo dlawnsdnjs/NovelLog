@@ -325,25 +325,7 @@ public class CharacterService {
         characterStatMapper.deleteCharacterStat(characterStat);
     }
 
-    /**
-     * 특정 캐릭터의 장비 정보를 조회합니다.
-     *
-     * @param episodeCharacter 에피소드-캐릭터 관계 정보
-     * @param equipmentNum 장비 번호
-     * @param uuid 사용자 UUID
-     * @return 캐릭터 장비 정보
-     * @throws NoPermissionException 권한이 없을 경우
-     */
-    public CharacterEquip selectCharacterEquipByIds(EpisodeCharacter episodeCharacter, long equipmentNum, long uuid)
-            throws NoPermissionException {
-        episodeService.checkEpisodeOwner(episodeCharacter.getEpisodeNum(), uuid);
-        checkCharacterOwner(episodeCharacter.getCharacterNum(), uuid);
-        return characterEquipMapper.selectCharacterEquipByIds(
-                episodeCharacter.getEpisodeNum(),
-                episodeCharacter.getCharacterNum(),
-                equipmentNum
-        );
-    }
+
 
     /**
      * 캐릭터의 모든 장비 목록을 조회합니다.

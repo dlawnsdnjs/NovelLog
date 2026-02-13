@@ -12,8 +12,6 @@ import java.util.List;
 
 @Repository
 public interface CharacterEquipRepository extends JpaRepository<CharacterEquip, CharacterEquipId> {
-    public CharacterEquip findCharacterEquipById(CharacterEquipId id);
-
     @Query("select ce.equipment.equipmentNum " +
             "from CharacterEquip ce " +
             "where ce.episodeCharacter = :episodeCharacter")

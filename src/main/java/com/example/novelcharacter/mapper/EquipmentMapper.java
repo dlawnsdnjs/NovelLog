@@ -8,12 +8,12 @@ import java.util.List;
 
 @Mapper
 public interface EquipmentMapper {
-    public Equipment selectEquipmentById(long equipmentNum);
-    public List<Equipment> selectEquipmentsByIds(List<Long> equipmentIds);
-    public List<Equipment> selectEquipmentsById(long novelNum);
-    public List<Equipment> selectEquipmentsPageById(long novelNum, int offset);
-    public Equipment selectEquipmentByName(String equipmentName, long novelNum);
-    public EquipmentDataDTO selectEquipmentDataList(List<Long> equipmentNums);
+    public EquipmentDTO selectEquipmentById(long equipmentNum);
+    public List<EquipmentDTO> selectEquipmentsByIds(List<Long> equipmentNum);
+    public List<EquipmentDTO> selectEquipmentsById(long novelNum);
+    public List<EquipmentDTO> selectEquipmentsPageById(long novelNum, int offset);
+    public EquipmentDTO selectEquipmentByName(String equipmentName, long novelNum);
+    public List<EquipmentDataDTO> selectEquipmentDataList(List<Long> equipmentNum);
     public int checkEquipmentOwner(long uuid, long equipmentNum);
     public void insertEquipment(Equipment equipment);
     public void updateEquipment(Equipment equipment);

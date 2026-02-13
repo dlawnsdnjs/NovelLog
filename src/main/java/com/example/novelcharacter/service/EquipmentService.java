@@ -63,6 +63,16 @@ public class EquipmentService {
     }
 
     /**
+     * 장비 ID 목록을 기반으로 여러 장비를 조회합니다.
+     *
+     * @param equipmentNum 장비 ID 리스트
+     * @return 조회된 장비 목록
+     */
+    public List<EquipmentDTO> selectEquipmentsByIds(List<Long> equipmentNum) {
+        return equipmentMapper.selectEquipmentsByIds(equipmentNum);
+    }
+
+    /**
      * 특정 소설에 속한 모든 장비를 조회합니다.
      *
      * @param novelNum 소설 번호
@@ -129,7 +139,8 @@ public class EquipmentService {
      * @throws NoPermissionException 사용자가 소설의 소유자가 아닐 경우
      */
     public void updateEquipment(EquipmentDataDTO equipmentData, long uuid) throws NoPermissionException {
-        Equipment equipment = equipmentData.getEquipment();
+        // N+1 문제 있어서 수정 필요
+        EquipmentDTO equipment = equipmentData.getEquipment();
         novelService.checkOwner(equipment.getNovelNum(), uuid);
         equipmentMapper.updateEquipment(equipment);
 
@@ -271,37 +282,12 @@ public class EquipmentService {
         if(equipmentIds == null || equipmentIds.isEmpty()) {
             return null;
         }
-//        List<Equipment> equipmentDTOS = selectEquipmentsByIds(equipmentIds);
-//        List<EquipmentStatInfoWithNumDTO> equipmentStatInfoWithNumDTOS = selectEquipmentStatsWithNum(equipmentIds);
-//
-//        Map<Long, List<EquipmentStatInfoWithNumDTO>> statMap =
-//                equipmentStatInfoWithNumDTOS.stream()
-//                        .collect(Collectors.groupingBy(EquipmentStatInfoWithNumDTO::getEquipmentNum));
+        List<EquipmentDTO> equips = equipmentMapper.selectEquipmentsByIds(equipmentIds);
+        for(EquipmentDTO equipment : equips) {
+            System.out.println(equipment);
+        }
 
-        List<EquipmentDataDTO> equipmentDataDTOS = new ArrayList<>();
-        equipmentMapper.selectEquipmentDataList(equipmentIds);
+        return equipmentMapper.selectEquipmentDataList(equipmentIds);
 
-//        for (Equipment equipmentDTO : equipmentDTOS) {
-//            EquipmentDataDTO equipmentDataDTO = new EquipmentDataDTO();
-//            equipmentDataDTO.setEquipment(equipmentDTO);
-//
-//            List<EquipmentStatInfoWithNumDTO> statWithNumList =
-//                    statMap.getOrDefault(equipmentDTO.getEquipmentNum(), new ArrayList<>());
-//
-//            List<EquipmentStatInfoDTO> equipmentStats = statWithNumList.stream()
-//                    .map(statWithNum -> {
-//                        EquipmentStatInfoDTO statInfo = new EquipmentStatInfoDTO();
-//                        statInfo.setStatName(statWithNum.getStatName());
-//                        statInfo.setValue(statWithNum.getValue());
-//                        statInfo.setType(statWithNum.getType());
-//                        return statInfo;
-//                    })
-//                    .collect(Collectors.toList());
-//
-//            equipmentDataDTO.setEquipmentStats(equipmentStats);
-//            equipmentDataDTOS.add(equipmentDataDTO);
-//        }
-
-        return equipmentDataDTOS;
     }
 }

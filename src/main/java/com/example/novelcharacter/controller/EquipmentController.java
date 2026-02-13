@@ -1,12 +1,11 @@
 package com.example.novelcharacter.controller;
 
 import com.example.novelcharacter.JWT.JWTUtil;
-import com.example.novelcharacter.dto.Equipment.EquipmentDTO;
-import com.example.novelcharacter.dto.Equipment.EquipmentDataDTO;
+import com.example.novelcharacter.domain.Equipment.entity.Equipment;
+import com.example.novelcharacter.domain.Equipment.dto.EquipmentDataDTO;
 import com.example.novelcharacter.service.EquipmentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,7 +38,7 @@ class EquipmentController {
      * @throws NoPermissionException  소설 접근 권한이 없는 경우 예외 발생
      */
     @PostMapping("/getEquipments")
-    public List<EquipmentDTO> getEquipments(@RequestHeader("Access") String access, @RequestBody Map<String, Long> payload) throws NoPermissionException {
+    public List<Equipment> getEquipments(@RequestHeader("Access") String access, @RequestBody Map<String, Long> payload) throws NoPermissionException {
         long uuid = jwtUtil.getUuid(access); // JWT에서 사용자 식별자 추출
         long novelNum = payload.get("novelNum"); // 요청 데이터에서 novelNum 추출
 
@@ -98,14 +97,14 @@ class EquipmentController {
      * 특정 장비를 삭제
      *
      * @param access       JWT Access 토큰
-     * @param equipmentDTO 삭제할 장비 정보 (equipmentNum 등)
+     * @param equipment 삭제할 장비 정보 (equipmentNum 등)
      * @return HTTP 204 No Content 응답
      * @throws NoPermissionException  삭제 권한이 없을 경우
      */
     @PostMapping("/deleteEquipment")
-    public ResponseEntity<Void> deleteEpisode(@RequestHeader("Access") String access, @RequestBody EquipmentDTO equipmentDTO) throws NoPermissionException {
+    public ResponseEntity<Void> deleteEpisode(@RequestHeader("Access") String access, @RequestBody Equipment equipment) throws NoPermissionException {
         long uuid = jwtUtil.getUuid(access);
-        equipmentService.deleteEquipment(equipmentDTO, uuid);
+        equipmentService.deleteEquipment(equipment, uuid);
 
         return ResponseEntity.noContent().build(); // 성공 시 내용 없는 204 응답 반환
     }

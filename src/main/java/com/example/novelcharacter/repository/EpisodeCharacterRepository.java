@@ -1,0 +1,22 @@
+package com.example.novelcharacter.repository;
+
+import com.example.novelcharacter.domain.Episode.entity.Episode;
+import com.example.novelcharacter.domain.Episode.entity.EpisodeCharacter;
+import com.example.novelcharacter.domain.Episode.entity.EpisodeCharacterId;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface EpisodeCharacterRepository extends JpaRepository<EpisodeCharacter, EpisodeCharacterId> {
+    public List<EpisodeCharacter> findEpisodeCharactersByIdEpisodeNum(long episodeNum);
+
+    @Query("select c " +
+            "from EpisodeCharacter ec join ec.character c " +
+            "where ec.episode.episodeNum = :episodeNum")
+    public List<Character> findCharactersByIdEpisodeNum(@Param("episodeNum") long episodeNum);
+    public EpisodeCharacter findRecentEpisodeCharacter(EpisodeCharacter  episodeCharacter);
+}

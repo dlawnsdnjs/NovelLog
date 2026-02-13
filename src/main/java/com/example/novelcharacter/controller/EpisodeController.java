@@ -1,11 +1,10 @@
 package com.example.novelcharacter.controller;
 
 import com.example.novelcharacter.JWT.JWTUtil;
-import com.example.novelcharacter.dto.Episode.EpisodeDTO;
+import com.example.novelcharacter.domain.Episode.entity.Episode;
 import com.example.novelcharacter.service.EpisodeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -54,7 +53,7 @@ public class EpisodeController {
      * </pre>
      */
     @PostMapping("/allEpisode")
-    public List<EpisodeDTO> getAllEpisode(@RequestHeader("Access") String access, @RequestBody Map<String, Long> payload)
+    public List<Episode> getAllEpisode(@RequestHeader("Access") String access, @RequestBody Map<String, Long> payload)
             throws NoPermissionException {
 
         long uuid = jwtUtil.getUuid(access);
@@ -67,7 +66,7 @@ public class EpisodeController {
      * 새로운 회차를 추가합니다.
      *
      * @param access JWT Access Token (HTTP Header)
-     * @param episodeDTO 추가할 회차 정보 (제목, 내용, 소설 번호 등 포함)
+     * @param episode 추가할 회차 정보 (제목, 내용, 소설 번호 등 포함)
      * @return 등록된 회차 정보
      * @throws NoPermissionException 사용자가 해당 소설에 회차를 추가할 권한이 없을 경우 발생
      *
@@ -93,20 +92,20 @@ public class EpisodeController {
      * </pre>
      */
     @PostMapping("/addEpisode")
-    public EpisodeDTO addEpisode(@RequestHeader("Access") String access, @Valid @RequestBody EpisodeDTO episodeDTO)
+    public Episode addEpisode(@RequestHeader("Access") String access, @Valid @RequestBody Episode episode)
             throws NoPermissionException {
 
         long uuid = jwtUtil.getUuid(access);
-        episodeService.insertEpisode(episodeDTO, uuid);
+        episodeService.insertEpisode(episode, uuid);
 
-        return episodeDTO;
+        return episode;
     }
 
     /**
      * 특정 회차를 삭제합니다.
      *
      * @param access JWT Access Token (HTTP Header)
-     * @param episodeDTO 삭제할 회차 정보 (회차 번호 포함)
+     * @param episode 삭제할 회차 정보 (회차 번호 포함)
      * @return HTTP 204 No Content (성공적으로 삭제된 경우)
      * @throws NoPermissionException 사용자가 해당 회차를 삭제할 권한이 없을 경우 발생
      *
@@ -126,11 +125,11 @@ public class EpisodeController {
      * </pre>
      */
     @PostMapping("/deleteEpisode")
-    public ResponseEntity<Void> deleteEpisode(@RequestHeader("Access") String access, @RequestBody EpisodeDTO episodeDTO)
+    public ResponseEntity<Void> deleteEpisode(@RequestHeader("Access") String access, @RequestBody Episode episode)
             throws NoPermissionException {
 
         long uuid = jwtUtil.getUuid(access);
-        episodeService.deleteEpisode(episodeDTO.getEpisodeNum(), uuid);
+        episodeService.deleteEpisode(episode.getEpisodeNum(), uuid);
 
         return ResponseEntity.noContent().build();
     }

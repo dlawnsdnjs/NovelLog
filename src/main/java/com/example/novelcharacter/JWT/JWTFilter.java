@@ -1,12 +1,11 @@
 package com.example.novelcharacter.JWT;
 
-import com.example.novelcharacter.dto.User.CustomUserDetails;
-import com.example.novelcharacter.dto.User.UserDTO;
+import com.example.novelcharacter.domain.User.CustomUserDetails;
+import com.example.novelcharacter.domain.User.entity.User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -62,7 +61,7 @@ public class JWTFilter extends OncePerRequestFilter {
         String username = jwtUtil.getUsername(accessToken);
         String role = jwtUtil.getRole(accessToken);
 
-        UserDTO user = new UserDTO();
+        User user = new User();
         user.setUuid(uuid);
         user.setUserName(username);
         user.setRole(role);

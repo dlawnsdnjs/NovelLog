@@ -1,8 +1,7 @@
 package com.example.novelcharacter.service;
 
-import com.example.novelcharacter.dto.User.UserDTO;
+import com.example.novelcharacter.domain.User.entity.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,7 +28,7 @@ public class ResetPasswordService {
 
     public boolean sendResetEmail(String userId) throws MessagingException {
         // 등록된 이메일인지 확인
-        UserDTO user = userService.getUserById(userId);
+        User user = userService.getUserById(userId);
         if (user == null) {
             return false;  // 존재하지 않음
         }
@@ -68,9 +67,9 @@ public class ResetPasswordService {
     }
 
     public boolean changePassword(long uuid, String currentPassword, String newPassword) {
-        UserDTO userDTO = userService.getUserByUuid(uuid);
-        if(userDTO.getPassword().equals(encoder.encode(currentPassword))) {
-            userService.updatePassword(userDTO.getUserId(), encoder.encode(newPassword));
+        User user = userService.getUserByUuid(uuid);
+        if(user.getPassword().equals(encoder.encode(currentPassword))) {
+            userService.updatePassword(user.getUserId(), encoder.encode(newPassword));
             return true;
         }
         return false;

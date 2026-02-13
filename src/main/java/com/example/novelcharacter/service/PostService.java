@@ -1,13 +1,12 @@
 package com.example.novelcharacter.service;
 
-import com.example.novelcharacter.dto.Board.BoardCategoryDTO;
-import com.example.novelcharacter.dto.Board.PostDTO;
-import com.example.novelcharacter.dto.Board.PostPageResponseDTO;
-import com.example.novelcharacter.dto.Board.PostResponseDTO;
+import com.example.novelcharacter.domain.Board.entity.BoardCategory;
+import com.example.novelcharacter.domain.Board.entity.Post;
+import com.example.novelcharacter.domain.Board.dto.PostPageResponseDTO;
+import com.example.novelcharacter.domain.Board.dto.PostResponseDTO;
 import com.example.novelcharacter.mapper.BoardCategoryMapper;
 import com.example.novelcharacter.mapper.PostMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.naming.NoPermissionException;
@@ -32,18 +31,18 @@ public class PostService {
      * 관리자가 아닌 사용자는 관리자 게시판(boardId = 0)에 글을 등록할 수 없습니다.
      * </p>
      *
-     * @param postDTO 등록할 게시글 데이터
+     * @param post 등록할 게시글 데이터
      * @param uuid    작성자 고유 식별자
      * @param role    작성자 권한 (예: ROLE_USER, ROLE_ADMIN)
      * @throws NoPermissionException 관리자가 아닌 사용자가 관리자 게시판에 글을 쓰려고 할 때 발생
      */
-    public void insertPost(PostDTO postDTO, long uuid, String role) throws NoPermissionException {
-        if (postDTO.getBoardId() == 0 && !role.equals("ROLE_ADMIN")) {
+    public void insertPost(Post post, long uuid, String role) throws NoPermissionException {
+        if (post.getBoardId() == 0 && !role.equals("ROLE_ADMIN")) {
             throw new NoPermissionException("관리자 권한이 필요합니다.");
         }
-        postDTO.setUuid(uuid);
+        post.setUuid(uuid);
 
-        postMapper.insertPost(postDTO);
+        postMapper.insertPost(post);
     }
 
     /**
@@ -106,15 +105,15 @@ public class PostService {
      * 게시글 작성자만 수정이 가능하며, 다른 사용자가 접근 시 예외가 발생합니다.
      * </p>
      *
-     * @param postDTO 수정할 게시글 데이터
+     * @param post 수정할 게시글 데이터
      * @param uuid    수정 요청자 고유 식별자
      * @throws NoPermissionException 작성자가 아닌 사용자가 수정하려 할 때 발생
      */
-    public void updatePost(PostDTO postDTO, long uuid) throws NoPermissionException {
-        if (postDTO.getUuid() != uuid) {
+    public void updatePost(Post post, long uuid) throws NoPermissionException {
+        if (post.getUuid() != uuid) {
             throw new NoPermissionException("작성자만 수정 가능합니다.");
         }
-        postMapper.updatePost(postDTO);
+        postMapper.updatePost(post);
     }
 
     /**
@@ -123,24 +122,24 @@ public class PostService {
      * 게시글 작성자만 삭제할 수 있습니다.
      * </p>
      *
-     * @param postDTO 삭제할 게시글 정보
+     * @param post 삭제할 게시글 정보
      * @param userName    요청자 고유 식별자
      * @throws NoPermissionException 작성자가 아닌 사용자가 삭제하려 할 때 발생
      */
-    public void deletePost(PostDTO postDTO, String userName) throws NoPermissionException {
-        String postWriter = selectPostById(postDTO.getPostId()).getUserName();
+    public void deletePost(Post post, String userName) throws NoPermissionException {
+        String postWriter = selectPostById(post.getPostId()).getUserName();
         if (!postWriter.equals(userName)) {
             throw new NoPermissionException("작성자만 삭제 가능합니다.");
         }
-        postMapper.deletePost(postDTO.getPostId());
+        postMapper.deletePost(post.getPostId());
     }
 
     /**
      * 모든 게시판 카테고리를 조회합니다.
      *
-     * @return 게시판 카테고리 목록 {@link BoardCategoryDTO}
+     * @return 게시판 카테고리 목록 {@link BoardCategory}
      */
-    public List<BoardCategoryDTO> selectAllBoardCategory() {
+    public List<BoardCategory> selectAllBoardCategory() {
         return boardCategoryMapper.selectAllBoardCategory();
     }
 }

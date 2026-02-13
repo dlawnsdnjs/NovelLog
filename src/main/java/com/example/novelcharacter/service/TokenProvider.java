@@ -1,14 +1,12 @@
 package com.example.novelcharacter.service;
 
 import com.example.novelcharacter.JWT.JWTUtil;
-import com.example.novelcharacter.dto.TokenResponse;
+import com.example.novelcharacter.domain.TokenResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.UUID;
 
 @Service

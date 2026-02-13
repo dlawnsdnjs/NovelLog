@@ -1,11 +1,10 @@
 package com.example.novelcharacter.service;
 
-import com.example.novelcharacter.dto.User.JoinDTO;
-import com.example.novelcharacter.dto.User.UserDTO;
+import com.example.novelcharacter.domain.User.dto.JoinDTO;
+import com.example.novelcharacter.domain.User.entity.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -86,7 +85,7 @@ public class JoinService {
 
         // 인증 완료 시 회원가입 처리
         if (email.equals(authComplete)) {
-            UserDTO data = new UserDTO();
+            User data = new User();
             data.setUserId(userId);
             data.setPassword(bCryptPasswordEncoder.encode(password));
             data.setEmail(email);

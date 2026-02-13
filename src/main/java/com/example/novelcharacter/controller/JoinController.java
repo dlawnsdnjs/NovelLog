@@ -1,11 +1,10 @@
 package com.example.novelcharacter.controller;
 
-import com.example.novelcharacter.dto.User.JoinDTO;
+import com.example.novelcharacter.domain.User.dto.JoinDTO;
 import com.example.novelcharacter.service.JoinService;
 import jakarta.validation.Valid;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

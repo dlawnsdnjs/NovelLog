@@ -1,10 +1,10 @@
 package com.example.novelcharacter.service;
 
-import com.example.novelcharacter.dto.OAuth.GoogleResponse;
-import com.example.novelcharacter.dto.OAuth.NaverResponse;
-import com.example.novelcharacter.dto.OAuth.OAuth2Response;
-import com.example.novelcharacter.dto.User.CustomOAuth2User;
-import com.example.novelcharacter.dto.User.UserDTO;
+import com.example.novelcharacter.domain.OAuth.GoogleResponse;
+import com.example.novelcharacter.domain.OAuth.NaverResponse;
+import com.example.novelcharacter.domain.OAuth.OAuth2Response;
+import com.example.novelcharacter.domain.User.CustomOAuth2User;
+import com.example.novelcharacter.domain.User.entity.User;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -40,7 +40,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
 
         String username = oAuth2Response.getProviderId()+"@"+oAuth2Response.getProvider()+".com";
-        UserDTO existData = userService.getUserById(username);
+        User existData = userService.getUserById(username);
 
         if(existData == null){
             existData = registerNewUser(oAuth2Response.getProvider(), oAuth2Response.getProviderId());
@@ -48,9 +48,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         return new CustomOAuth2User(existData);
     }
 
-    private UserDTO registerNewUser(String provider, String providerId) {
+    private User registerNewUser(String provider, String providerId) {
         boolean saved = false;
-        UserDTO newUser = new UserDTO();
+        User newUser = new User();
 
         while (!saved) {
             try {

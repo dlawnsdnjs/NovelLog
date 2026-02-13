@@ -1,12 +1,13 @@
 package com.example.novelcharacter.service;
 
-import com.example.novelcharacter.dto.FavoriteDTO;
-import com.example.novelcharacter.dto.Novel.NovelDTO;
-import com.example.novelcharacter.dto.Novel.NovelWithFavoriteDTO;
+import com.example.novelcharacter.domain.Favorite;
+import com.example.novelcharacter.domain.Novel.entity.Novel;
+import com.example.novelcharacter.domain.Novel.dto.NovelWithFavoriteDTO;
+import com.example.novelcharacter.domain.User.entity.User;
 import com.example.novelcharacter.mapper.NovelMapper;
+import com.example.novelcharacter.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.naming.NoPermissionException;
@@ -34,6 +35,7 @@ public class NovelService {
 
     /** 즐겨찾기 상태를 관리하는 서비스 */
     private final FavoriteService favoriteService;
+    private final UserRepository userRepository;
 
     /**
      * 새로운 소설을 생성하고 데이터베이스에 저장합니다.
@@ -51,9 +53,11 @@ public class NovelService {
             throw new IllegalArgumentException("Novel Title cannot be null or empty");
         }
 
-        NovelDTO newNovel = new NovelDTO();
+        Novel newNovel = new Novel();
         newNovel.setNovelTitle(novelTitle);
-        newNovel.setUuid(uuid);
+        User user = userRepository.getReferenceById(uuid);
+
+        newNovel.setUser(user);
         novelMapper.insertNovel(newNovel);
 
         NovelWithFavoriteDTO novelWithFavoriteDTO = new NovelWithFavoriteDTO();
@@ -81,10 +85,10 @@ public class NovelService {
      *
      * @param novelNum 조회할 소설의 고유 번호
      * @param uuid     요청 사용자의 UUID
-     * @return 소설 상세 정보 {@link NovelDTO}
+     * @return 소설 상세 정보 {@link Novel}
      * @throws NoPermissionException 사용자가 소설의 소유자가 아닌 경우
      */
-    public NovelDTO selectNovelOne(long novelNum, long uuid) throws NoPermissionException {
+    public Novel selectNovelOne(long novelNum, long uuid) throws NoPermissionException {
         checkOwner(novelNum, uuid);
         return novelMapper.selectNovelById(novelNum);
     }
@@ -111,11 +115,14 @@ public class NovelService {
      * @param uuid     사용자 UUID
      */
     public void setFavoriteNovel(long novelNum, long uuid) {
-        FavoriteDTO favoriteDTO = new FavoriteDTO();
-        favoriteDTO.setUuid(uuid);
-        favoriteDTO.setTargetId(novelNum);
-        favoriteDTO.setTargetType("Novel");
-        favoriteService.setFavorite(favoriteDTO);
+        Favorite favorite = new Favorite();
+
+        User user = userRepository.getReferenceById(uuid);
+
+        favorite.setUser(user);
+        favorite.setTargetId(novelNum);
+        favorite.setTargetType("Novel");
+        favoriteService.setFavorite(favorite);
     }
 
     /**
@@ -123,13 +130,13 @@ public class NovelService {
      * <p>
      * 수정 전에 {@link #checkOwner(long, long)}를 호출하여 권한을 검증합니다.
      *
-     * @param novelDTO 수정할 소설 데이터
+     * @param novel 수정할 소설 데이터
      * @throws NoPermissionException 사용자가 소설의 소유자가 아닌 경우
      */
-    public void updateNovel(NovelDTO novelDTO) throws NoPermissionException {
+    public void updateNovel(Novel novel) throws NoPermissionException {
         try {
-            checkOwner(novelDTO.getNovelNum(), novelDTO.getUuid());
-            novelMapper.updateNovel(novelDTO);
+            checkOwner(novel.getNovelNum(), novel.getUser().getUuid());
+            novelMapper.updateNovel(novel);
         } catch (Exception e) {
             log.warn("Failed to update novel", e);
         }

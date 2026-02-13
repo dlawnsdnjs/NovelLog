@@ -1,8 +1,8 @@
 package com.example.novelcharacter.OAuth2;
 
 import com.example.novelcharacter.JWT.JWTUtil;
-import com.example.novelcharacter.dto.User.CustomOAuth2User;
-import com.example.novelcharacter.dto.User.UserDTO;
+import com.example.novelcharacter.domain.User.CustomOAuth2User;
+import com.example.novelcharacter.domain.User.entity.User;
 import com.example.novelcharacter.service.UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -44,10 +44,10 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         long userId = customUserDetails.getUuid();
         String username = customUserDetails.getName();
-        UserDTO userDTO = userService.getUserByUuid(userId);
+        User user = userService.getUserByUuid(userId);
 
-        if(userDTO != null) {
-            userService.updateLastLoginTime(userDTO);
+        if(user != null) {
+            userService.updateLastLoginTime(user);
         }
 
         // ✅ 권한 정보

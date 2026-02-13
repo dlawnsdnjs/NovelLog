@@ -1,11 +1,10 @@
 package com.example.novelcharacter.controller;
 
 import com.example.novelcharacter.JWT.JWTUtil;
-import com.example.novelcharacter.dto.Character.CharacterDTO;
+import com.example.novelcharacter.domain.Character.entity.Character;
 import com.example.novelcharacter.service.CharacterService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,7 +40,7 @@ public class CharacterController {
      * </pre>
      */
     @PostMapping("/episodeCharacters")
-    public List<CharacterDTO> episodeCharacter(@RequestHeader("Access") String access, @RequestBody long episodeNum)
+    public List<Character> episodeCharacter(@RequestHeader("Access") String access, @RequestBody long episodeNum)
             throws NoPermissionException {
         long uuid = jwtUtil.getUuid(access);
         return characterService.selectCharactersByEpisode(episodeNum, uuid);
@@ -63,7 +62,7 @@ public class CharacterController {
      * </pre>
      */
     @PostMapping("/novelCharacters")
-    public List<CharacterDTO> novelCharacters(@RequestHeader("Access") String access, @RequestBody Map<String, Long> payload)
+    public List<Character> novelCharacters(@RequestHeader("Access") String access, @RequestBody Map<String, Long> payload)
             throws NoPermissionException {
         long uuid = jwtUtil.getUuid(access);
         long novelNum = payload.get("novelNum");
@@ -74,7 +73,7 @@ public class CharacterController {
      * 새로운 캐릭터를 추가합니다.
      *
      * @param access JWT Access Token (헤더)
-     * @param characterDTO 추가할 캐릭터 데이터 (이름, 직업, 설명 등)
+     * @param character 추가할 캐릭터 데이터 (이름, 직업, 설명 등)
      * @return 추가된 캐릭터 정보
      * @throws NoPermissionException 사용자가 해당 소설에 캐릭터를 추가할 권한이 없을 경우 발생
      *
@@ -90,18 +89,18 @@ public class CharacterController {
      * </pre>
      */
     @PostMapping("/addCharacter")
-    public CharacterDTO addCharacter(@RequestHeader("Access") String access, @Valid @RequestBody CharacterDTO characterDTO)
+    public Character addCharacter(@RequestHeader("Access") String access, @Valid @RequestBody Character character)
             throws NoPermissionException {
         long uuid = jwtUtil.getUuid(access);
-        characterService.insertCharacter(characterDTO, uuid);
-        return characterDTO;
+        characterService.insertCharacter(character, uuid);
+        return character;
     }
 
     /**
      * 특정 캐릭터를 삭제합니다.
      *
      * @param access JWT Access Token (헤더)
-     * @param characterDTO 삭제할 캐릭터 정보 (characterNum 또는 novelNum 등 포함)
+     * @param character 삭제할 캐릭터 정보 (characterNum 또는 novelNum 등 포함)
      * @return 삭제 성공 시 204 No Content 응답
      * @throws NoPermissionException 사용자가 해당 캐릭터를 삭제할 권한이 없을 경우 발생
      *
@@ -113,10 +112,10 @@ public class CharacterController {
      * </pre>
      */
     @PostMapping("/deleteCharacter")
-    public ResponseEntity<Void> deleteEpisode(@RequestHeader("Access") String access, @RequestBody CharacterDTO characterDTO)
+    public ResponseEntity<Void> deleteEpisode(@RequestHeader("Access") String access, @RequestBody Character character)
             throws NoPermissionException {
         long uuid = jwtUtil.getUuid(access);
-        characterService.deleteCharacter(characterDTO, uuid);
+        characterService.deleteCharacter(character, uuid);
         return ResponseEntity.noContent().build();
     }
 }

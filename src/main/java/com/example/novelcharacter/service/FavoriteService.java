@@ -1,9 +1,8 @@
 package com.example.novelcharacter.service;
 
-import com.example.novelcharacter.dto.FavoriteDTO;
+import com.example.novelcharacter.domain.Favorite;
 import com.example.novelcharacter.mapper.FavoriteMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -31,15 +30,15 @@ public class FavoriteService {
      * 즐겨찾기를 설정하거나 해제합니다.
      * <p>
      * 해당 즐겨찾기가 존재하지 않으면 추가하고,
-     * 이미 존재한다면 {@link #deleteFavorite(FavoriteDTO)}를 호출하여 제거합니다.
+     * 이미 존재한다면 {@link #deleteFavorite(Favorite)}를 호출하여 제거합니다.
      *
-     * @param favoriteDTO 즐겨찾기 정보가 담긴 DTO
+     * @param favorite 즐겨찾기 정보가 담긴 DTO
      */
-    public void setFavorite(FavoriteDTO favoriteDTO) {
-        if (favoriteMapper.getFavorite(favoriteDTO) == null) {
-            favoriteMapper.addFavorite(favoriteDTO);
+    public void setFavorite(Favorite favorite) {
+        if (favoriteMapper.getFavorite(favorite) == null) {
+            favoriteMapper.addFavorite(favorite);
         } else {
-            deleteFavorite(favoriteDTO);
+            deleteFavorite(favorite);
         }
     }
 
@@ -48,9 +47,9 @@ public class FavoriteService {
      * <p>
      * DB에서 해당 즐겨찾기 정보를 제거합니다.
      *
-     * @param favoriteDTO 삭제할 즐겨찾기 정보를 담은 DTO
+     * @param favorite 삭제할 즐겨찾기 정보를 담은 DTO
      */
-    public void deleteFavorite(FavoriteDTO favoriteDTO) {
-        favoriteMapper.removeFavorite(favoriteDTO);
+    public void deleteFavorite(Favorite favorite) {
+        favoriteMapper.removeFavorite(favorite);
     }
 }

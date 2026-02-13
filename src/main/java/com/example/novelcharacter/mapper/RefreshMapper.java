@@ -1,6 +1,6 @@
 package com.example.novelcharacter.mapper;
 
-import com.example.novelcharacter.dto.RefreshDTO;
+import com.example.novelcharacter.domain.RefreshDTO;
 import jakarta.transaction.Transactional;
 import org.apache.ibatis.annotations.Mapper;
 

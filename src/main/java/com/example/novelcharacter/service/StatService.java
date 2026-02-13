@@ -1,9 +1,8 @@
 package com.example.novelcharacter.service;
 
-import com.example.novelcharacter.dto.Stat.StatDTO;
+import com.example.novelcharacter.domain.Stat.entity.Stat;
 import com.example.novelcharacter.mapper.StatMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -38,10 +37,10 @@ public class StatService {
     /**
      * <p>단일 스탯 정보를 데이터베이스에 등록합니다.</p>
      *
-     * @param statDTO 등록할 스탯 정보 DTO
+     * @param stat 등록할 스탯 정보 DTO
      */
-    public void insertStat(StatDTO statDTO) {
-        statMapper.insertStat(statDTO);
+    public void insertStat(Stat stat) {
+        statMapper.insertStat(stat);
     }
 
     /**
@@ -49,29 +48,29 @@ public class StatService {
      * <p>빈 문자열이나 null 항목은 자동으로 필터링됩니다.</p>
      *
      * @param statNameList 등록할 스탯 이름 목록
-     * @return 데이터베이스에 삽입된 {@link StatDTO} 객체 리스트
+     * @return 데이터베이스에 삽입된 {@link Stat} 객체 리스트
      */
-    public List<StatDTO> insertStatList(List<String> statNameList) {
-        List<StatDTO> statDTOList = statNameList.stream()
+    public List<Stat> insertStatList(List<String> statNameList) {
+        List<Stat> statList = statNameList.stream()
                 .filter(name -> name != null && !name.trim().isEmpty())
                 .map(name -> {
-                    StatDTO dto = new StatDTO();
+                    Stat dto = new Stat();
                     dto.setStatName(name);
                     return dto;
                 })
                 .collect(Collectors.toList());
 
-        statMapper.insertStatList(statDTOList);
-        return statDTOList;
+        statMapper.insertStatList(statList);
+        return statList;
     }
 
     /**
      * 스탯 코드를 기반으로 단일 스탯 정보를 조회합니다.
      *
      * @param statCode 조회할 스탯의 고유 코드
-     * @return 해당 코드의 {@link StatDTO} 객체 (없으면 null)
+     * @return 해당 코드의 {@link Stat} 객체 (없으면 null)
      */
-    public StatDTO selectStat(long statCode) {
+    public Stat selectStat(long statCode) {
         return statMapper.selectStat(statCode);
     }
 
@@ -80,16 +79,16 @@ public class StatService {
      * <p>해당 스탯이 존재하지 않으면 자동으로 새 스탯을 등록합니다.</p>
      *
      * @param statName 조회할 스탯 이름
-     * @return 조회되었거나 새로 생성된 {@link StatDTO} 객체
+     * @return 조회되었거나 새로 생성된 {@link Stat} 객체
      */
-    public StatDTO selectStat(String statName) {
-        StatDTO statDTO = statMapper.selectStat(statName);
-        if (statDTO == null) {
-            statDTO = new StatDTO();
-            statDTO.setStatName(statName);
-            insertStat(statDTO);
+    public Stat selectStat(String statName) {
+        Stat stat = statMapper.selectStat(statName);
+        if (stat == null) {
+            stat = new Stat();
+            stat.setStatName(statName);
+            insertStat(stat);
         }
-        return statDTO;
+        return stat;
     }
 
     /**
@@ -97,12 +96,12 @@ public class StatService {
      * <p>존재하지 않는 스탯은 자동으로 새로 생성하여 결과 리스트에 포함시킵니다.</p>
      *
      * <p>즉, 요청된 이름 중 일부가 DB에 없더라도
-     * 최종 반환 리스트에는 모든 이름에 대한 {@link StatDTO}가 포함됩니다.</p>
+     * 최종 반환 리스트에는 모든 이름에 대한 {@link Stat}가 포함됩니다.</p>
      *
      * @param statNameList 조회할 스탯 이름 목록
-     * @return 기존 및 신규 등록된 스탯이 모두 포함된 {@link StatDTO} 리스트
+     * @return 기존 및 신규 등록된 스탯이 모두 포함된 {@link Stat} 리스트
      */
-    public List<StatDTO> selectStatList(List<String> statNameList) {
+    public List<Stat> selectStatList(List<String> statNameList) {
         // 유효한 이름만 필터링
         List<String> filteredNames = statNameList.stream()
                 .filter(name -> name != null && !name.trim().isEmpty())
@@ -114,11 +113,11 @@ public class StatService {
         }
 
         // 1️⃣ 기존 스탯 조회
-        List<StatDTO> statDTOList = statMapper.selectStatList(filteredNames);
+        List<Stat> statList = statMapper.selectStatList(filteredNames);
 
         // 2️⃣ 조회된 스탯 이름 집합
-        Set<String> existingNames = statDTOList.stream()
-                .map(StatDTO::getStatName)
+        Set<String> existingNames = statList.stream()
+                .map(Stat::getStatName)
                 .collect(Collectors.toSet());
 
         // 3️⃣ 존재하지 않는 스탯 이름 추출
@@ -127,7 +126,7 @@ public class StatService {
                 .toList();
 
         // 4️⃣ 결과 리스트 구성
-        List<StatDTO> result = new ArrayList<>(statDTOList);
+        List<Stat> result = new ArrayList<>(statList);
 
         if (!missingNames.isEmpty()) {
             result.addAll(insertStatList(missingNames));
@@ -139,10 +138,10 @@ public class StatService {
     /**
      * <p>스탯 정보를 수정합니다.</p>
      *
-     * @param statDTO 수정할 스탯 정보 DTO
+     * @param stat 수정할 스탯 정보 DTO
      */
-    public void updateStat(StatDTO statDTO) {
-        statMapper.updateStat(statDTO);
+    public void updateStat(Stat stat) {
+        statMapper.updateStat(stat);
     }
 
     /**

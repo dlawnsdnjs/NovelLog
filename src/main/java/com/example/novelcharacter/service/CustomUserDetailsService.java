@@ -1,9 +1,8 @@
 package com.example.novelcharacter.service;
 
-import com.example.novelcharacter.dto.User.CustomUserDetails;
-import com.example.novelcharacter.dto.User.UserDTO;
+import com.example.novelcharacter.domain.User.CustomUserDetails;
+import com.example.novelcharacter.domain.User.entity.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -16,7 +15,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserDTO userData = userService.getUserById(username);
+        User userData = userService.getUserById(username);
 
         if (userData != null) {
             return new CustomUserDetails(userData);

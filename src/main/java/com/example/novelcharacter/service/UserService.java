@@ -1,12 +1,11 @@
 package com.example.novelcharacter.service;
 
-import com.example.novelcharacter.dto.User.UserDTO;
+import com.example.novelcharacter.domain.User.entity.User;
 import com.example.novelcharacter.mapper.UserMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.javassist.bytecode.DuplicateMemberException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -43,9 +42,9 @@ public class UserService {
      * <p>UUID를 기반으로 사용자를 조회합니다.</p>
      *
      * @param uuid 사용자 고유 번호(UUID)
-     * @return 조회된 {@link UserDTO} 객체 (없으면 null)
+     * @return 조회된 {@link User} 객체 (없으면 null)
      */
-    public UserDTO getUserByUuid(long uuid) {
+    public User getUserByUuid(long uuid) {
         return userMapper.getUserByUuid(uuid);
     }
 
@@ -53,9 +52,9 @@ public class UserService {
      * <p>사용자 아이디(ID)를 기반으로 사용자를 조회합니다.</p>
      *
      * @param userId 사용자 로그인 아이디
-     * @return 조회된 {@link UserDTO} 객체 (없으면 null)
+     * @return 조회된 {@link User} 객체 (없으면 null)
      */
-    public UserDTO getUserById(String userId) {
+    public User getUserById(String userId) {
         return userMapper.getUserById(userId);
     }
 
@@ -63,9 +62,9 @@ public class UserService {
      * <p>사용자 이름을 기반으로 사용자를 조회합니다.</p>
      *
      * @param userName 사용자 이름
-     * @return 조회된 {@link UserDTO} 객체 (없으면 null)
+     * @return 조회된 {@link User} 객체 (없으면 null)
      */
-    public UserDTO getUserByName(String userName) {
+    public User getUserByName(String userName) {
         return userMapper.getUserByName(userName);
     }
 
@@ -76,17 +75,17 @@ public class UserService {
      * @return 존재하면 true, 없으면 false
      */
     public boolean isExistByUserId(String userId) {
-        UserDTO userDTO = getUserById(userId);
-        return userDTO != null;
+        User user = getUserById(userId);
+        return user != null;
     }
 
     /**
      * <p>이메일을 기반으로 사용자를 조회합니다.</p>
      *
      * @param email 사용자 이메일 주소
-     * @return 조회된 {@link UserDTO} 객체 (없으면 null)
+     * @return 조회된 {@link User} 객체 (없으면 null)
      */
-    public UserDTO findByEmail(String email) {
+    public User findByEmail(String email) {
         return userMapper.findByEmail(email);
     }
 
@@ -97,32 +96,32 @@ public class UserService {
      * @return 존재하면 true, 없으면 false
      */
     public boolean isExistByEmail(String email) {
-        UserDTO userDTO = findByEmail(email);
-        return userDTO != null;
+        User user = findByEmail(email);
+        return user != null;
     }
 
     /**
      * <p>새로운 사용자를 데이터베이스에 등록합니다.</p>
      *
-     * @param userDTO 등록할 사용자 정보 DTO
+     * @param user 등록할 사용자 정보 DTO
      */
-    public void insertUser(UserDTO userDTO) {
-        userMapper.insertUser(userDTO);
+    public void insertUser(User user) {
+        userMapper.insertUser(user);
     }
 
     /**
      * <p>기존 사용자 정보를 수정합니다.</p>
      *
-     * @param userDTO 수정할 사용자 정보 DTO
+     * @param user 수정할 사용자 정보 DTO
      */
-    public void updateUser(UserDTO userDTO) {
-        userMapper.updateUser(userDTO);
+    public void updateUser(User user) {
+        userMapper.updateUser(user);
     }
 
     public void updatePassword(String userId, String newPassword){
-        UserDTO userDTO = userMapper.getUserById(userId);
-        userDTO.setPassword(newPassword);
-        updateUser(userDTO);
+        User user = userMapper.getUserById(userId);
+        user.setPassword(newPassword);
+        updateUser(user);
     }
 
     public boolean checkDuplicateName(String userName) {
@@ -139,31 +138,31 @@ public class UserService {
      * @throws Exception 이름이 중복될 경우 발생
      */
     public void updateUserName(String userName, long uuid) throws DuplicateMemberException {
-        UserDTO userDTO = getUserByUuid(uuid);
+        User user = getUserByUuid(uuid);
         if (getUserByName(userName) != null) {
             throw new DuplicateMemberException("중복된 이름입니다");
         }
-        userDTO.setUserName(userName);
-        updateUser(userDTO);
+        user.setUserName(userName);
+        updateUser(user);
     }
 
     /**
      * <p>사용자의 마지막 로그인 시간을 현재 날짜로 갱신합니다.</p>
      *
-     * @param userDTO 대상 사용자 정보 DTO
+     * @param user 대상 사용자 정보 DTO
      */
-    public void updateLastLoginTime(UserDTO userDTO) {
-        userDTO.setLastLoginDate(LocalDate.now());
-        updateUser(userDTO);
+    public void updateLastLoginTime(User user) {
+        user.setLastLoginDate(LocalDate.now());
+        updateUser(user);
     }
 
     /**
      * <p>사용자 정보를 삭제합니다.</p>
      *
-     * @param userDTO 삭제할 사용자 정보 DTO
+     * @param user 삭제할 사용자 정보 DTO
      */
-    public void deleteUser(UserDTO userDTO) {
-        userMapper.deleteUser(userDTO);
+    public void deleteUser(User user) {
+        userMapper.deleteUser(user);
     }
 
     public void deleteUser(long uuid){

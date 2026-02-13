@@ -28,7 +28,7 @@
                    ), 0)
     </select>
 
-    <insert id="insertNovel" useGeneratedKeys="true" keyProperty="novelNum" parameterType="novelDTO">
+    <insert id="insertNovel" useGeneratedKeys="true" keyProperty="novelNum" parameterType="novel">
         INSERT INTO Novel (novelTitle, uuid) VALUES (#{novelTitle}, #{uuid});
     </insert>
 
@@ -36,7 +36,7 @@
         SELECT * FROM Novel WHERE novelTitle LIKE CONCAT('%', #{search}, '%');
     </select>
 
-    <update id="updateNovel" parameterType="novelDTO">
+    <update id="updateNovel" parameterType="novel">
         UPDATE Novel SET novelTitle = #{novelTitle}, uuid = #{uuid} WHERE novelNum = #{novelNum};
     </update>
 

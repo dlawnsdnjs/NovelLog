@@ -1,13 +1,12 @@
 package com.example.novelcharacter.service;
 
 import com.example.novelcharacter.JWT.JWTUtil;
-import com.example.novelcharacter.dto.TokenResponse;
-import com.example.novelcharacter.dto.User.UserDTO;
+import com.example.novelcharacter.domain.TokenResponse;
+import com.example.novelcharacter.domain.User.entity.User;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -62,7 +61,7 @@ public class ReissueService {
             return new ResponseEntity<>("invalid refresh token", HttpStatus.BAD_REQUEST);
         }
 
-        UserDTO user = userService.getUserByUuid(uuid);
+        User user = userService.getUserByUuid(uuid);
         String username = user.getUserName();
         String role = user.getRole();
         String loginType = jwtUtil.getLoginType(refresh);

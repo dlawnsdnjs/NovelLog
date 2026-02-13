@@ -1,9 +1,8 @@
 package com.example.novelcharacter.service;
 
 import com.example.novelcharacter.component.MaskUtil;
-import com.example.novelcharacter.dto.User.UserDTO;
+import com.example.novelcharacter.domain.User.entity.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
@@ -21,7 +20,7 @@ public class FindIdService {
     public boolean sendUserId(String email) throws MessagingException {
 
         // 1) 이메일 존재확인
-        UserDTO user = userService.findByEmail(email);
+        User user = userService.findByEmail(email);
         if (user == null) {
             return false;
         }

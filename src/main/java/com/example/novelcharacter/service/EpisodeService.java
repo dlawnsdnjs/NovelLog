@@ -1,9 +1,8 @@
 package com.example.novelcharacter.service;
 
-import com.example.novelcharacter.dto.Episode.EpisodeDTO;
+import com.example.novelcharacter.domain.Episode.entity.Episode;
 import com.example.novelcharacter.mapper.EpisodeMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.naming.NoPermissionException;
@@ -34,16 +33,16 @@ public class EpisodeService {
      *
      * <p>소설 소유자만 등록할 수 있으며, 등록 후 회차 순서(order index)를 보정합니다.</p>
      *
-     * @param episodeDTO 등록할 회차 정보
+     * @param episode 등록할 회차 정보
      * @param uuid       사용자 고유 식별자(UUID)
      * @return 등록된 회차 정보
      * @throws NoPermissionException 사용자가 해당 소설의 소유자가 아닌 경우
      */
-    public EpisodeDTO insertEpisode(EpisodeDTO episodeDTO, long uuid) throws NoPermissionException {
-        novelService.checkOwner(episodeDTO.getNovelNum(), uuid);
-        episodeMapper.insertEpisode(episodeDTO);
-        episodeMapper.updateOrderIndexNull(episodeDTO);
-        return episodeDTO;
+    public Episode insertEpisode(Episode episode, long uuid) throws NoPermissionException {
+        novelService.checkOwner(episode.getNovelNum(), uuid);
+        episodeMapper.insertEpisode(episode);
+        episodeMapper.updateOrderIndexNull(episode);
+        return episode;
     }
 
     /**
@@ -54,7 +53,7 @@ public class EpisodeService {
      * @return 회차 목록
      * @throws NoPermissionException 사용자가 해당 소설의 소유자가 아닌 경우
      */
-    public List<EpisodeDTO> selectAllEpisode(long novelNum, long uuid) throws NoPermissionException {
+    public List<Episode> selectAllEpisode(long novelNum, long uuid) throws NoPermissionException {
         novelService.checkOwner(novelNum, uuid);
         return episodeMapper.selectAllEpisode(novelNum);
     }
@@ -68,7 +67,7 @@ public class EpisodeService {
      * @return 페이징된 회차 목록
      * @throws NoPermissionException 사용자가 해당 소설의 소유자가 아닌 경우
      */
-    public List<EpisodeDTO> selectEpisodePage(long novelNum, int offset, long uuid) throws NoPermissionException {
+    public List<Episode> selectEpisodePage(long novelNum, int offset, long uuid) throws NoPermissionException {
         novelService.checkOwner(novelNum, uuid);
         return episodeMapper.selectEpisodePage(novelNum, offset);
     }
@@ -100,7 +99,7 @@ public class EpisodeService {
      * @return 검색 결과로 반환된 회차 목록
      * @throws NoPermissionException 사용자가 해당 소설의 소유자가 아닌 경우
      */
-    public List<EpisodeDTO> searchEpisode(String search, long novelNum, long uuid) throws NoPermissionException {
+    public List<Episode> searchEpisode(String search, long novelNum, long uuid) throws NoPermissionException {
         novelService.checkOwner(novelNum, uuid);
         return episodeMapper.searchEpisode(search);
     }
@@ -108,13 +107,13 @@ public class EpisodeService {
     /**
      * 회차 정보를 수정합니다.
      *
-     * @param episodeDTO 수정할 회차 정보
+     * @param episode 수정할 회차 정보
      * @param uuid       사용자 UUID
      * @throws NoPermissionException 사용자가 해당 소설의 소유자가 아닌 경우
      */
-    public void updateEpisode(EpisodeDTO episodeDTO, long uuid) throws NoPermissionException {
-        novelService.checkOwner(episodeDTO.getNovelNum(), uuid);
-        episodeMapper.updateEpisode(episodeDTO);
+    public void updateEpisode(Episode episode, long uuid) throws NoPermissionException {
+        novelService.checkOwner(episode.getNovelNum(), uuid);
+        episodeMapper.updateEpisode(episode);
     }
 
     /**

@@ -1,11 +1,10 @@
 package com.example.novelcharacter.controller;
 
 import com.example.novelcharacter.JWT.JWTUtil;
-import com.example.novelcharacter.dto.Novel.NovelDTO;
-import com.example.novelcharacter.dto.Novel.NovelWithFavoriteDTO;
+import com.example.novelcharacter.domain.Novel.entity.Novel;
+import com.example.novelcharacter.domain.Novel.dto.NovelWithFavoriteDTO;
 import com.example.novelcharacter.service.NovelService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -85,7 +84,7 @@ public class NovelController {
      *
      * @param access   JWT Access Token
      * @param novelNum 조회할 소설 번호 (PathVariable)
-     * @return NovelDTO : 조회 성공 시 소설 정보 반환
+     * @return Novel : 조회 성공 시 소설 정보 반환
      * @throws NoPermissionException 권한이 없을 경우 예외 발생 (전역 예외 처리기에서 403 응답)
      *
      * 처리 과정:
@@ -98,8 +97,8 @@ public class NovelController {
      * </ol>
      */
     @GetMapping("/getNovel/{novelNum}")
-    public NovelDTO getNovel(@RequestHeader("Access") String access,
-                             @PathVariable("novelNum") long novelNum) throws NoPermissionException {
+    public Novel getNovel(@RequestHeader("Access") String access,
+                          @PathVariable("novelNum") long novelNum) throws NoPermissionException {
         long uuid = jwtUtil.getUuid(access);
         return novelService.selectNovelOne(novelNum, uuid);
     }

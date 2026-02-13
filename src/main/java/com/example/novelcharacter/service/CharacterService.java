@@ -1,16 +1,19 @@
 package com.example.novelcharacter.service;
 
 import com.example.novelcharacter.component.StatCalculator;
-import com.example.novelcharacter.dto.Character.CharacterDTO;
-import com.example.novelcharacter.dto.Episode.*;
-import com.example.novelcharacter.dto.Equipment.EquipmentDataDTO;
-import com.example.novelcharacter.dto.Stat.StatDTO;
-import com.example.novelcharacter.dto.Stat.StatInfoDTO;
-import com.example.novelcharacter.dto.Stat.StatRequestDTO;
+import com.example.novelcharacter.domain.Character.entity.Character;
+import com.example.novelcharacter.domain.Episode.dto.CharacterRequestDataDTO;
+import com.example.novelcharacter.domain.Episode.dto.CharacterResponseDataDTO;
+import com.example.novelcharacter.domain.Episode.entity.CharacterEquip;
+import com.example.novelcharacter.domain.Episode.entity.CharacterStat;
+import com.example.novelcharacter.domain.Episode.entity.EpisodeCharacter;
+import com.example.novelcharacter.domain.Equipment.dto.EquipmentDataDTO;
+import com.example.novelcharacter.domain.Stat.entity.Stat;
+import com.example.novelcharacter.domain.Stat.dto.StatInfoDTO;
+import com.example.novelcharacter.domain.Stat.dto.StatRequestDTO;
 import com.example.novelcharacter.mapper.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.naming.NoPermissionException;
@@ -44,13 +47,13 @@ public class CharacterService {
     /**
      * 새로운 캐릭터를 등록합니다.
      *
-     * @param characterDTO 등록할 캐릭터 정보
+     * @param character 등록할 캐릭터 정보
      * @param uuid 소설 소유자 UUID
      * @throws NoPermissionException 소설의 소유자가 아닌 경우
      */
-    public void insertCharacter(CharacterDTO characterDTO, long uuid) throws NoPermissionException {
-        novelService.checkOwner(characterDTO.getNovelNum(), uuid);
-        characterMapper.insertCharacter(characterDTO);
+    public void insertCharacter(Character character, long uuid) throws NoPermissionException {
+        novelService.checkOwner(character.getNovelNum(), uuid);
+        characterMapper.insertCharacter(character);
     }
 
     /**
@@ -59,7 +62,7 @@ public class CharacterService {
      * @param characterNum 캐릭터 번호
      * @return 캐릭터 정보
      */
-    public CharacterDTO selectCharacter(long characterNum) {
+    public Character selectCharacter(long characterNum) {
         return characterMapper.selectCharacter(characterNum);
     }
 
@@ -84,7 +87,7 @@ public class CharacterService {
      * @return 캐릭터 목록
      * @throws NoPermissionException 소설의 소유자가 아닌 경우
      */
-    public List<CharacterDTO> selectCharacterList(long novelNum, long uuid) throws NoPermissionException {
+    public List<Character> selectCharacterList(long novelNum, long uuid) throws NoPermissionException {
         novelService.checkOwner(novelNum, uuid);
         return characterMapper.selectCharacterList(novelNum);
     }
@@ -96,29 +99,29 @@ public class CharacterService {
      * @param character 검색할 캐릭터명
      * @return 검색된 캐릭터 목록
      */
-    public List<CharacterDTO> searchCharacterList(long novelNum, String character) {
+    public List<Character> searchCharacterList(long novelNum, String character) {
         return characterMapper.searchCharacterList(novelNum, character);
     }
 
     /**
      * 캐릭터 정보를 수정합니다.
      *
-     * @param characterDTO 수정할 캐릭터 정보
+     * @param character 수정할 캐릭터 정보
      */
-    public void updateCharacter(CharacterDTO characterDTO) {
-        characterMapper.updateCharacter(characterDTO);
+    public void updateCharacter(Character character) {
+        characterMapper.updateCharacter(character);
     }
 
     /**
      * 캐릭터를 삭제합니다.
      *
-     * @param characterDTO 삭제할 캐릭터 정보
+     * @param character 삭제할 캐릭터 정보
      * @param uuid 소설 소유자 UUID
      * @throws NoPermissionException 소유자 권한이 없을 경우
      */
-    public void deleteCharacter(CharacterDTO characterDTO, long uuid) throws NoPermissionException {
-        novelService.checkOwner(characterDTO.getNovelNum(), uuid);
-        characterMapper.deleteCharacter(characterDTO.getCharacterNum());
+    public void deleteCharacter(Character character, long uuid) throws NoPermissionException {
+        novelService.checkOwner(character.getNovelNum(), uuid);
+        characterMapper.deleteCharacter(character.getCharacterNum());
     }
 
     /**
@@ -149,7 +152,7 @@ public class CharacterService {
         long episodeNum = characterRequestDataDTO.getEpisodeNum();
         long characterNum = characterRequestDataDTO.getCharacterNum();
 
-//        deleteEpisodeCharacter(new EpisodeCharacterDTO(episodeNum, characterNum));
+//        deleteEpisodeCharacter(new EpisodeCharacter(episodeNum, characterNum));
         insertEpisodeCharacter(episodeNum, characterNum);
         insertCharacterStatList(episodeNum, characterNum, characterRequestDataDTO.getStats());
         insertCharacterEquipList(episodeNum, characterNum, characterRequestDataDTO.getEquipments());
@@ -158,14 +161,14 @@ public class CharacterService {
     /**
      * 캐릭터의 상세 데이터를 조회합니다.
      *
-     * @param episodeCharacterDTO 조회 대상 캐릭터의 에피소드 정보
+     * @param episodeCharacter 조회 대상 캐릭터의 에피소드 정보
      * @param uuid 요청 사용자 UUID
      * @return 캐릭터 상세 데이터 (기본 정보, 스탯, 장비, 계산된 스탯 포함)
      * @throws NoPermissionException 접근 권한이 없을 경우
      */
-    public CharacterResponseDataDTO selectCharacterData(EpisodeCharacterDTO episodeCharacterDTO, long uuid)
+    public CharacterResponseDataDTO selectCharacterData(EpisodeCharacter episodeCharacter, long uuid)
             throws NoPermissionException {
-        CharacterResponseDataDTO response = selectSimpleCharacterData(episodeCharacterDTO, uuid);
+        CharacterResponseDataDTO response = selectSimpleCharacterData(episodeCharacter, uuid);
 
         List<StatInfoDTO> finalStats = statCalculator.calculate(response.getStats(), response.getEquipment());
         response.setFinalStats(finalStats);
@@ -173,25 +176,25 @@ public class CharacterService {
         return response;
     }
 
-    public CharacterResponseDataDTO selectSimpleCharacterData(EpisodeCharacterDTO episodeCharacterDTO, long uuid) throws NoPermissionException {
-        episodeService.checkEpisodeOwner(episodeCharacterDTO.getEpisodeNum(), uuid);
-        checkCharacterOwner(uuid, episodeCharacterDTO.getCharacterNum());
+    public CharacterResponseDataDTO selectSimpleCharacterData(EpisodeCharacter episodeCharacter, long uuid) throws NoPermissionException {
+        episodeService.checkEpisodeOwner(episodeCharacter.getEpisodeNum(), uuid);
+        checkCharacterOwner(uuid, episodeCharacter.getCharacterNum());
 
         CharacterResponseDataDTO response = new CharacterResponseDataDTO();
-        response.setCharacter(selectCharacter(episodeCharacterDTO.getCharacterNum()));
+        response.setCharacter(selectCharacter(episodeCharacter.getCharacterNum()));
 
-        List<StatInfoDTO> stats = selectCharacterStatsByIds(episodeCharacterDTO);
+        List<StatInfoDTO> stats = selectCharacterStatsByIds(episodeCharacter);
         response.setStats(stats);
 
-        List<Long> equips = selectCharacterEquipsByIds(episodeCharacterDTO);
+        List<Long> equips = selectCharacterEquipsByIds(episodeCharacter);
         List<EquipmentDataDTO> equipmentData = equipmentService.selectEquipmentDataList(equips);
         response.setEquipment(equipmentData);
 
         return response;
     }
 
-    public CharacterResponseDataDTO selectRecentCharacterData(EpisodeCharacterDTO episodeCharacterDTO, long uuid) throws NoPermissionException {
-        EpisodeCharacterDTO result = episodeCharacterMapper.selectRecentEpisodeCharacter(episodeCharacterDTO);
+    public CharacterResponseDataDTO selectRecentCharacterData(EpisodeCharacter episodeCharacter, long uuid) throws NoPermissionException {
+        EpisodeCharacter result = episodeCharacterMapper.selectRecentEpisodeCharacter(episodeCharacter);
 
         return result != null ? selectSimpleCharacterData(result, uuid) : null;
     }
@@ -204,7 +207,7 @@ public class CharacterService {
      * @return 캐릭터 목록
      * @throws NoPermissionException 에피소드 접근 권한이 없을 경우
      */
-    public List<CharacterDTO> selectCharactersByEpisode(long episodeNum, long uuid) throws NoPermissionException {
+    public List<Character> selectCharactersByEpisode(long episodeNum, long uuid) throws NoPermissionException {
         episodeService.checkEpisodeOwner(episodeNum, uuid);
         return episodeCharacterMapper.selectCharactersByEpisode(episodeNum);
     }
@@ -216,7 +219,7 @@ public class CharacterService {
      * @param characterNum 캐릭터 번호
      */
     public void insertEpisodeCharacter(long episodeNum, long characterNum) {
-        EpisodeCharacterDTO dto = new EpisodeCharacterDTO();
+        EpisodeCharacter dto = new EpisodeCharacter();
         dto.setEpisodeNum(episodeNum);
         dto.setCharacterNum(characterNum);
         episodeCharacterMapper.insertEpisodeCharacter(dto);
@@ -225,45 +228,45 @@ public class CharacterService {
     /**
      * 에피소드와 캐릭터의 관계를 삭제합니다.
      *
-     * @param episodeCharacterDTO 삭제할 관계 정보
+     * @param episodeCharacter 삭제할 관계 정보
      * @param uuid 사용자 UUID
      * @throws NoPermissionException 권한이 없을 경우
      */
-    public void deleteEpisodeCharacter(EpisodeCharacterDTO episodeCharacterDTO, long uuid) throws NoPermissionException {
-        episodeService.checkEpisodeOwner(episodeCharacterDTO.getEpisodeNum(), uuid);
-        checkCharacterOwner(episodeCharacterDTO.getCharacterNum(), uuid);
-        episodeCharacterMapper.deleteEpisodeCharacter(episodeCharacterDTO);
+    public void deleteEpisodeCharacter(EpisodeCharacter episodeCharacter, long uuid) throws NoPermissionException {
+        episodeService.checkEpisodeOwner(episodeCharacter.getEpisodeNum(), uuid);
+        checkCharacterOwner(episodeCharacter.getCharacterNum(), uuid);
+        episodeCharacterMapper.deleteEpisodeCharacter(episodeCharacter);
     }
 
     /**
      * 권한 검증 없이 에피소드-캐릭터 관계를 삭제합니다.
      *
-     * @param episodeCharacterDTO 삭제할 관계 정보
+     * @param episodeCharacter 삭제할 관계 정보
      */
-    public void deleteEpisodeCharacter(EpisodeCharacterDTO episodeCharacterDTO) {
-        episodeCharacterMapper.deleteEpisodeCharacter(episodeCharacterDTO);
+    public void deleteEpisodeCharacter(EpisodeCharacter episodeCharacter) {
+        episodeCharacterMapper.deleteEpisodeCharacter(episodeCharacter);
     }
 
     /**
      * 캐릭터 스탯 정보를 조회합니다.
      *
-     * @param episodeCharacterDTO 조회 대상
+     * @param episodeCharacter 조회 대상
      * @return 스탯 정보 목록
      */
-    public List<StatInfoDTO> selectCharacterStatsByIds(EpisodeCharacterDTO episodeCharacterDTO) {
-        return characterStatMapper.selectCharacterStatsResponse(episodeCharacterDTO);
+    public List<StatInfoDTO> selectCharacterStatsByIds(EpisodeCharacter episodeCharacter) {
+        return characterStatMapper.selectCharacterStatsResponse(episodeCharacter);
     }
 
     /**
      * 단일 캐릭터 스탯을 등록합니다.
      *
-     * @param characterStatDTO 등록할 스탯 정보
+     * @param characterStat 등록할 스탯 정보
      * @param uuid 사용자 UUID
      * @throws NoPermissionException 권한이 없을 경우
      */
-    public void insertCharacterStat(CharacterStatDTO characterStatDTO, long uuid) throws NoPermissionException {
-        checkCharacterOwner(uuid, characterStatDTO.getCharacterNum());
-        characterStatMapper.insertCharacterStat(characterStatDTO);
+    public void insertCharacterStat(CharacterStat characterStat, long uuid) throws NoPermissionException {
+        checkCharacterOwner(uuid, characterStat.getCharacterNum());
+        characterStatMapper.insertCharacterStat(characterStat);
     }
 
     /**
@@ -280,11 +283,11 @@ public class CharacterService {
         }
         List<String> statNames = statInfoDTOS.stream().map(StatInfoDTO::getStatName).collect(Collectors.toList());
 
-        List<StatDTO> statDTOS = statService.selectStatList(statNames);
+        List<Stat> stats = statService.selectStatList(statNames);
 
 
-        Map<String, Long> statCodeMap = statDTOS.stream()
-                .collect(Collectors.toMap(StatDTO::getStatName, StatDTO::getStatCode));
+        Map<String, Long> statCodeMap = stats.stream()
+                .collect(Collectors.toMap(Stat::getStatName, Stat::getStatCode));
 
         List<StatRequestDTO> statRequests = statInfoDTOS.stream()
                 .map(resp -> {
@@ -301,43 +304,43 @@ public class CharacterService {
     /**
      * 캐릭터 스탯 정보를 수정합니다.
      *
-     * @param characterStatDTO 수정할 스탯 정보
+     * @param characterStat 수정할 스탯 정보
      * @param uuid 사용자 UUID
      * @throws NoPermissionException 권한이 없을 경우
      */
-    public void updateCharacterStat(CharacterStatDTO characterStatDTO, long uuid) throws NoPermissionException {
-        checkCharacterOwner(uuid, characterStatDTO.getCharacterNum());
-        characterStatMapper.updateCharacterStat(characterStatDTO);
+    public void updateCharacterStat(CharacterStat characterStat, long uuid) throws NoPermissionException {
+        checkCharacterOwner(uuid, characterStat.getCharacterNum());
+        characterStatMapper.updateCharacterStat(characterStat);
     }
 
     /**
      * 캐릭터 스탯을 삭제합니다.
      *
-     * @param characterStatDTO 삭제할 스탯 정보
+     * @param characterStat 삭제할 스탯 정보
      * @param uuid 사용자 UUID
      * @throws NoPermissionException 권한이 없을 경우
      */
-    public void deleteCharacterStat(CharacterStatDTO characterStatDTO, long uuid) throws NoPermissionException {
-        checkCharacterOwner(uuid, characterStatDTO.getCharacterNum());
-        characterStatMapper.deleteCharacterStat(characterStatDTO);
+    public void deleteCharacterStat(CharacterStat characterStat, long uuid) throws NoPermissionException {
+        checkCharacterOwner(uuid, characterStat.getCharacterNum());
+        characterStatMapper.deleteCharacterStat(characterStat);
     }
 
     /**
      * 특정 캐릭터의 장비 정보를 조회합니다.
      *
-     * @param episodeCharacterDTO 에피소드-캐릭터 관계 정보
+     * @param episodeCharacter 에피소드-캐릭터 관계 정보
      * @param equipmentNum 장비 번호
      * @param uuid 사용자 UUID
      * @return 캐릭터 장비 정보
      * @throws NoPermissionException 권한이 없을 경우
      */
-    public CharacterEquipDTO selectCharacterEquipByIds(EpisodeCharacterDTO episodeCharacterDTO, long equipmentNum, long uuid)
+    public CharacterEquip selectCharacterEquipByIds(EpisodeCharacter episodeCharacter, long equipmentNum, long uuid)
             throws NoPermissionException {
-        episodeService.checkEpisodeOwner(episodeCharacterDTO.getEpisodeNum(), uuid);
-        checkCharacterOwner(episodeCharacterDTO.getCharacterNum(), uuid);
+        episodeService.checkEpisodeOwner(episodeCharacter.getEpisodeNum(), uuid);
+        checkCharacterOwner(episodeCharacter.getCharacterNum(), uuid);
         return characterEquipMapper.selectCharacterEquipByIds(
-                episodeCharacterDTO.getEpisodeNum(),
-                episodeCharacterDTO.getCharacterNum(),
+                episodeCharacter.getEpisodeNum(),
+                episodeCharacter.getCharacterNum(),
                 equipmentNum
         );
     }
@@ -345,26 +348,26 @@ public class CharacterService {
     /**
      * 캐릭터의 모든 장비 목록을 조회합니다.
      *
-     * @param episodeCharacterDTO 에피소드-캐릭터 관계 정보
+     * @param episodeCharacter 에피소드-캐릭터 관계 정보
      * @return 장비 목록
      */
-    public List<Long> selectCharacterEquipsByIds(EpisodeCharacterDTO episodeCharacterDTO) {
+    public List<Long> selectCharacterEquipsByIds(EpisodeCharacter episodeCharacter) {
         return characterEquipMapper.selectCharacterEquipsByIds(
-                episodeCharacterDTO.getEpisodeNum(),
-                episodeCharacterDTO.getCharacterNum()
+                episodeCharacter.getEpisodeNum(),
+                episodeCharacter.getCharacterNum()
         );
     }
 
     /**
      * 캐릭터 장비를 등록합니다.
      *
-     * @param characterEquipDTO 등록할 장비 정보
+     * @param characterEquip 등록할 장비 정보
      * @param uuid 사용자 UUID
      * @throws NoPermissionException 권한이 없을 경우
      */
-    public void insertCharacterEquip(CharacterEquipDTO characterEquipDTO, long uuid) throws NoPermissionException {
-        checkCharacterOwner(uuid, characterEquipDTO.getCharacterNum());
-        characterEquipMapper.insertCharacterEquip(characterEquipDTO);
+    public void insertCharacterEquip(CharacterEquip characterEquip, long uuid) throws NoPermissionException {
+        checkCharacterOwner(uuid, characterEquip.getCharacterNum());
+        characterEquipMapper.insertCharacterEquip(characterEquip);
     }
 
     /**
@@ -383,12 +386,12 @@ public class CharacterService {
     /**
      * 캐릭터 장비를 삭제합니다.
      *
-     * @param characterEquipDTO 삭제할 장비 정보
+     * @param characterEquip 삭제할 장비 정보
      * @param uuid 사용자 UUID
      * @throws NoPermissionException 권한이 없을 경우
      */
-    public void deleteCharacterEquip(CharacterEquipDTO characterEquipDTO, long uuid) throws NoPermissionException {
-        checkCharacterOwner(uuid, characterEquipDTO.getCharacterNum());
-        characterEquipMapper.deleteCharacterEquip(characterEquipDTO);
+    public void deleteCharacterEquip(CharacterEquip characterEquip, long uuid) throws NoPermissionException {
+        checkCharacterOwner(uuid, characterEquip.getCharacterNum());
+        characterEquipMapper.deleteCharacterEquip(characterEquip);
     }
 }

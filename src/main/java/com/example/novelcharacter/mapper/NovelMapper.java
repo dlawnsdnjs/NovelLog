@@ -1,18 +1,18 @@
 package com.example.novelcharacter.mapper;
 
-import com.example.novelcharacter.dto.Novel.NovelDTO;
-import com.example.novelcharacter.dto.Novel.NovelWithFavoriteDTO;
+import com.example.novelcharacter.domain.Novel.entity.Novel;
+import com.example.novelcharacter.domain.Novel.dto.NovelWithFavoriteDTO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
 @Mapper
 public interface NovelMapper {
-    public void insertNovel(NovelDTO novelDTO);
+    public void insertNovel(Novel novel);
     public List<NovelWithFavoriteDTO> selectAllNovel(long uuid);
-    public NovelDTO selectNovelById(long novelNum);
+    public Novel selectNovelById(long novelNum);
     public int checkOwner(long novelNum, long uuid);
-    public List<NovelDTO> searchNovel(String search);
-    public void updateNovel(NovelDTO novelDTO);
+    public List<Novel> searchNovel(String search);
+    public void updateNovel(Novel novel);
     public void deleteNovel(long novelNum);
 }

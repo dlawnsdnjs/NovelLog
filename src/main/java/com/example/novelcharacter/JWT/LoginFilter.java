@@ -1,15 +1,14 @@
     package com.example.novelcharacter.JWT;
 
-    import com.example.novelcharacter.dto.TokenResponse;
-    import com.example.novelcharacter.dto.User.CustomUserDetails;
-    import com.example.novelcharacter.dto.User.UserDTO;
+    import com.example.novelcharacter.domain.TokenResponse;
+    import com.example.novelcharacter.domain.User.CustomUserDetails;
+    import com.example.novelcharacter.domain.User.entity.User;
     import com.example.novelcharacter.service.TokenProvider;
     import com.example.novelcharacter.service.UserService;
     import jakarta.servlet.FilterChain;
     import jakarta.servlet.http.HttpServletRequest;
     import jakarta.servlet.http.HttpServletResponse;
     import lombok.RequiredArgsConstructor;
-    import org.springframework.beans.factory.annotation.Autowired;
     import org.springframework.http.HttpStatus;
     import org.springframework.security.authentication.AuthenticationManager;
     import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -50,8 +49,8 @@
 
             long uuid = customUserDetails.getUuid();
             String username = customUserDetails.getUsername();
-            UserDTO userDTO = userService.getUserByUuid(uuid);
-            userService.updateLastLoginTime(userDTO);
+            User user = userService.getUserByUuid(uuid);
+            userService.updateLastLoginTime(user);
 
             Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
             Iterator<? extends GrantedAuthority> iterator = authorities.iterator();

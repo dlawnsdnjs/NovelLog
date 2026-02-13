@@ -1,8 +1,8 @@
 package com.example.novelcharacter.component;
 
-import com.example.novelcharacter.dto.Equipment.EquipmentDataDTO;
-import com.example.novelcharacter.dto.Equipment.EquipmentStatInfoDTO;
-import com.example.novelcharacter.dto.Stat.StatInfoDTO;
+import com.example.novelcharacter.domain.Equipment.dto.EquipmentDataDTO;
+import com.example.novelcharacter.domain.Equipment.dto.EquipmentStatInfoDTO;
+import com.example.novelcharacter.domain.Stat.dto.StatInfoDTO;
 import org.springframework.stereotype.Component;
 
 import java.util.LinkedHashMap;

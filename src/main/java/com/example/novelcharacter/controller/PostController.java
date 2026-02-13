@@ -1,13 +1,12 @@
 package com.example.novelcharacter.controller;
 
 import com.example.novelcharacter.JWT.JWTUtil;
-import com.example.novelcharacter.dto.Board.BoardCategoryDTO;
-import com.example.novelcharacter.dto.Board.PostDTO;
-import com.example.novelcharacter.dto.Board.PostPageResponseDTO;
-import com.example.novelcharacter.dto.Board.PostResponseDTO;
+import com.example.novelcharacter.domain.Board.entity.BoardCategory;
+import com.example.novelcharacter.domain.Board.entity.Post;
+import com.example.novelcharacter.domain.Board.dto.PostPageResponseDTO;
+import com.example.novelcharacter.domain.Board.dto.PostResponseDTO;
 import com.example.novelcharacter.service.PostService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.naming.NoPermissionException;
@@ -25,7 +24,7 @@ import java.util.List;
  *     <li>특정 사용자 게시글 조회: {@link #selectPostsByUserName(long, String, int)}</li>
  *     <li>내 게시글 목록 조회: {@link #selectMyPostsByBoardId(String, long, int)}</li>
  *     <li>게시글 단건 조회: {@link #selectPostById(long)}</li>
- *     <li>게시글 작성, 수정, 삭제: {@link #postAdd(String, PostDTO)}, {@link #updatePost(String, PostDTO)}, {@link #deletePost(String, PostDTO)}</li>
+ *     <li>게시글 작성, 수정, 삭제: {@link #postAdd(String, Post)}, {@link #updatePost(String, Post)}, {@link #deletePost(String, Post)}</li>
  * </ul>
  */
 @RestController
@@ -38,10 +37,10 @@ public class PostController {
     /**
      * 전체 게시판 목록을 조회합니다.
      *
-     * @return 게시판 카테고리 목록 ({@link BoardCategoryDTO})
+     * @return 게시판 카테고리 목록 ({@link BoardCategory})
      */
     @GetMapping("/board")
-    public List<BoardCategoryDTO> selectAllBoard() {
+    public List<BoardCategory> selectAllBoard() {
         return postService.selectAllBoardCategory();
     }
 
@@ -103,42 +102,42 @@ public class PostController {
      * 새 게시글을 작성합니다.
      *
      * @param access  요청 헤더의 Access 토큰 (작성자 식별용)
-     * @param postDTO 게시글 데이터 ({@link PostDTO})
+     * @param post 게시글 데이터 ({@link Post})
      * @throws NoPermissionException 권한이 없는 사용자가 요청한 경우
      */
     @PostMapping("/postAdd")
     public void postAdd(@RequestHeader("Access") String access,
-                        @RequestBody PostDTO postDTO) throws NoPermissionException {
+                        @RequestBody Post post) throws NoPermissionException {
         long uuid = jwtUtil.getUuid(access);
         String role = jwtUtil.getRole(access);
-        postService.insertPost(postDTO, uuid, role);
+        postService.insertPost(post, uuid, role);
     }
 
     /**
      * 기존 게시글을 수정합니다.
      *
      * @param access  요청 헤더의 Access 토큰 (작성자 검증용)
-     * @param postDTO 수정할 게시글 데이터 ({@link PostDTO})
+     * @param post 수정할 게시글 데이터 ({@link Post})
      * @throws NoPermissionException 다른 사용자의 게시글을 수정하려는 경우
      */
     @PostMapping("/postUpdate")
     public void updatePost(@RequestHeader("Access") String access,
-                           @RequestBody PostDTO postDTO) throws NoPermissionException {
+                           @RequestBody Post post) throws NoPermissionException {
         long uuid = jwtUtil.getUuid(access);
-        postService.updatePost(postDTO, uuid);
+        postService.updatePost(post, uuid);
     }
 
     /**
      * 게시글을 삭제합니다.
      *
      * @param access  요청 헤더의 Access 토큰 (작성자 검증용)
-     * @param postDTO 삭제할 게시글 데이터 ({@link PostDTO})
+     * @param post 삭제할 게시글 데이터 ({@link Post})
      * @throws NoPermissionException 다른 사용자의 게시글을 삭제하려는 경우
      */
     @PostMapping("/postDelete")
     public void deletePost(@RequestHeader("Access") String access,
-                           @RequestBody PostDTO postDTO) throws NoPermissionException {
+                           @RequestBody Post post) throws NoPermissionException {
         String userName = jwtUtil.getUsername(access);
-        postService.deletePost(postDTO, userName);
+        postService.deletePost(post, userName);
     }
 }

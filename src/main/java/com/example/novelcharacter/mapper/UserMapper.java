@@ -1,15 +1,15 @@
 package com.example.novelcharacter.mapper;
 
-import com.example.novelcharacter.dto.User.UserDTO;
+import com.example.novelcharacter.domain.User.entity.User;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
 public interface UserMapper {
-    public UserDTO getUserByUuid(long uuid);
-    public UserDTO getUserById(String userId);
-    public UserDTO getUserByName(String userName);
-    public UserDTO findByEmail(String email);
-    public void insertUser(UserDTO userDTO);
-    public void updateUser(UserDTO userDTO);
-    public void deleteUser(UserDTO userDTO);
+    public User getUserByUuid(long uuid);
+    public User getUserById(String userId);
+    public User getUserByName(String userName);
+    public User findByEmail(String email);
+    public void insertUser(User user);
+    public void updateUser(User user);
+    public void deleteUser(User user);
 }

@@ -149,7 +149,7 @@ public class CharacterService {
         long episodeNum = characterRequestDataDTO.getEpisodeNum();
         long characterNum = characterRequestDataDTO.getCharacterNum();
 
-//        deleteEpisodeCharacter(new EpisodeCharacterDTO(episodeNum, characterNum));
+        deleteEpisodeCharacter(new EpisodeCharacterDTO(episodeNum, characterNum));
         insertEpisodeCharacter(episodeNum, characterNum);
         insertCharacterStatList(episodeNum, characterNum, characterRequestDataDTO.getStats());
         insertCharacterEquipList(episodeNum, characterNum, characterRequestDataDTO.getEquipments());

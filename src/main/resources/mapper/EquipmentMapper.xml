@@ -9,8 +9,8 @@
         SELECT * FROM Equipment
         WHERE
             equipmentNum IN
-            <foreach collection="list" item="equipmentNum" separator=",">
-                (#{equipmentNum})
+            <foreach collection="list" item="equipmentNum" open="(" separator="," close=")">
+                #{equipmentNum}
             </foreach>
     </select>
 
@@ -42,8 +42,8 @@
         LEFT JOIN EquipmentStat es ON e.equipmentNum = es.equipmentNum
         LEFT JOIN Stat s ON es.statCode = s.statCode
         WHERE e.equipmentNum IN
-        <foreach collection="list" item="id" open="(" separator="," close=")">
-            #{id}
+        <foreach collection="list" item="equipmentNum" open="(" separator="," close=")">
+            #{equipmentNum}
         </foreach>
         ORDER BY e.equipmentNum ASC
     </select>

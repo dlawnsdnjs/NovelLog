@@ -27,6 +27,9 @@ public class EquipmentStat {
     @JoinColumn(name="statCode")
     private Stat stat;
 
+    @Column("statType")
+    private int statType;
+
 
     @Column(name="value")
     private long value;

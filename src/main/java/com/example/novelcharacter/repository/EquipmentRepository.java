@@ -21,7 +21,7 @@ public interface EquipmentRepository extends JpaRepository<Equipment, Integer> {
             "join fetch e.stats es " + // 1:N 페치 조인
             "join fetch es.stat s " +  // N:1 페치 조인
             "where e.equipmentNum in :ids")
-    public List<EquipmentDataDTO> findEquipmentDataByEquipmentNumIn(@Param("ids") List<Long> ids);
+    public List<Equipment> findEquipmentDataByEquipmentNumIn(@Param("ids") List<Long> ids);
 
     @Query("select distinct e from Equipment e " +
             "join fetch e.stats es " + // 1:N 페치 조인

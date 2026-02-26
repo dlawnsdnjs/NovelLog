@@ -93,7 +93,7 @@ public class CharacterController {
     public CharacterDTO addCharacter(@RequestHeader("Access") String access, @Valid @RequestBody CharacterDTO character)
             throws NoPermissionException {
         long uuid = jwtUtil.getUuid(access);
-        characterService.insertCharacter(character, uuid);
+        character = characterService.insertCharacter(character, uuid);
         return character;
     }
 

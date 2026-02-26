@@ -24,10 +24,4 @@ public class Favorite {
     @JoinColumn(name="uuid", referencedColumnName = "uuid", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
-
-    @Column(name="targetType", insertable = false, updatable = false)
-    private String targetType;
-
-    @Column(name="targetId", insertable = false, updatable = false)
-    private long targetId;
 }

@@ -1,15 +1,14 @@
 package com.example.novelcharacter.service;
 
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMessage;
 
 /**
  * 이메일 발송 기능을 담당하는 서비스 클래스입니다.
@@ -33,15 +32,13 @@ public class EmailServiceImpl implements EmailService {
      * HTML 형식의 이메일을 발송합니다.
      *
      * <p>이 메서드는 {@link MimeMessageHelper}를 사용하여 수신자, 제목, 본문 등을 설정하고,
-     * {@link JavaMailSender#send(MimeMessage)}를 통해 메일을 실제로 전송합니다.</p>
      *
      * @param toEmail 수신자 이메일 주소
      * @param title   메일 제목
      * @param content 메일 본문 (HTML 형식 가능)
-     * @throws javax.mail.MessagingException MIME 메시지 생성 과정에서 오류가 발생한 경우
      * @throws RuntimeException 메일 전송에 실패한 경우 (예: SMTP 연결 실패, 잘못된 주소 등)
      */
-    public void sendEmail(String toEmail, String title, String content) throws javax.mail.MessagingException {
+    public void sendEmail(String toEmail, String title, String content) throws MessagingException {
         MimeMessage message = emailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
 

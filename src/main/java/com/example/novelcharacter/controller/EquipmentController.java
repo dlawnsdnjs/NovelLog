@@ -74,8 +74,7 @@ class EquipmentController {
     @PostMapping("/addEquipment")
     public EquipmentDataDTO addEquipment(@RequestHeader("Access") String access, @Valid @RequestBody EquipmentDataDTO equipmentDataDTO) throws NoPermissionException {
         long uuid = jwtUtil.getUuid(access);
-        equipmentService.insertEquipment(equipmentDataDTO, uuid);
-        return equipmentDataDTO;
+        return equipmentService.insertEquipment(equipmentDataDTO, uuid);
     }
 
     /**

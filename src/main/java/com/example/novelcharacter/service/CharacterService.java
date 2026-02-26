@@ -7,6 +7,7 @@ import com.example.novelcharacter.domain.Episode.dto.CharacterRequestDataDTO;
 import com.example.novelcharacter.domain.Episode.dto.CharacterResponseDataDTO;
 import com.example.novelcharacter.domain.Episode.dto.EpisodeCharacterDTO;
 import com.example.novelcharacter.domain.Episode.entity.EpisodeCharacter;
+import com.example.novelcharacter.domain.Episode.entity.EpisodeCharacterId;
 import com.example.novelcharacter.domain.Equipment.dto.EquipmentDataDTO;
 import com.example.novelcharacter.domain.Novel.entity.Novel;
 import com.example.novelcharacter.domain.Stat.entity.Stat;
@@ -55,13 +56,14 @@ public class CharacterService {
      * @throws NoPermissionException 소설의 소유자가 아닌 경우
      */
     @Transactional
-    public void insertCharacter(CharacterDTO character, long uuid) throws NoPermissionException {
+    public CharacterDTO insertCharacter(CharacterDTO character, long uuid) throws NoPermissionException {
         novelService.checkOwner(character.getNovelNum(), uuid);
         Character c = new Character();
         c.setCharacterName(character.getCharacterName());
         Novel n = novelService.getNovelProxy(character.getNovelNum());
         c.setNovel(n);
-        characterRepository.save(c);
+        return CharacterDTO.from(characterRepository.save(c));
+
     }
 
 
@@ -220,9 +222,12 @@ public class CharacterService {
      */
     public void insertEpisodeCharacter(long episodeNum, long characterNum) {
         EpisodeCharacter dto = new EpisodeCharacter();
+        dto.setId(new EpisodeCharacterId(episodeNum, characterNum));
+
         dto.setEpisode(episodeService.getEpisodeProxy(episodeNum));
         dto.setCharacter(characterRepository.getReferenceById(characterNum));
         episodeCharacterRepository.save(dto);
+        episodeCharacterRepository.flush();
     }
 
     /**
@@ -235,7 +240,7 @@ public class CharacterService {
     @Transactional
     public void deleteEpisodeCharacter(EpisodeCharacterDTO episodeCharacter, long uuid) throws NoPermissionException {
         episodeService.checkEpisodeOwner(episodeCharacter.getEpisodeNum(), uuid);
-        checkCharacterOwner(episodeCharacter.getCharacterNum(), uuid);
+        checkCharacterOwner(uuid, episodeCharacter.getCharacterNum());
 
         episodeCharacterRepository.deleteByEpisodeCharacter(episodeCharacter.getEpisodeNum(), episodeCharacter.getCharacterNum());
     }

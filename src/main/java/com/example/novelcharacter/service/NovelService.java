@@ -1,6 +1,8 @@
 package com.example.novelcharacter.service;
 
 import com.example.novelcharacter.domain.Favorite;
+import com.example.novelcharacter.domain.FavoriteId;
+import com.example.novelcharacter.domain.Novel.dto.NovelDTO;
 import com.example.novelcharacter.domain.Novel.entity.Novel;
 import com.example.novelcharacter.domain.Novel.dto.NovelWithFavoriteDTO;
 import com.example.novelcharacter.domain.User.entity.User;
@@ -87,9 +89,9 @@ public class NovelService {
      * @return 소설 상세 정보 {@link Novel}
      * @throws NoPermissionException 사용자가 소설의 소유자가 아닌 경우
      */
-    public Novel selectNovelOne(long novelNum, long uuid) throws NoPermissionException {
+    public NovelDTO selectNovelOne(long novelNum, long uuid) throws NoPermissionException {
         checkOwner(novelNum, uuid);
-        return novelRepository.findNovelByNovelNum(novelNum);
+        return NovelDTO.from(novelRepository.findNovelByNovelNum(novelNum));
     }
 
     /**
@@ -117,10 +119,13 @@ public class NovelService {
         Favorite favorite = new Favorite();
 
         User user = userService.getUserProxy(uuid);
+        FavoriteId fi = new FavoriteId();
 
         favorite.setUser(user);
-        favorite.setTargetId(novelNum);
-        favorite.setTargetType("Novel");
+        fi.setUuid(uuid);
+        fi.setTargetId(novelNum);
+        fi.setTargetType("Novel");
+        favorite.setId(fi);
         favoriteService.setFavorite(favorite);
     }
 

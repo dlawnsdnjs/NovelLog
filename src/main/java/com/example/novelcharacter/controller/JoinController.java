@@ -2,6 +2,7 @@ package com.example.novelcharacter.controller;
 
 import com.example.novelcharacter.domain.User.dto.JoinDTO;
 import com.example.novelcharacter.service.JoinService;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +10,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.mail.MessagingException;
 import java.util.Map;
 
 /**
@@ -50,7 +50,6 @@ public class JoinController {
      *
      * @param request  이메일 주소를 담은 요청 객체
      * @return 전송 성공 시 HTTP 200 + "ok"
-     * @throws MessagingException  메일 전송 실패 시 발생
      *
      * 처리 과정:
      * - 사용자가 입력한 이메일로 인증코드 발송

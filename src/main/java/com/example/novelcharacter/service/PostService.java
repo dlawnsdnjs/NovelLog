@@ -1,5 +1,6 @@
 package com.example.novelcharacter.service;
 
+import com.example.novelcharacter.domain.Board.dto.PostDTO;
 import com.example.novelcharacter.domain.Board.entity.BoardCategory;
 import com.example.novelcharacter.domain.Board.entity.Post;
 import com.example.novelcharacter.domain.Board.dto.PostPageResponseDTO;
@@ -42,13 +43,18 @@ public class PostService {
      * @param role    작성자 권한 (예: ROLE_USER, ROLE_ADMIN)
      * @throws NoPermissionException 관리자가 아닌 사용자가 관리자 게시판에 글을 쓰려고 할 때 발생
      */
-    public void insertPost(Post post, long uuid, String role) throws NoPermissionException {
-        if (post.getBoard().getBoardId() == 0 && !role.equals("ROLE_ADMIN")) {
+    public void insertPost(PostDTO post, long uuid, String role) throws NoPermissionException {
+        if (post.getBoardId() == 0 && !role.equals("ROLE_ADMIN")) {
             throw new NoPermissionException("관리자 권한이 필요합니다.");
         }
-        User u = userService.getUserProxy(uuid);
-        post.setUser(u);
-        postRepository.save(post);
+        Post p = new Post();
+        p.setPostId(post.getPostId());
+        p.setPostTitle(post.getPostTitle());
+        p.setContent(post.getContent());
+        p.setWriteDate(post.getWriteDate());
+        p.setBoard(boardCategoryRepository.getReferenceById(post.getBoardId()));
+        p.setUser(userService.getUserProxy(uuid));
+        postRepository.save(p);
 
     }
 
@@ -120,8 +126,8 @@ public class PostService {
      * @throws NoPermissionException 작성자가 아닌 사용자가 수정하려 할 때 발생
      */
     @Transactional
-    public void updatePost(Post post, long uuid) throws NoPermissionException {
-        if (post.getUser().getUuid() != uuid) {
+    public void updatePost(PostDTO post, long uuid) throws NoPermissionException {
+        if (post.getUuid() != uuid) {
             throw new NoPermissionException("작성자만 수정 가능합니다.");
         }
         Post p = postRepository.findByPostId(post.getPostId());
@@ -136,16 +142,16 @@ public class PostService {
      * </p>
      *
      * @param post 삭제할 게시글 정보
-     * @param userName    요청자 고유 식별자
+     * @param uuid    요청자 고유 식별자
      * @throws NoPermissionException 작성자가 아닌 사용자가 삭제하려 할 때 발생
      */
     @Transactional
-    public void deletePost(Post post, String userName) throws NoPermissionException {
-        String postWriter = selectPostById(post.getPostId()).getUserName();
-        if (!postWriter.equals(userName)) {
+    public void deletePost(PostDTO post, long uuid) throws NoPermissionException {
+        Post p = postRepository.findByPostId(post.getPostId());
+        User u = p.getUser();
+        if (u.getUuid() != uuid && !u.getRole().equals("ROLE_ADMIN")) {
             throw new NoPermissionException("작성자만 삭제 가능합니다.");
         }
-        Post p = postRepository.findByPostId(post.getPostId());
         postRepository.delete(p);
     }
 

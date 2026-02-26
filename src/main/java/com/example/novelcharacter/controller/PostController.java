@@ -1,6 +1,7 @@
 package com.example.novelcharacter.controller;
 
 import com.example.novelcharacter.JWT.JWTUtil;
+import com.example.novelcharacter.domain.Board.dto.PostDTO;
 import com.example.novelcharacter.domain.Board.entity.BoardCategory;
 import com.example.novelcharacter.domain.Board.entity.Post;
 import com.example.novelcharacter.domain.Board.dto.PostPageResponseDTO;
@@ -107,7 +108,7 @@ public class PostController {
      */
     @PostMapping("/postAdd")
     public void postAdd(@RequestHeader("Access") String access,
-                        @RequestBody Post post) throws NoPermissionException {
+                        @RequestBody PostDTO post) throws NoPermissionException {
         long uuid = jwtUtil.getUuid(access);
         String role = jwtUtil.getRole(access);
         postService.insertPost(post, uuid, role);
@@ -122,7 +123,7 @@ public class PostController {
      */
     @PostMapping("/postUpdate")
     public void updatePost(@RequestHeader("Access") String access,
-                           @RequestBody Post post) throws NoPermissionException {
+                           @RequestBody PostDTO post) throws NoPermissionException {
         long uuid = jwtUtil.getUuid(access);
         postService.updatePost(post, uuid);
     }
@@ -136,8 +137,8 @@ public class PostController {
      */
     @PostMapping("/postDelete")
     public void deletePost(@RequestHeader("Access") String access,
-                           @RequestBody Post post) throws NoPermissionException {
-        String userName = jwtUtil.getUsername(access);
-        postService.deletePost(post, userName);
+                           @RequestBody PostDTO post) throws NoPermissionException {
+        long uuid = jwtUtil.getUuid(access);
+        postService.deletePost(post, uuid);
     }
 }

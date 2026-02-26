@@ -1,6 +1,7 @@
 package com.example.novelcharacter.controller;
 
 import com.example.novelcharacter.JWT.JWTUtil;
+import com.example.novelcharacter.domain.Novel.dto.NovelDTO;
 import com.example.novelcharacter.domain.Novel.entity.Novel;
 import com.example.novelcharacter.domain.Novel.dto.NovelWithFavoriteDTO;
 import com.example.novelcharacter.service.NovelService;
@@ -97,8 +98,8 @@ public class NovelController {
      * </ol>
      */
     @GetMapping("/getNovel/{novelNum}")
-    public Novel getNovel(@RequestHeader("Access") String access,
-                          @PathVariable("novelNum") long novelNum) throws NoPermissionException {
+    public NovelDTO getNovel(@RequestHeader("Access") String access,
+                             @PathVariable("novelNum") long novelNum) throws NoPermissionException {
         long uuid = jwtUtil.getUuid(access);
         return novelService.selectNovelOne(novelNum, uuid);
     }

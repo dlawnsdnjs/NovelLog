@@ -6,12 +6,11 @@ import com.example.novelcharacter.service.ResetPasswordService;
 import com.example.novelcharacter.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.apache.ibatis.javassist.bytecode.DuplicateMemberException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.mail.MessagingException;
+import jakarta.mail.MessagingException;
 import java.util.Map;
 
 /**

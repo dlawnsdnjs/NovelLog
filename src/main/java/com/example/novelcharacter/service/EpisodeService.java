@@ -43,12 +43,12 @@ public class EpisodeService {
         Episode newEpisode = new Episode();
         newEpisode.setEpisodeNum(episode.getEpisodeNum());
         newEpisode.setEpisodeTitle(episode.getEpisodeTitle());
-        Novel n = novelRepository.getReferenceById(episode.getNovelNum());
+        Novel n = novelService.getNovelProxy(episode.getNovelNum());
         newEpisode.setNovel(n);
         newEpisode.setEpisodeSummary(episode.getEpisodeSummary());
-        episodeRepository.save(newEpisode);
-        newEpisode.setOrderIndex(newEpisode.getEpisodeNum());
-        return episode;
+        Episode result = episodeRepository.save(newEpisode);
+        result.setOrderIndex(result.getEpisodeNum());
+        return EpisodeDTO.from(result);
     }
 
     /**

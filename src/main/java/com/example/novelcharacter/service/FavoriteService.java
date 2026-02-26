@@ -34,10 +34,11 @@ public class FavoriteService {
      * @param favorite 즐겨찾기 정보가 담긴 DTO
      */
     public void setFavorite(Favorite favorite) {
-        if (favoriteRepository.findFavoriteById(favorite.getId()) == null) {
+        Favorite f = favoriteRepository.findFavoriteById(favorite.getId());
+        if (f == null) {
             favoriteRepository.save(favorite);
         } else {
-            deleteFavorite(favorite);
+            deleteFavorite(f);
         }
     }
 

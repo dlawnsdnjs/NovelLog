@@ -16,7 +16,7 @@ public class StatBatchRepository {
     private final JdbcTemplate jdbcTemplate;
 
     public void statBatchInsert(List<Stat> stats){
-        String sql = "insert into Stat values (statName)";
+        String sql = "insert into Stat(statName) values (?)";
 
         jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
            @Override

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.naming.NoPermissionException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -23,7 +24,7 @@ import java.util.stream.Collectors;
  * 장비(Equipment) 관련 비즈니스 로직을 처리하는 서비스 클래스입니다.
  *
  * <p>장비의 생성, 수정, 삭제, 조회, 스탯 관리 등 복합적인 로직을 담당하며
- * {@link EquipmentMapper}, {@link EquipmentStatMapper}, {@link StatService}, {@link NovelService}
+ {@link StatService}, {@link NovelService}
  * 와 연동하여 동작합니다.</p>
  *
  * @author
@@ -111,7 +112,8 @@ public class EquipmentService {
      * @param uuid 사용자 UUID
      * @throws NoPermissionException 사용자가 소설의 소유자가 아닐 경우
      */
-    public void insertEquipment(EquipmentDataDTO equipmentData, long uuid) throws NoPermissionException {
+    @Transactional
+    public EquipmentDataDTO insertEquipment(EquipmentDataDTO equipmentData, long uuid) throws NoPermissionException {
         EquipmentDTO equipment = equipmentData.getEquipment();
         novelService.checkOwner(equipment.getNovelNum(), uuid);
         Equipment e = new Equipment();
@@ -119,9 +121,11 @@ public class EquipmentService {
         e.setEquipmentName(equipment.getEquipmentName());
         e.setInform(equipment.getInform());
         e.setNovel(novelService.getNovelProxy(equipment.getNovelNum()));
-
-        insertEquipmentStatList(equipment.getEquipmentNum(), equipmentData.getEquipmentStats());
-        equipmentRepository.save(e);
+        e = equipmentRepository.save(e);
+        equipmentRepository.flush();
+        equipmentData.setEquipment(EquipmentDTO.from(e));
+        equipmentData.setEquipmentStats(insertEquipmentStatList(e.getEquipmentNum(), equipmentData.getEquipmentStats()));
+        return equipmentData;
     }
 
     /**
@@ -171,11 +175,12 @@ public class EquipmentService {
      * @param equipmentStats 스탯 정보 리스트
      * @throws IllegalArgumentException 존재하지 않는 스탯 이름이 포함된 경우
      */
-    public void insertEquipmentStatList(long equipmentNum, List<EquipmentStatInfoDTO> equipmentStats) {
+    public List<EquipmentStatInfoDTO> insertEquipmentStatList(long equipmentNum, List<EquipmentStatInfoDTO> equipmentStats) {
 
         List<EquipmentStatRequestDTO> statRequests = statExtractor(equipmentStats);
 
         equipmentStatBatchRepository.equipmentStatBatchInsert(equipmentNum, statRequests);
+        return equipmentStatRepository.findByIdEquipmentNum(equipmentNum);
     }
 
     public List<EquipmentStatRequestDTO> statExtractor(List<EquipmentStatInfoDTO> equipmentStats) {
@@ -233,6 +238,22 @@ public class EquipmentService {
             return null;
         }
 
-        return equipmentRepository.findEquipmentDataByEquipmentNumIn(equipmentIds);
+        List<Equipment> equipmentList = equipmentRepository.findEquipmentDataByEquipmentNumIn(equipmentIds);
+        List<EquipmentDataDTO> equipmentDataDTOS = new ArrayList<>();
+        for(Equipment equipment : equipmentList) {
+            EquipmentDataDTO equipmentDataDTO = new EquipmentDataDTO();
+            equipmentDataDTO.setEquipment(EquipmentDTO.from(equipment));
+            List<EquipmentStatInfoDTO> equipmentStatInfoDTOS = equipment.getStats().stream().map(stat->{
+                EquipmentStatInfoDTO equipmentStatInfoDTO = new EquipmentStatInfoDTO();
+                equipmentStatInfoDTO.setStatName(stat.getStat().getStatName());
+                equipmentStatInfoDTO.setValue(stat.getValue());
+                equipmentStatInfoDTO.setType(stat.getStatType());
+                return equipmentStatInfoDTO;
+            }).toList();
+            equipmentDataDTO.setEquipmentStats(equipmentStatInfoDTOS);
+            equipmentDataDTOS.add(equipmentDataDTO);
+        }
+
+        return equipmentDataDTOS;
     }
 }

@@ -64,7 +64,7 @@ public class StatService {
                 .collect(Collectors.toList());
 
         statBatchRepository.statBatchInsert(statList);
-        return statList;
+        return statRepository.findStatsByStatNameIn(statNameList);
     }
 
     /**

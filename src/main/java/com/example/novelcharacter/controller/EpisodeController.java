@@ -97,7 +97,9 @@ public class EpisodeController {
             throws NoPermissionException {
 
         long uuid = jwtUtil.getUuid(access);
-        episodeService.insertEpisode(episode, uuid);
+        episode = episodeService.insertEpisode(episode, uuid);
+        System.out.println(episode.getEpisodeTitle() + " " + episode.getEpisodeSummary() + " " + episode.getEpisodeNum() + " " +
+                episode.getNovelNum() + " " + episode.getOrderIndex());
 
         return episode;
     }

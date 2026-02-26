@@ -2,6 +2,7 @@ package com.example.novelcharacter.service;
 
 import com.example.novelcharacter.domain.User.dto.JoinDTO;
 import com.example.novelcharacter.domain.User.entity.User;
+import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +11,6 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.mail.MessagingException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.Duration;
@@ -130,7 +130,6 @@ public class JoinService {
      * 6자리 인증 코드를 생성하여 메일로 전송한 뒤 Redis에 저장합니다.
      *
      * @param toEmail 수신자 이메일 주소
-     * @throws MessagingException 이메일 전송 실패 시
      * @throws RuntimeException 이메일이 이미 등록된 경우
      */
     public String sendCodeToEmail(String toEmail) throws MessagingException {

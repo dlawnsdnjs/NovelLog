@@ -15,11 +15,11 @@ public class CharacterEquipBatchRepository {
     private final JdbcTemplate jdbcTemplate;
 
     public void characterEquipBatchInsert(long episodeNum, long characterNum, List<Long> equipmentNums) {
-        String sql = "insert into CharacterEquip values (episodeNum, characterNum, equipmentNum)";
+        String sql = "insert into CharacterEquip(equipmentNum, characterNum, episodeNum) values (?, ?, ?)";
 
         jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
            @Override
-            public void setValues(PreparedStatement ps, int i) throws SQLException {
+           public void setValues(PreparedStatement ps, int i) throws SQLException {
                 long equipmentNum = equipmentNums.get(i);
                 ps.setLong(1, equipmentNum);
                 ps.setLong(2, characterNum);
@@ -27,7 +27,7 @@ public class CharacterEquipBatchRepository {
            }
 
            @Override
-            public int getBatchSize() {
+           public int getBatchSize() {
                return equipmentNums.size();
            }
         });

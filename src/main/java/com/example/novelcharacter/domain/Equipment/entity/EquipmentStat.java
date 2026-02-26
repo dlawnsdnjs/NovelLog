@@ -19,15 +19,15 @@ public class EquipmentStat {
 
     @MapsId("equipmentNum")
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="equipmentNum")
+    @JoinColumn(name="equipmentNum", referencedColumnName = "equipmentNum", nullable = false)
     private Equipment equipment;
 
     @MapsId("statCode")
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="statCode")
+    @JoinColumn(name="statCode", referencedColumnName = "statCode", nullable = false)
     private Stat stat;
 
-    @Column("statType")
+    @Column(name="statType", insertable = false, updatable = false)
     private int statType;
 
 

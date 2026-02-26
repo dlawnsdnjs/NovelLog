@@ -8,6 +8,7 @@ import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name="EpisodeCharacter")
@@ -17,13 +18,17 @@ public class EpisodeCharacter {
 
     @MapsId("episodeNum")
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="episodeNum")
+    @JoinColumn(    name = "episodeNum",
+            referencedColumnName = "episodeNum",
+            nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Episode episode;
 
     @MapsId("characterNum")
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="characterNum")
+    @JoinColumn(    name = "characterNum",
+            referencedColumnName = "characterNum",
+            nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Character character;
 }

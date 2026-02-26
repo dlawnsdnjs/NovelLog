@@ -22,7 +22,7 @@ public class Post {
     private long postId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="boardId")
+    @JoinColumn(name="boardId", referencedColumnName = "boardId", nullable = false)
     @OnDelete(action= OnDeleteAction.CASCADE)
     private BoardCategory board;
 
@@ -33,7 +33,7 @@ public class Post {
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="uuid")
+    @JoinColumn(name="uuid", referencedColumnName = "uuid", nullable = false)
     @OnDelete(action= OnDeleteAction.CASCADE)
     private User user;
 

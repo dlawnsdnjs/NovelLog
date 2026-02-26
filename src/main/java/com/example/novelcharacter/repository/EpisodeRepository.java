@@ -1,6 +1,7 @@
 package com.example.novelcharacter.repository;
 
 import com.example.novelcharacter.domain.Episode.entity.Episode;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,9 +11,8 @@ import java.util.List;
 
 @Repository
 public interface EpisodeRepository extends JpaRepository<Episode, Long> {
-    public void updateOrderIndexNull(Episode episode);
     public List<Episode> findAllEpisodesByNovel_NovelNum(long novelNum);
-    public List<Episode> findEpisodePage(long novelNum, int page);
+    public List<Episode> findEpisodeByNovel_NovelNum(long novelNum, Pageable pageable);
     public Episode findEpisodeByEpisodeNum(long episodeNum);
 
     @Query("select count(e) > 0 " +

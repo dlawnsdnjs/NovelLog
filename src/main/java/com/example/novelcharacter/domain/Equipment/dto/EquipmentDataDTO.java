@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 public class EquipmentDataDTO {
-    private Equipment equipment;
+    private EquipmentDTO equipment;
 
     private List<EquipmentStatInfoDTO> equipmentStats;
 }

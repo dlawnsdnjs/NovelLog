@@ -21,15 +21,13 @@ public class Favorite {
 
     @MapsId("uuid")
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="uuid", nullable = false)
+    @JoinColumn(name="uuid", referencedColumnName = "uuid", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
-    @MapsId("targetType")
-    @Column(name="targetType", nullable = false)
+    @Column(name="targetType", insertable = false, updatable = false)
     private String targetType;
 
-    @MapsId("targetId")
-    @Column(name="targetId", nullable = false)
+    @Column(name="targetId", insertable = false, updatable = false)
     private long targetId;
 }

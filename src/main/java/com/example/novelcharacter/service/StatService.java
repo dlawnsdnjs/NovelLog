@@ -1,7 +1,9 @@
 package com.example.novelcharacter.service;
 
 import com.example.novelcharacter.domain.Stat.entity.Stat;
-import com.example.novelcharacter.mapper.StatMapper;
+import com.example.novelcharacter.repository.StatBatchRepository;
+import com.example.novelcharacter.repository.StatRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +34,8 @@ import java.util.stream.Collectors;
 @Service
 public class StatService {
 
-    private final StatMapper statMapper;
+    private final StatRepository statRepository;
+    private final StatBatchRepository statBatchRepository;
 
     /**
      * <p>단일 스탯 정보를 데이터베이스에 등록합니다.</p>
@@ -40,7 +43,7 @@ public class StatService {
      * @param stat 등록할 스탯 정보 DTO
      */
     public void insertStat(Stat stat) {
-        statMapper.insertStat(stat);
+        statRepository.save(stat);
     }
 
     /**
@@ -60,7 +63,7 @@ public class StatService {
                 })
                 .collect(Collectors.toList());
 
-        statMapper.insertStatList(statList);
+        statBatchRepository.statBatchInsert(statList);
         return statList;
     }
 
@@ -71,7 +74,7 @@ public class StatService {
      * @return 해당 코드의 {@link Stat} 객체 (없으면 null)
      */
     public Stat selectStat(long statCode) {
-        return statMapper.selectStat(statCode);
+        return statRepository.findStatByStatCode(statCode);
     }
 
     /**
@@ -82,7 +85,7 @@ public class StatService {
      * @return 조회되었거나 새로 생성된 {@link Stat} 객체
      */
     public Stat selectStat(String statName) {
-        Stat stat = statMapper.selectStat(statName);
+        Stat stat = statRepository.findStatByStatName(statName);
         if (stat == null) {
             stat = new Stat();
             stat.setStatName(statName);
@@ -113,7 +116,7 @@ public class StatService {
         }
 
         // 1️⃣ 기존 스탯 조회
-        List<Stat> statList = statMapper.selectStatList(filteredNames);
+        List<Stat> statList = statRepository.findStatsByStatNameIn(filteredNames);
 
         // 2️⃣ 조회된 스탯 이름 집합
         Set<String> existingNames = statList.stream()
@@ -140,17 +143,17 @@ public class StatService {
      *
      * @param stat 수정할 스탯 정보 DTO
      */
+    @Transactional
     public void updateStat(Stat stat) {
-        statMapper.updateStat(stat);
+        Stat s = statRepository.findStatByStatCode(stat.getStatCode());
+        s.setStatName(stat.getStatName());
     }
 
     /**
      * <p>스탯 코드를 기반으로 스탯 정보를 삭제합니다.</p>
      *
-     * @param statCode 삭제할 스탯의 고유 코드
-     * @return 삭제된 행의 개수 (성공 시 1)
      */
-    public int deleteStat(long statCode) {
-        return statMapper.deleteStat(statCode);
+    public void deleteStat(Stat stat) {
+        statRepository.delete(stat);
     }
 }

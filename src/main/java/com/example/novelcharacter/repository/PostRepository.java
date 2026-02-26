@@ -13,6 +13,7 @@ import java.util.List;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
+    public Post findByPostId(Long postId);
 
     @Query("select new com.example.novelcharacter.domain.Board.dto.PostDataDTO(p.postId, p.postTitle, u.userName) " +
             "from Post p join p.user u where p.board.boardId = :boardId " +

@@ -19,18 +19,17 @@ public class CharacterEquip {
     @EmbeddedId
     private CharacterEquipId id;
 
-    @MapsId("episodeCharacterId")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumns({
-            @JoinColumn(name="episodeNum"),
-            @JoinColumn(name="characterNum")
+            @JoinColumn(name="episodeNum", referencedColumnName="episodeNum", insertable=false, updatable=false),
+            @JoinColumn(name="characterNum", referencedColumnName="characterNum", insertable=false, updatable=false)
     })
     @OnDelete(action = OnDeleteAction.CASCADE)
     private EpisodeCharacter episodeCharacter;
 
     @MapsId("equipmentNum")
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="equipmentNum")
+    @JoinColumn(name="equipmentNum", referencedColumnName = "equipmentNum", nullable=false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Equipment equipment;
 }

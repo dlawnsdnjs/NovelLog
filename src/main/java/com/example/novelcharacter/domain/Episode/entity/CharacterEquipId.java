@@ -14,6 +14,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @EqualsAndHashCode
 public class CharacterEquipId implements Serializable {
-    private EpisodeCharacterId episodeCharacterId;
+    private long episodeNum;
+    private long characterNum;
     private long equipmentNum;
 }

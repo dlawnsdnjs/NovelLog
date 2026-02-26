@@ -1,5 +1,6 @@
 package com.example.novelcharacter.repository;
 
+import com.example.novelcharacter.domain.Episode.dto.EpisodeCharacterDTO;
 import com.example.novelcharacter.domain.Episode.entity.CharacterEquip;
 import com.example.novelcharacter.domain.Episode.entity.CharacterEquipId;
 import com.example.novelcharacter.domain.Episode.entity.EpisodeCharacter;
@@ -14,7 +15,7 @@ import java.util.List;
 public interface CharacterEquipRepository extends JpaRepository<CharacterEquip, CharacterEquipId> {
     @Query("select ce.equipment.equipmentNum " +
             "from CharacterEquip ce " +
-            "where ce.episodeCharacter = :episodeCharacter")
-    public List<Long> findCharacterEquipsByEpisodeCharacter(@Param("episodeCharacter") EpisodeCharacter episodeCharacter);
-    public void insertCharacterEquips(long episodeNum, long characterNum, List<Long> equipmentNums);
+            "where ce.episodeCharacter.id.episodeNum = :#{#episodeCharacter.episodeNum} " +
+            "and ce.episodeCharacter.id.characterNum = :#{#episodeCharacter.characterNum}")
+    public List<Long> findCharacterEquipsByEpisodeCharacter(@Param("episodeCharacter") EpisodeCharacterDTO episodeCharacter);
 }

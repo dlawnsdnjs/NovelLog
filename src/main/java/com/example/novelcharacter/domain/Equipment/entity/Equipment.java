@@ -20,7 +20,7 @@ import java.util.List;
 @Table(name="Equipment")
 public class Equipment {
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="novelNum", nullable=false)
+    @JoinColumn(name="novelNum", referencedColumnName = "novelNum", nullable=false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Novel novel;
 

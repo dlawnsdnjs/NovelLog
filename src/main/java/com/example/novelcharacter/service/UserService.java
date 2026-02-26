@@ -1,7 +1,7 @@
 package com.example.novelcharacter.service;
 
 import com.example.novelcharacter.domain.User.entity.User;
-import com.example.novelcharacter.mapper.UserMapper;
+import com.example.novelcharacter.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,25 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 
-/**
- * <p><b>UserService</b>는 사용자(User) 정보를 관리하는 서비스 계층 클래스입니다.</p>
- *
- * <p>사용자 등록, 조회, 수정, 삭제 및 중복 검사 등의 기능을 제공합니다.
- * MyBatis의 {@link UserMapper}를 사용하여 데이터베이스와 연동됩니다.</p>
- *
- * <h2>주요 기능</h2>
- * <ul>
- *     <li>사용자 정보 조회 (UUID, ID, 이름, 이메일 기준)</li>
- *     <li>아이디 및 이메일 중복 여부 확인</li>
- *     <li>사용자 등록 및 정보 수정</li>
- *     <li>이름 변경 및 중복 이름 검증</li>
- *     <li>최근 로그인 시간 갱신</li>
- *     <li>사용자 삭제</li>
- * </ul>
- *
- * @author
- * @version 1.0
- */
 @Slf4j
 @Service
 @Transactional
@@ -36,7 +17,7 @@ import java.time.LocalDate;
 public class UserService {
 
     /** 사용자 데이터 접근을 위한 MyBatis 매퍼 */
-    private final UserMapper userMapper;
+    private final UserRepository userRepository;
 
     /**
      * <p>UUID를 기반으로 사용자를 조회합니다.</p>
@@ -45,7 +26,7 @@ public class UserService {
      * @return 조회된 {@link User} 객체 (없으면 null)
      */
     public User getUserByUuid(long uuid) {
-        return userMapper.getUserByUuid(uuid);
+        return userRepository.findByUuid(uuid);
     }
 
     /**
@@ -55,7 +36,7 @@ public class UserService {
      * @return 조회된 {@link User} 객체 (없으면 null)
      */
     public User getUserById(String userId) {
-        return userMapper.getUserById(userId);
+        return userRepository.findByUserId(userId);
     }
 
     /**
@@ -65,7 +46,7 @@ public class UserService {
      * @return 조회된 {@link User} 객체 (없으면 null)
      */
     public User getUserByName(String userName) {
-        return userMapper.getUserByName(userName);
+        return userRepository.findByUserName(userName);
     }
 
     /**
@@ -86,7 +67,7 @@ public class UserService {
      * @return 조회된 {@link User} 객체 (없으면 null)
      */
     public User findByEmail(String email) {
-        return userMapper.findByEmail(email);
+        return userRepository.findByEmail(email);
     }
 
     /**
@@ -106,7 +87,7 @@ public class UserService {
      * @param user 등록할 사용자 정보 DTO
      */
     public void insertUser(User user) {
-        userMapper.insertUser(user);
+        userRepository.save(user);
     }
 
     /**
@@ -114,14 +95,17 @@ public class UserService {
      *
      * @param user 수정할 사용자 정보 DTO
      */
+    @Transactional
     public void updateUser(User user) {
-        userMapper.updateUser(user);
+        User u = userRepository.findByUuid(user.getUuid());
+        u.setUserName(user.getUserName());
+        u.setEmail(user.getEmail());
     }
 
+    @Transactional
     public void updatePassword(String userId, String newPassword){
-        User user = userMapper.getUserById(userId);
+        User user = userRepository.findByUserId(userId);
         user.setPassword(newPassword);
-        updateUser(user);
     }
 
     public boolean checkDuplicateName(String userName) {
@@ -137,13 +121,13 @@ public class UserService {
      * @param uuid     사용자 UUID
      * @throws Exception 이름이 중복될 경우 발생
      */
+    @Transactional
     public void updateUserName(String userName, long uuid) throws DuplicateMemberException {
         User user = getUserByUuid(uuid);
         if (getUserByName(userName) != null) {
             throw new DuplicateMemberException("중복된 이름입니다");
         }
         user.setUserName(userName);
-        updateUser(user);
     }
 
     /**
@@ -152,8 +136,12 @@ public class UserService {
      * @param user 대상 사용자 정보 DTO
      */
     public void updateLastLoginTime(User user) {
-        user.setLastLoginDate(LocalDate.now());
-        updateUser(user);
+        User u = userRepository.findByUuid(user.getUuid());
+        u.setLastLoginDate(LocalDate.now());
+    }
+
+    public User getUserProxy(long uuid){
+        return userRepository.getReferenceById(uuid);
     }
 
     /**
@@ -162,7 +150,7 @@ public class UserService {
      * @param user 삭제할 사용자 정보 DTO
      */
     public void deleteUser(User user) {
-        userMapper.deleteUser(user);
+        userRepository.delete(user);
     }
 
     public void deleteUser(long uuid){

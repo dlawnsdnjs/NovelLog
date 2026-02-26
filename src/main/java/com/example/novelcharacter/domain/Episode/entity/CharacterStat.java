@@ -19,18 +19,17 @@ public class CharacterStat {
     @EmbeddedId
     private CharacterStatId id;
 
-    @MapsId("episodeCharacterId")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumns({
-            @JoinColumn(name="episodeNum"),
-            @JoinColumn(name="characterNum")
+            @JoinColumn(name="episodeNum", referencedColumnName="episodeNum", insertable=false, updatable=false),
+            @JoinColumn(name="characterNum", referencedColumnName="characterNum", insertable=false, updatable=false)
     })
     @OnDelete(action = OnDeleteAction.CASCADE)
     private EpisodeCharacter episodeCharacter;
 
     @MapsId("statCode")
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="statCode")
+    @JoinColumn(name="statCode", referencedColumnName = "statCode", nullable=false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Stat stat;
 

@@ -1,7 +1,7 @@
 package com.example.novelcharacter.repository;
 
 import com.example.novelcharacter.domain.Board.entity.BoardCategory;
-import org.jetbrains.annotations.NotNull;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

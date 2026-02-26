@@ -1,6 +1,7 @@
 package com.example.novelcharacter.controller;
 
 import com.example.novelcharacter.JWT.JWTUtil;
+import com.example.novelcharacter.domain.Character.dto.CharacterDTO;
 import com.example.novelcharacter.domain.Character.entity.Character;
 import com.example.novelcharacter.service.CharacterService;
 import jakarta.validation.Valid;
@@ -40,7 +41,7 @@ public class CharacterController {
      * </pre>
      */
     @PostMapping("/episodeCharacters")
-    public List<Character> episodeCharacter(@RequestHeader("Access") String access, @RequestBody long episodeNum)
+    public List<CharacterDTO> episodeCharacter(@RequestHeader("Access") String access, @RequestBody long episodeNum)
             throws NoPermissionException {
         long uuid = jwtUtil.getUuid(access);
         return characterService.selectCharactersByEpisode(episodeNum, uuid);
@@ -62,7 +63,7 @@ public class CharacterController {
      * </pre>
      */
     @PostMapping("/novelCharacters")
-    public List<Character> novelCharacters(@RequestHeader("Access") String access, @RequestBody Map<String, Long> payload)
+    public List<CharacterDTO> novelCharacters(@RequestHeader("Access") String access, @RequestBody Map<String, Long> payload)
             throws NoPermissionException {
         long uuid = jwtUtil.getUuid(access);
         long novelNum = payload.get("novelNum");
@@ -89,7 +90,7 @@ public class CharacterController {
      * </pre>
      */
     @PostMapping("/addCharacter")
-    public Character addCharacter(@RequestHeader("Access") String access, @Valid @RequestBody Character character)
+    public CharacterDTO addCharacter(@RequestHeader("Access") String access, @Valid @RequestBody CharacterDTO character)
             throws NoPermissionException {
         long uuid = jwtUtil.getUuid(access);
         characterService.insertCharacter(character, uuid);
@@ -112,7 +113,7 @@ public class CharacterController {
      * </pre>
      */
     @PostMapping("/deleteCharacter")
-    public ResponseEntity<Void> deleteEpisode(@RequestHeader("Access") String access, @RequestBody Character character)
+    public ResponseEntity<Void> deleteEpisode(@RequestHeader("Access") String access, @RequestBody CharacterDTO character)
             throws NoPermissionException {
         long uuid = jwtUtil.getUuid(access);
         characterService.deleteCharacter(character, uuid);

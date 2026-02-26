@@ -4,9 +4,14 @@ import com.example.novelcharacter.domain.Board.entity.BoardCategory;
 import com.example.novelcharacter.domain.Board.entity.Post;
 import com.example.novelcharacter.domain.Board.dto.PostPageResponseDTO;
 import com.example.novelcharacter.domain.Board.dto.PostResponseDTO;
-import com.example.novelcharacter.mapper.BoardCategoryMapper;
-import com.example.novelcharacter.mapper.PostMapper;
+import com.example.novelcharacter.domain.User.entity.User;
+import com.example.novelcharacter.repository.BoardCategoryRepository;
+import com.example.novelcharacter.repository.PostRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.naming.NoPermissionException;
@@ -22,8 +27,9 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class PostService {
-    private final PostMapper postMapper;
-    private final BoardCategoryMapper boardCategoryMapper;
+    private final PostRepository postRepository;
+    private final BoardCategoryRepository boardCategoryRepository;
+    private final UserService userService;
 
     /**
      * 게시글을 등록합니다.
@@ -37,12 +43,13 @@ public class PostService {
      * @throws NoPermissionException 관리자가 아닌 사용자가 관리자 게시판에 글을 쓰려고 할 때 발생
      */
     public void insertPost(Post post, long uuid, String role) throws NoPermissionException {
-        if (post.getBoardId() == 0 && !role.equals("ROLE_ADMIN")) {
+        if (post.getBoard().getBoardId() == 0 && !role.equals("ROLE_ADMIN")) {
             throw new NoPermissionException("관리자 권한이 필요합니다.");
         }
-        post.setUuid(uuid);
+        User u = userService.getUserProxy(uuid);
+        post.setUser(u);
+        postRepository.save(post);
 
-        postMapper.insertPost(post);
     }
 
     /**
@@ -54,8 +61,9 @@ public class PostService {
      */
     public PostPageResponseDTO selectPostsByBoard(long boardId, int page) {
         PostPageResponseDTO postPageResponseDTO = new PostPageResponseDTO();
-        postPageResponseDTO.setData(postMapper.selectPostsByBoard(boardId, (page - 1) * 20));
-        postPageResponseDTO.setTotalCount(postMapper.selectPostCountByBoard(boardId));
+        Pageable pageable = PageRequest.of(page-1, 20, Sort.by("postId").descending());
+        postPageResponseDTO.setData(postRepository.selectPostsByBoard(boardId, pageable));
+        postPageResponseDTO.setTotalCount(postRepository.countPostByBoard_BoardId(boardId));
         return postPageResponseDTO;
     }
 
@@ -69,8 +77,9 @@ public class PostService {
      */
     public PostPageResponseDTO selectPostsByUuid(long uuid, long boardId, int page) {
         PostPageResponseDTO postPageResponseDTO = new PostPageResponseDTO();
-        postPageResponseDTO.setData(postMapper.selectPostsByUuid(uuid, boardId, (page - 1) * 20));
-        postPageResponseDTO.setTotalCount(postMapper.selectPostCountByUuid(boardId, uuid));
+        Pageable pageable = PageRequest.of(page-1, 20, Sort.by("postId").descending());
+        postPageResponseDTO.setData(postRepository.selectPostsByUuid(uuid, boardId, pageable));
+        postPageResponseDTO.setTotalCount(postRepository.selectPostCountByUuid(boardId, uuid));
         return postPageResponseDTO;
     }
 
@@ -84,8 +93,9 @@ public class PostService {
      */
     public PostPageResponseDTO selectPostsByUsername(String userName, long boardId, int page) {
         PostPageResponseDTO postPageResponseDTO = new PostPageResponseDTO();
-        postPageResponseDTO.setData(postMapper.selectPostsByUserName(userName, boardId, (page - 1) * 20));
-        postPageResponseDTO.setTotalCount(postMapper.selectPostCountByUserName(boardId, userName));
+        Pageable pageable = PageRequest.of(page-1, 20, Sort.by("postId").descending());
+        postPageResponseDTO.setData(postRepository.selectPostsByUserName(userName, boardId, pageable));
+        postPageResponseDTO.setTotalCount(postRepository.selectPostCountByUserName(boardId, userName));
         return postPageResponseDTO;
     }
 
@@ -96,7 +106,7 @@ public class PostService {
      * @return 조회된 게시글 정보 {@link PostResponseDTO}
      */
     public PostResponseDTO selectPostById(long postId) {
-        return postMapper.selectPostById(postId);
+        return postRepository.selectPostById(postId);
     }
 
     /**
@@ -109,11 +119,14 @@ public class PostService {
      * @param uuid    수정 요청자 고유 식별자
      * @throws NoPermissionException 작성자가 아닌 사용자가 수정하려 할 때 발생
      */
+    @Transactional
     public void updatePost(Post post, long uuid) throws NoPermissionException {
-        if (post.getUuid() != uuid) {
+        if (post.getUser().getUuid() != uuid) {
             throw new NoPermissionException("작성자만 수정 가능합니다.");
         }
-        postMapper.updatePost(post);
+        Post p = postRepository.findByPostId(post.getPostId());
+        p.setPostTitle(post.getPostTitle());
+        p.setContent(post.getContent());
     }
 
     /**
@@ -126,12 +139,14 @@ public class PostService {
      * @param userName    요청자 고유 식별자
      * @throws NoPermissionException 작성자가 아닌 사용자가 삭제하려 할 때 발생
      */
+    @Transactional
     public void deletePost(Post post, String userName) throws NoPermissionException {
         String postWriter = selectPostById(post.getPostId()).getUserName();
         if (!postWriter.equals(userName)) {
             throw new NoPermissionException("작성자만 삭제 가능합니다.");
         }
-        postMapper.deletePost(post.getPostId());
+        Post p = postRepository.findByPostId(post.getPostId());
+        postRepository.delete(p);
     }
 
     /**
@@ -140,6 +155,6 @@ public class PostService {
      * @return 게시판 카테고리 목록 {@link BoardCategory}
      */
     public List<BoardCategory> selectAllBoardCategory() {
-        return boardCategoryMapper.selectAllBoardCategory();
+        return boardCategoryRepository.findAll();
     }
 }

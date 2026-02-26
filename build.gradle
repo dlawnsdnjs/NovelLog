@@ -2,7 +2,6 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.2.1'
 	id 'io.spring.dependency-management' version '1.1.4'
-    id 'org.jetbrains.kotlin.jvm'
 }
 
 group = 'com.example'
@@ -39,8 +38,6 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
 
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
-	implementation 'javax.mail:javax.mail-api:1.6.2'  // JavaMail API
-	implementation 'com.sun.mail:javax.mail:1.6.2'    // 실제 메일 전송 구현
 
 	implementation 'com.bucket4j:bucket4j-core:8.4.0'// Rate Limiting을 위한 Bucket4j 라이브러리
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
@@ -49,7 +46,7 @@ dependencies {
 
 
 	// Spring Context Support
-	implementation 'org.springframework:spring-context-support:5.3.9'
+	implementation 'org.springframework:spring-context-support'
 
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	implementation 'org.apache.commons:commons-pool2'
@@ -62,7 +59,6 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 
 }
 

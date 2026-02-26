@@ -6,6 +6,7 @@ import com.example.novelcharacter.domain.Equipment.dto.EquipmentStatRequestDTO;
 import com.example.novelcharacter.domain.Equipment.entity.EquipmentStat;
 import com.example.novelcharacter.domain.Equipment.entity.EquipmentStatId;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -26,5 +27,7 @@ public interface EquipmentStatRepository extends JpaRepository<EquipmentStat, Eq
             "where es.equipment.equipmentNum = :equipmentNum")
     public List<EquipmentStatInfoDTO> findByIdEquipmentNum(@Param("equipmentNum") long equipmentNum);
 
-    public void insertEquipmentStats(long equipmentNum, List<EquipmentStatRequestDTO> stats);
+    @Modifying
+    @Query("delete from EquipmentStat es where es.equipment.equipmentNum = :equipmentNum")
+    public void deleteEquipmentStatsByEquipmentNum(@Param("equipmentNum") long equipmentNum);
 }

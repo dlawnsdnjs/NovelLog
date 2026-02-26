@@ -1,9 +1,11 @@
 package com.example.novelcharacter.controller;
 
 import com.example.novelcharacter.JWT.JWTUtil;
+import com.example.novelcharacter.domain.Character.dto.CharacterDTO;
 import com.example.novelcharacter.domain.Character.entity.Character;
 import com.example.novelcharacter.domain.Episode.dto.CharacterRequestDataDTO;
 import com.example.novelcharacter.domain.Episode.dto.CharacterResponseDataDTO;
+import com.example.novelcharacter.domain.Episode.dto.EpisodeCharacterDTO;
 import com.example.novelcharacter.domain.Episode.entity.EpisodeCharacter;
 import com.example.novelcharacter.service.CharacterService;
 import org.springframework.web.bind.annotation.*;
@@ -90,7 +92,7 @@ public class CharacterStatusController {
      * </pre>
      */
     @PostMapping("/characters")
-    public List<Character> selectEpisodeCharacters(@RequestHeader("Access") String access, @RequestBody Map<String, Long> payload)
+    public List<CharacterDTO> selectEpisodeCharacters(@RequestHeader("Access") String access, @RequestBody Map<String, Long> payload)
             throws NoPermissionException {
         long uuid = jwtUtil.getUuid(access);
         long episodeNum = payload.get("episodeNum");
@@ -128,20 +130,20 @@ public class CharacterStatusController {
      * </pre>
      */
     @PostMapping("/characterStatus")
-    public CharacterResponseDataDTO selectCharacterStats(@RequestHeader("Access") String access, @RequestBody EpisodeCharacter episodeCharacter)
+    public CharacterResponseDataDTO selectCharacterStats(@RequestHeader("Access") String access, @RequestBody EpisodeCharacterDTO episodeCharacter)
             throws NoPermissionException {
         long uuid = jwtUtil.getUuid(access);
         return characterService.selectCharacterData(episodeCharacter, uuid);
     }
 
     @PostMapping("/characterStatus/recent")
-    public CharacterResponseDataDTO selectRecentCharacterStats(@RequestHeader("Access") String access, @RequestBody EpisodeCharacter episodeCharacter) throws NoPermissionException {
+    public CharacterResponseDataDTO selectRecentCharacterStats(@RequestHeader("Access") String access, @RequestBody EpisodeCharacterDTO episodeCharacter) throws NoPermissionException {
         long uuid = jwtUtil.getUuid(access);
         return characterService.selectRecentCharacterData(episodeCharacter, uuid);
     }
 
     @PostMapping("/deleteCharacterStatus")
-    public void deleteCharacterStatus(@RequestHeader("Access") String access, @RequestBody EpisodeCharacter episodeCharacter) throws NoPermissionException {
+    public void deleteCharacterStatus(@RequestHeader("Access") String access, @RequestBody EpisodeCharacterDTO episodeCharacter) throws NoPermissionException {
         long uuid = jwtUtil.getUuid(access);
         characterService.deleteEpisodeCharacter(episodeCharacter, uuid);
     }

@@ -26,7 +26,7 @@ public class Novel {
     private String novelTitle;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="uuid")
+    @JoinColumn(name="uuid", referencedColumnName = "uuid", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 }

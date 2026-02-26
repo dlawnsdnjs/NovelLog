@@ -17,7 +17,7 @@ public class EquipmentStatBatchRepository {
     private final JdbcTemplate jdbcTemplate;
 
     public void equipmentStatBatchInsert(long equipmentNum ,final List<EquipmentStatRequestDTO> equipmentStatList) {
-        String sql = "insert into EquipmentStat values (equipmentNum, statCode, statType, value)";
+        String sql = "insert into EquipmentStat (equipmentNum, statCode, statType, value) values (?, ?, ?, ?)";
 
         jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
             @Override
@@ -35,4 +35,5 @@ public class EquipmentStatBatchRepository {
             }
         });
     }
+
 }

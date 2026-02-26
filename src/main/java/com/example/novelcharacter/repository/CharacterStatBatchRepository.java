@@ -18,15 +18,15 @@ import java.util.List;
 public class CharacterStatBatchRepository {
     private final JdbcTemplate jdbcTemplate;
 
-    public void characterStatBatchInsert(EpisodeCharacterDTO episodeCharacterDTO, List<StatRequestDTO> statRequestDTOS) {
-        String sql = "insert into CharacterStat values (episodeNum, characterNum, statCode, value)";
+    public void characterStatBatchInsert(long episodeNum, long characterNum, List<StatRequestDTO> statRequestDTOS) {
+        String sql = "insert into CharacterStat (episodeNum, characterNum, statCode, value) values (?, ?, ?, ?)";
 
         jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
             @Override
             public void setValues(PreparedStatement ps, int i) throws SQLException {
                 StatRequestDTO statRequestDTO = statRequestDTOS.get(i);
-                ps.setLong(1, episodeCharacterDTO.getEpisodeNum());
-                ps.setLong(2, episodeCharacterDTO.getCharacterNum());
+                ps.setLong(1, episodeNum);
+                ps.setLong(2, characterNum);
                 ps.setLong(3, statRequestDTO.getStatCode());
                 ps.setLong(4, statRequestDTO.getValue());
             }

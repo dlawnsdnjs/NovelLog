@@ -3,7 +3,9 @@ package com.example.novelcharacter;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
+@EnableJpaRepositories(basePackages = "com.example.novelcharacter.repository")
 @SpringBootApplication(scanBasePackages = "com.example")
 public class NovelCharacterApplication {
 

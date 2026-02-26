@@ -14,10 +14,10 @@ import org.hibernate.annotations.OnDeleteAction;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name="Character")
+@Table(name="`Character`")
 public class Character {
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="novelNum")
+    @JoinColumn(name="novelNum", referencedColumnName = "novelNum", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Novel novel;
 

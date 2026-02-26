@@ -24,7 +24,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private final JWTUtil jwtUtil;
     private final UserService userService;
 
-    @Value("${FRONT_URL}")
+    @Value("${FRONT_TEST_URL}")
     private String frontURL;
 
 

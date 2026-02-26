@@ -8,7 +8,6 @@ import java.util.List;
 
 @Repository
 public interface StatRepository extends JpaRepository<Stat, Integer> {
-    public void insertStatList(List<Stat> statList);
     public List<Stat> findStatsByStatNameIn(List<String> statNames);
     public Stat findStatByStatCode(long statCode);
     public Stat findStatByStatName(String statName);

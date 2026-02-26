@@ -22,7 +22,7 @@ public class ResetPasswordService {
     private final EmailService emailService;
     private final BCryptPasswordEncoder encoder;
 
-    @Value("${BACK_URL}")
+    @Value("${BACK_TEST_URL}")
     private String BACK_URL;
 
 

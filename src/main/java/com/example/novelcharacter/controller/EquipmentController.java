@@ -1,6 +1,7 @@
 package com.example.novelcharacter.controller;
 
 import com.example.novelcharacter.JWT.JWTUtil;
+import com.example.novelcharacter.domain.Equipment.dto.EquipmentDTO;
 import com.example.novelcharacter.domain.Equipment.entity.Equipment;
 import com.example.novelcharacter.domain.Equipment.dto.EquipmentDataDTO;
 import com.example.novelcharacter.service.EquipmentService;
@@ -38,7 +39,7 @@ class EquipmentController {
      * @throws NoPermissionException  소설 접근 권한이 없는 경우 예외 발생
      */
     @PostMapping("/getEquipments")
-    public List<Equipment> getEquipments(@RequestHeader("Access") String access, @RequestBody Map<String, Long> payload) throws NoPermissionException {
+    public List<EquipmentDTO> getEquipments(@RequestHeader("Access") String access, @RequestBody Map<String, Long> payload) throws NoPermissionException {
         long uuid = jwtUtil.getUuid(access); // JWT에서 사용자 식별자 추출
         long novelNum = payload.get("novelNum"); // 요청 데이터에서 novelNum 추출
 
@@ -102,7 +103,7 @@ class EquipmentController {
      * @throws NoPermissionException  삭제 권한이 없을 경우
      */
     @PostMapping("/deleteEquipment")
-    public ResponseEntity<Void> deleteEpisode(@RequestHeader("Access") String access, @RequestBody Equipment equipment) throws NoPermissionException {
+    public ResponseEntity<Void> deleteEpisode(@RequestHeader("Access") String access, @RequestBody EquipmentDTO equipment) throws NoPermissionException {
         long uuid = jwtUtil.getUuid(access);
         equipmentService.deleteEquipment(equipment, uuid);
 

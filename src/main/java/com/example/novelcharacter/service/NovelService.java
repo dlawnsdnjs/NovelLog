@@ -4,8 +4,8 @@ import com.example.novelcharacter.domain.Favorite;
 import com.example.novelcharacter.domain.Novel.entity.Novel;
 import com.example.novelcharacter.domain.Novel.dto.NovelWithFavoriteDTO;
 import com.example.novelcharacter.domain.User.entity.User;
-import com.example.novelcharacter.mapper.NovelMapper;
-import com.example.novelcharacter.repository.UserRepository;
+import com.example.novelcharacter.repository.NovelRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,6 @@ import java.util.List;
  *     <li>즐겨찾기 토글 기능</li>
  * </ul>
  *
- * <p>이 서비스는 {@link NovelMapper}를 통해 데이터베이스 접근을 수행하며,
  * {@link FavoriteService}를 통해 즐겨찾기 상태를 관리합니다.</p>
  */
 @Slf4j
@@ -31,11 +30,11 @@ import java.util.List;
 @Service
 public class NovelService {
     /** 소설 관련 데이터베이스 작업을 담당하는 Mapper */
-    private final NovelMapper novelMapper;
+    private final NovelRepository novelRepository;
 
     /** 즐겨찾기 상태를 관리하는 서비스 */
     private final FavoriteService favoriteService;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     /**
      * 새로운 소설을 생성하고 데이터베이스에 저장합니다.
@@ -55,10 +54,10 @@ public class NovelService {
 
         Novel newNovel = new Novel();
         newNovel.setNovelTitle(novelTitle);
-        User user = userRepository.getReferenceById(uuid);
+        User user = userService.getUserProxy(uuid);
 
         newNovel.setUser(user);
-        novelMapper.insertNovel(newNovel);
+        novelRepository.save(newNovel);
 
         NovelWithFavoriteDTO novelWithFavoriteDTO = new NovelWithFavoriteDTO();
         novelWithFavoriteDTO.setNovelTitle(novelTitle);
@@ -75,7 +74,7 @@ public class NovelService {
      * @return 해당 사용자의 모든 소설 목록
      */
     public List<NovelWithFavoriteDTO> selectAllNovel(long uuid) {
-        return novelMapper.selectAllNovel(uuid);
+        return novelRepository.findAllByUuid(uuid);
     }
 
     /**
@@ -90,7 +89,7 @@ public class NovelService {
      */
     public Novel selectNovelOne(long novelNum, long uuid) throws NoPermissionException {
         checkOwner(novelNum, uuid);
-        return novelMapper.selectNovelById(novelNum);
+        return novelRepository.findNovelByNovelNum(novelNum);
     }
 
     /**
@@ -101,7 +100,7 @@ public class NovelService {
      * @throws NoPermissionException 소설이 해당 사용자의 것이 아닌 경우
      */
     public void checkOwner(long novelNum, long uuid) throws NoPermissionException {
-        if (novelMapper.checkOwner(novelNum, uuid) != 1) {
+        if (!novelRepository.existsByNovelNumAndUser_Uuid(novelNum, uuid)) {
             throw new NoPermissionException("해당 유저의 소설이 아닙니다.");
         }
     }
@@ -117,7 +116,7 @@ public class NovelService {
     public void setFavoriteNovel(long novelNum, long uuid) {
         Favorite favorite = new Favorite();
 
-        User user = userRepository.getReferenceById(uuid);
+        User user = userService.getUserProxy(uuid);
 
         favorite.setUser(user);
         favorite.setTargetId(novelNum);
@@ -133,13 +132,19 @@ public class NovelService {
      * @param novel 수정할 소설 데이터
      * @throws NoPermissionException 사용자가 소설의 소유자가 아닌 경우
      */
+    @Transactional
     public void updateNovel(Novel novel) throws NoPermissionException {
         try {
             checkOwner(novel.getNovelNum(), novel.getUser().getUuid());
-            novelMapper.updateNovel(novel);
+            Novel n = novelRepository.findNovelByNovelNum(novel.getNovelNum());
+            n.setNovelTitle(novel.getNovelTitle());
         } catch (Exception e) {
             log.warn("Failed to update novel", e);
         }
+    }
+
+    public Novel getNovelProxy(long novelNum){
+        return novelRepository.getReferenceById(novelNum);
     }
 
     /**
@@ -150,8 +155,10 @@ public class NovelService {
      * @param novelNum 삭제할 소설 번호
      * @param uuid 사용자 uuid
      */
+    @Transactional
     public void deleteNovel(long novelNum, long uuid) throws NoPermissionException {
         checkOwner(novelNum, uuid);
-        novelMapper.deleteNovel(novelNum);
+        Novel n = novelRepository.findNovelByNovelNum(novelNum);
+        novelRepository.delete(n);
     }
 }

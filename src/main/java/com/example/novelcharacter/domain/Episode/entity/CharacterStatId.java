@@ -12,6 +12,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @EqualsAndHashCode
 public class CharacterStatId implements Serializable {
-    private EpisodeCharacterId episodeCharacterId;
+    private long episodeNum;
+    private long characterNum;
     private long statCode;
 }

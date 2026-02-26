@@ -17,7 +17,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @Table(name="Episode")
 public class Episode {
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="novelNum", nullable=false)
+    @JoinColumn(name="novelNum", referencedColumnName = "novelNum", nullable=false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Novel novel;
 

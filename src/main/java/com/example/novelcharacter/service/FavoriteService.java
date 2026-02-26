@@ -1,7 +1,7 @@
 package com.example.novelcharacter.service;
 
 import com.example.novelcharacter.domain.Favorite;
-import com.example.novelcharacter.mapper.FavoriteMapper;
+import com.example.novelcharacter.repository.FavoriteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,14 +17,13 @@ import org.springframework.stereotype.Service;
  *   <li>즐겨찾기 삭제</li>
  * </ul>
  *
- * <p>이 서비스는 {@link FavoriteMapper}를 통해 데이터베이스와 연동됩니다.</p>
  */
 @RequiredArgsConstructor
 @Service
 public class FavoriteService {
 
     /** 즐겨찾기 관련 DB 작업을 수행하는 매퍼 */
-    private final FavoriteMapper favoriteMapper;
+    private final FavoriteRepository favoriteRepository;
 
     /**
      * 즐겨찾기를 설정하거나 해제합니다.
@@ -35,8 +34,8 @@ public class FavoriteService {
      * @param favorite 즐겨찾기 정보가 담긴 DTO
      */
     public void setFavorite(Favorite favorite) {
-        if (favoriteMapper.getFavorite(favorite) == null) {
-            favoriteMapper.addFavorite(favorite);
+        if (favoriteRepository.findFavoriteById(favorite.getId()) == null) {
+            favoriteRepository.save(favorite);
         } else {
             deleteFavorite(favorite);
         }
@@ -50,6 +49,6 @@ public class FavoriteService {
      * @param favorite 삭제할 즐겨찾기 정보를 담은 DTO
      */
     public void deleteFavorite(Favorite favorite) {
-        favoriteMapper.removeFavorite(favorite);
+        favoriteRepository.delete(favorite);
     }
 }

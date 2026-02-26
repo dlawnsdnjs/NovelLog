@@ -1,32 +1,31 @@
 package com.example.novelcharacter.service;
 
+import com.example.novelcharacter.domain.Episode.dto.EpisodeDTO;
 import com.example.novelcharacter.domain.Episode.entity.Episode;
-import com.example.novelcharacter.mapper.EpisodeMapper;
+import com.example.novelcharacter.domain.Novel.entity.Novel;
+import com.example.novelcharacter.repository.EpisodeRepository;
+import com.example.novelcharacter.repository.NovelRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.naming.NoPermissionException;
 import java.util.List;
+import java.util.stream.Collectors;
 
-/**
- * 회차(Episode) 관련 비즈니스 로직을 처리하는 서비스 클래스입니다.
- *
- * <p>이 클래스는 {@link EpisodeMapper}를 통해 데이터베이스와 연동하며,
- * {@link NovelService}를 이용해 사용자의 소유권 검증을 수행합니다.
- * 회차 등록, 수정, 삭제, 검색 등의 기능을 제공합니다.</p>
- *
- * @author
- * @since 2025-10-15
- */
 @RequiredArgsConstructor
 @Service
 public class EpisodeService {
 
     /** 회차 관련 데이터베이스 작업을 수행하는 매퍼 */
-    private final EpisodeMapper episodeMapper;
+    private final EpisodeRepository episodeRepository;
 
     /** 소설의 소유자 검증 및 관련 검증 로직을 담당하는 서비스 */
     private final NovelService novelService;
+    private final NovelRepository novelRepository;
 
     /**
      * 새로운 회차를 등록합니다.
@@ -38,10 +37,17 @@ public class EpisodeService {
      * @return 등록된 회차 정보
      * @throws NoPermissionException 사용자가 해당 소설의 소유자가 아닌 경우
      */
-    public Episode insertEpisode(Episode episode, long uuid) throws NoPermissionException {
+    @Transactional
+    public EpisodeDTO insertEpisode(EpisodeDTO episode, long uuid) throws NoPermissionException {
         novelService.checkOwner(episode.getNovelNum(), uuid);
-        episodeMapper.insertEpisode(episode);
-        episodeMapper.updateOrderIndexNull(episode);
+        Episode newEpisode = new Episode();
+        newEpisode.setEpisodeNum(episode.getEpisodeNum());
+        newEpisode.setEpisodeTitle(episode.getEpisodeTitle());
+        Novel n = novelRepository.getReferenceById(episode.getNovelNum());
+        newEpisode.setNovel(n);
+        newEpisode.setEpisodeSummary(episode.getEpisodeSummary());
+        episodeRepository.save(newEpisode);
+        newEpisode.setOrderIndex(newEpisode.getEpisodeNum());
         return episode;
     }
 
@@ -53,9 +59,9 @@ public class EpisodeService {
      * @return 회차 목록
      * @throws NoPermissionException 사용자가 해당 소설의 소유자가 아닌 경우
      */
-    public List<Episode> selectAllEpisode(long novelNum, long uuid) throws NoPermissionException {
+    public List<EpisodeDTO> selectAllEpisode(long novelNum, long uuid) throws NoPermissionException {
         novelService.checkOwner(novelNum, uuid);
-        return episodeMapper.selectAllEpisode(novelNum);
+        return episodeRepository.findAllEpisodesByNovel_NovelNum(novelNum).stream().map(EpisodeDTO::from).collect(Collectors.toList());
     }
 
     /**
@@ -67,9 +73,10 @@ public class EpisodeService {
      * @return 페이징된 회차 목록
      * @throws NoPermissionException 사용자가 해당 소설의 소유자가 아닌 경우
      */
-    public List<Episode> selectEpisodePage(long novelNum, int offset, long uuid) throws NoPermissionException {
+    public List<EpisodeDTO> selectEpisodePage(long novelNum, int offset, long uuid) throws NoPermissionException {
         novelService.checkOwner(novelNum, uuid);
-        return episodeMapper.selectEpisodePage(novelNum, offset);
+        Pageable pageable = PageRequest.of(offset-1, 20, Sort.by("orderIndex").descending());
+        return episodeRepository.findEpisodeByNovel_NovelNum(novelNum, pageable).stream().map(EpisodeDTO::from).collect(Collectors.toList());
     }
 
     /**
@@ -77,13 +84,10 @@ public class EpisodeService {
      *
      * @param episodeNum 회차 번호
      * @param uuid       사용자 UUID
-     * @return 소유자가 맞을 경우 1 반환
      * @throws NoPermissionException 사용자가 해당 회차의 소유자가 아닌 경우
      */
-    public int checkEpisodeOwner(long episodeNum, long uuid) throws NoPermissionException {
-        if (episodeMapper.checkEpisodeOwner(episodeNum, uuid) == 1) {
-            return 1;
-        } else {
+    public void checkEpisodeOwner(long episodeNum, long uuid) throws NoPermissionException {
+        if (!episodeRepository.existsByEpisodeNumAndUuid(episodeNum, uuid)) {
             throw new NoPermissionException("사용자가 작성한 회차가 아닙니다.");
         }
     }
@@ -101,7 +105,7 @@ public class EpisodeService {
      */
     public List<Episode> searchEpisode(String search, long novelNum, long uuid) throws NoPermissionException {
         novelService.checkOwner(novelNum, uuid);
-        return episodeMapper.searchEpisode(search);
+        return episodeRepository.findByEpisodeTitleContaining(search);
     }
 
     /**
@@ -111,9 +115,17 @@ public class EpisodeService {
      * @param uuid       사용자 UUID
      * @throws NoPermissionException 사용자가 해당 소설의 소유자가 아닌 경우
      */
-    public void updateEpisode(Episode episode, long uuid) throws NoPermissionException {
+    @Transactional
+    public void updateEpisode(EpisodeDTO episode, long uuid) throws NoPermissionException {
         novelService.checkOwner(episode.getNovelNum(), uuid);
-        episodeMapper.updateEpisode(episode);
+        Episode e = episodeRepository.findEpisodeByEpisodeNum(episode.getEpisodeNum());
+        e.setEpisodeTitle(episode.getEpisodeTitle());
+        e.setOrderIndex(episode.getOrderIndex());
+        e.setEpisodeSummary(episode.getEpisodeSummary());
+    }
+
+    public Episode getEpisodeProxy(long episodeNum){
+        return episodeRepository.getReferenceById(episodeNum);
     }
 
     /**
@@ -125,8 +137,10 @@ public class EpisodeService {
      * @param uuid       사용자 UUID
      * @throws NoPermissionException 사용자가 해당 회차의 소유자가 아닌 경우
      */
+    @Transactional
     public void deleteEpisode(long episodeNum, long uuid) throws NoPermissionException {
         checkEpisodeOwner(episodeNum, uuid);
-        episodeMapper.deleteEpisode(episodeNum);
+        Episode e = episodeRepository.findEpisodeByEpisodeNum(episodeNum);
+        episodeRepository.delete(e);
     }
 }

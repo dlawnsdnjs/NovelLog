@@ -1,6 +1,7 @@
 package com.example.novelcharacter.controller;
 
 import com.example.novelcharacter.JWT.JWTUtil;
+import com.example.novelcharacter.domain.Episode.dto.EpisodeDTO;
 import com.example.novelcharacter.domain.Episode.entity.Episode;
 import com.example.novelcharacter.service.EpisodeService;
 import jakarta.validation.Valid;
@@ -53,7 +54,7 @@ public class EpisodeController {
      * </pre>
      */
     @PostMapping("/allEpisode")
-    public List<Episode> getAllEpisode(@RequestHeader("Access") String access, @RequestBody Map<String, Long> payload)
+    public List<EpisodeDTO> getAllEpisode(@RequestHeader("Access") String access, @RequestBody Map<String, Long> payload)
             throws NoPermissionException {
 
         long uuid = jwtUtil.getUuid(access);
@@ -92,7 +93,7 @@ public class EpisodeController {
      * </pre>
      */
     @PostMapping("/addEpisode")
-    public Episode addEpisode(@RequestHeader("Access") String access, @Valid @RequestBody Episode episode)
+    public EpisodeDTO addEpisode(@RequestHeader("Access") String access, @Valid @RequestBody EpisodeDTO episode)
             throws NoPermissionException {
 
         long uuid = jwtUtil.getUuid(access);

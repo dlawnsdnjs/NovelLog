@@ -2,16 +2,19 @@ package com.example.novelcharacter.service;
 
 import com.example.novelcharacter.domain.Equipment.dto.*;
 import com.example.novelcharacter.domain.Equipment.entity.Equipment;
-import com.example.novelcharacter.domain.Equipment.entity.EquipmentStat;
 import com.example.novelcharacter.domain.Stat.entity.Stat;
 import com.example.novelcharacter.domain.Stat.dto.StatRequestDTO;
-import com.example.novelcharacter.mapper.EquipmentMapper;
-import com.example.novelcharacter.mapper.EquipmentStatMapper;
+import com.example.novelcharacter.repository.EquipmentRepository;
+import com.example.novelcharacter.repository.EquipmentStatBatchRepository;
+import com.example.novelcharacter.repository.EquipmentStatRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.naming.NoPermissionException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -30,10 +33,11 @@ import java.util.stream.Collectors;
 @Service
 public class EquipmentService {
 
-    private final EquipmentMapper equipmentMapper;
-    private final EquipmentStatMapper equipmentStatMapper;
+    private final EquipmentRepository equipmentRepository;
+    private final EquipmentStatRepository equipmentStatRepository;
     private final StatService statService;
     private final NovelService novelService;
+    private final EquipmentStatBatchRepository equipmentStatBatchRepository;
 
 
     /**
@@ -42,8 +46,8 @@ public class EquipmentService {
      * @param equipmentNum 장비 고유 번호
      * @return 장비 정보 DTO
      */
-    public EquipmentDTO selectEquipmentById(long equipmentNum) {
-        return equipmentMapper.selectEquipmentById(equipmentNum);
+    public Equipment selectEquipmentById(long equipmentNum) {
+        return equipmentRepository.findEquipmentByEquipmentNum(equipmentNum);
     }
 
     /**
@@ -54,7 +58,7 @@ public class EquipmentService {
      * @throws NoPermissionException 사용자가 해당 장비의 소유자가 아닐 경우
      */
     public void checkEquipmentOwner(long uuid, long equipmentNum) throws NoPermissionException {
-        if (equipmentMapper.checkEquipmentOwner(uuid, equipmentNum) != 1) {
+        if (!equipmentRepository.existsByUuidAndEquipmentNum(uuid, equipmentNum)) {
             throw new NoPermissionException("해당 유저의 장비가 아닙니다.");
         }
     }
@@ -66,7 +70,8 @@ public class EquipmentService {
      * @return 조회된 장비 목록
      */
     public List<EquipmentDTO> selectEquipmentsByIds(List<Long> equipmentNum) {
-        return equipmentMapper.selectEquipmentsByIds(equipmentNum);
+        List<Equipment> equipmentList = equipmentRepository.findByEquipmentNumIn(equipmentNum);
+        return equipmentList.stream().map(EquipmentDTO::from).collect(Collectors.toList());
     }
 
     /**
@@ -79,7 +84,8 @@ public class EquipmentService {
      */
     public List<EquipmentDTO> selectEquipmentsByNovel(long novelNum, long uuid) throws NoPermissionException {
         novelService.checkOwner(novelNum, uuid);
-        return equipmentMapper.selectEquipmentsById(novelNum);
+        List<Equipment> equipmentList = equipmentRepository.findEquipmentsByNovel_NovelNum(novelNum);
+        return equipmentList.stream().map(EquipmentDTO::from).collect(Collectors.toList());
     }
 
     /**
@@ -93,21 +99,9 @@ public class EquipmentService {
      */
     public List<EquipmentDTO> selectEquipmentsPageByNovel(long novelNum, int offset, long uuid) throws NoPermissionException {
         novelService.checkOwner(novelNum, uuid);
-        return equipmentMapper.selectEquipmentsPageById(novelNum, offset);
-    }
-
-    /**
-     * 장비 이름으로 특정 장비를 조회합니다.
-     *
-     * @param equipmentName 장비 이름
-     * @param novelNum 소설 번호
-     * @param uuid 사용자 UUID
-     * @return 장비 DTO
-     * @throws NoPermissionException 사용자가 소설의 소유자가 아닐 경우
-     */
-    public EquipmentDTO selectEquipmentByName(String equipmentName, long novelNum, long uuid) throws NoPermissionException {
-        novelService.checkOwner(novelNum, uuid);
-        return equipmentMapper.selectEquipmentByName(equipmentName, novelNum);
+        Pageable pageable = PageRequest.of(offset-1, 20, Sort.by("novelNum").descending());
+        List<Equipment> equipmentList = equipmentRepository.findByNovel_NovelNum(novelNum, pageable);
+        return equipmentList.stream().map(EquipmentDTO::from).collect(Collectors.toList());
     }
 
     /**
@@ -118,11 +112,16 @@ public class EquipmentService {
      * @throws NoPermissionException 사용자가 소설의 소유자가 아닐 경우
      */
     public void insertEquipment(EquipmentDataDTO equipmentData, long uuid) throws NoPermissionException {
-        Equipment equipment = equipmentData.getEquipment();
+        EquipmentDTO equipment = equipmentData.getEquipment();
         novelService.checkOwner(equipment.getNovelNum(), uuid);
-        equipmentMapper.insertEquipment(equipment);
+        Equipment e = new Equipment();
+        e.setEquipmentNum(equipment.getEquipmentNum());
+        e.setEquipmentName(equipment.getEquipmentName());
+        e.setInform(equipment.getInform());
+        e.setNovel(novelService.getNovelProxy(equipment.getNovelNum()));
 
         insertEquipmentStatList(equipment.getEquipmentNum(), equipmentData.getEquipmentStats());
+        equipmentRepository.save(e);
     }
 
     /**
@@ -135,22 +134,18 @@ public class EquipmentService {
      * @param uuid 사용자 UUID
      * @throws NoPermissionException 사용자가 소설의 소유자가 아닐 경우
      */
+    @Transactional
     public void updateEquipment(EquipmentDataDTO equipmentData, long uuid) throws NoPermissionException {
         // N+1 문제 있어서 수정 필요
         EquipmentDTO equipment = equipmentData.getEquipment();
+        long equipmentNum = equipment.getEquipmentNum();
         novelService.checkOwner(equipment.getNovelNum(), uuid);
-        equipmentMapper.updateEquipment(equipment);
+        Equipment e = equipmentRepository.findEquipmentByEquipmentNum(equipmentNum);
+        e.setEquipmentName(equipment.getEquipmentName());
 
-        for (EquipmentStatInfoDTO equipmentStatDTO : equipmentData.getEquipmentStats()) {
-            EquipmentStat equipmentStat = new EquipmentStat();
-            equipmentStat.setEquipmentNum(equipment.getEquipmentNum());
-            Stat stat = statService.selectStat(equipmentStatDTO.getStatName());
-            equipmentStat.setStatCode(stat.getStatCode());
-            equipmentStat.setStatType(equipmentStatDTO.getType());
-            equipmentStat.setValue(equipmentStatDTO.getValue());
-
-            updateEquipmentStat(equipmentStat);
-        }
+        equipmentStatRepository.deleteEquipmentStatsByEquipmentNum(equipmentNum);
+        List<EquipmentStatRequestDTO> equipmentStatRequestDTOS = statExtractor(equipmentData.getEquipmentStats());
+        equipmentStatBatchRepository.equipmentStatBatchInsert(equipmentNum, equipmentStatRequestDTOS);
     }
 
     /**
@@ -160,41 +155,14 @@ public class EquipmentService {
      * @param uuid 사용자 UUID
      * @throws NoPermissionException 사용자가 소설의 소유자가 아닐 경우
      */
-    public void deleteEquipment(Equipment equipment, long uuid) throws NoPermissionException {
+    @Transactional
+    public void deleteEquipment(EquipmentDTO equipment, long uuid) throws NoPermissionException {
         novelService.checkOwner(equipment.getNovelNum(), uuid);
-        equipmentMapper.deleteEquipment(equipment.getEquipmentNum());
+        Equipment e = equipmentRepository.findEquipmentByEquipmentNum(equipment.getEquipmentNum());
+        equipmentRepository.delete(e);
     }
 
     // ---------------------- 장비 스탯 관련 ----------------------
-
-    /**
-     * 특정 장비의 모든 스탯을 조회합니다.
-     *
-     * @param equipmentNum 장비 번호
-     * @return 스탯 정보 리스트
-     */
-    public List<EquipmentStatInfoDTO> selectEquipmentStats(long equipmentNum) {
-        return equipmentStatMapper.selectEquipmentStatsById(equipmentNum);
-    }
-
-    /**
-     * 여러 장비의 스탯 정보를 조회합니다.
-     *
-     * @param equipmentIds 장비 번호 리스트
-     * @return 장비별 스탯 리스트
-     */
-    public List<EquipmentStatInfoWithNumDTO> selectEquipmentStatsWithNum(List<Long> equipmentIds) {
-        return equipmentStatMapper.selectEquipmentStatsByIds(equipmentIds);
-    }
-
-    /**
-     * 단일 장비 스탯을 등록합니다.
-     *
-     * @param equipmentStat 등록할 장비 스탯 정보
-     */
-    public void insertEquipmentStat(EquipmentStat equipmentStat) {
-        equipmentStatMapper.insertEquipmentStat(equipmentStat);
-    }
 
     /**
      * 여러 장비 스탯을 일괄 등록합니다.
@@ -204,6 +172,13 @@ public class EquipmentService {
      * @throws IllegalArgumentException 존재하지 않는 스탯 이름이 포함된 경우
      */
     public void insertEquipmentStatList(long equipmentNum, List<EquipmentStatInfoDTO> equipmentStats) {
+
+        List<EquipmentStatRequestDTO> statRequests = statExtractor(equipmentStats);
+
+        equipmentStatBatchRepository.equipmentStatBatchInsert(equipmentNum, statRequests);
+    }
+
+    public List<EquipmentStatRequestDTO> statExtractor(List<EquipmentStatInfoDTO> equipmentStats) {
         List<String> statNames = equipmentStats.stream()
                 .map(EquipmentStatInfoDTO::getStatName)
                 .collect(Collectors.toList());
@@ -212,7 +187,7 @@ public class EquipmentService {
         Map<String, Long> statCodeMap = stats.stream()
                 .collect(Collectors.toMap(Stat::getStatName, Stat::getStatCode));
 
-        List<EquipmentStatRequestDTO> statRequests = equipmentStats.stream()
+        return equipmentStats.stream()
                 .map(equipStat -> {
                     Long statCode = statCodeMap.get(equipStat.getStatName());
                     if (statCode == null) {
@@ -230,26 +205,8 @@ public class EquipmentService {
                 })
                 .collect(Collectors.toList());
 
-        equipmentStatMapper.insertEquipmentStatList(equipmentNum, statRequests);
     }
 
-    /**
-     * 장비 스탯을 삭제합니다.
-     *
-     * @param equipmentStat 삭제할 스탯 정보
-     */
-    public void deleteEquipmentStat(EquipmentStat equipmentStat) {
-        equipmentStatMapper.deleteEquipmentStat(equipmentStat);
-    }
-
-    /**
-     * 장비 스탯을 수정합니다.
-     *
-     * @param equipmentStat 수정할 스탯 정보
-     */
-    public void updateEquipmentStat(EquipmentStat equipmentStat) {
-        equipmentStatMapper.updateEquipmentStat(equipmentStat);
-    }
 
     /**
      * 장비 전체 정보(기본 정보 + 스탯)를 조회합니다.
@@ -262,11 +219,7 @@ public class EquipmentService {
     public EquipmentDataDTO selectEquipmentData(long uuid, long equipmentNum) throws NoPermissionException {
         checkEquipmentOwner(uuid, equipmentNum);
 
-        EquipmentDataDTO equipmentDataDTO = new EquipmentDataDTO();
-        equipmentDataDTO.setEquipment(selectEquipmentById(equipmentNum));
-        equipmentDataDTO.setEquipmentStats(selectEquipmentStats(equipmentNum));
-
-        return equipmentDataDTO;
+        return equipmentRepository.findEquipmentDataByEquipmentNum(equipmentNum);
     }
 
     /**
@@ -279,12 +232,7 @@ public class EquipmentService {
         if(equipmentIds == null || equipmentIds.isEmpty()) {
             return null;
         }
-        List<EquipmentDTO> equips = equipmentMapper.selectEquipmentsByIds(equipmentIds);
-        for(EquipmentDTO equipment : equips) {
-            System.out.println(equipment);
-        }
 
-        return equipmentMapper.selectEquipmentDataList(equipmentIds);
-
+        return equipmentRepository.findEquipmentDataByEquipmentNumIn(equipmentIds);
     }
 }

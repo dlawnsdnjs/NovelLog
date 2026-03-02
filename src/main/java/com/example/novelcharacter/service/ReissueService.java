@@ -67,11 +67,11 @@ public class ReissueService {
         String loginType = jwtUtil.getLoginType(refresh);
 
 
-        TokenResponse tokenSet = tokenProvider.generateTokenSet(uuid, username, role, loginType);
-        // 새로운 토큰 발급
         // 기존 Refresh Token 삭제 후 새로 저장
         refreshService.deleteByRefresh(uuid);
 
+        TokenResponse tokenSet = tokenProvider.generateTokenSet(uuid, username, role, loginType);
+        // 새로운 토큰 발급
         tokenProvider.sendTokens(response, tokenSet);
 
         return new ResponseEntity<>("success", HttpStatus.OK);

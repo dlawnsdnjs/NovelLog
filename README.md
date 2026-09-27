@@ -21,10 +21,6 @@ Novel Log는 이러한 문제를 해결하기 위해 다음 기능을 제공합�
 
 <hr>
 
-<h2>🔗 데모 사이트</h2>
-<p>
-👉 <a href="https://novel-log.com/">https://novel-log.com/</a>
-</p>
 
 <hr>
 
